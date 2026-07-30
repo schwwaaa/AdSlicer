@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdSlicer — Help</title>
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#ffcc00">
+<meta name="description" content="AdSlicer help documentation for archival commercial detection, boundary review, and segment export.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #008080;
+    font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+    font-size: 11px;
+    color: #000;
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  .window {
+    background: #c0c0c0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    box-shadow: 1px 1px 0 #000;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 16px);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .title-bar {
+    background: linear-gradient(to right, #000080, #1084d0);
+    padding: 3px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .title-bar-text {
+    color: #fff;
+    font-weight: bold;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .title-bar-controls { display: flex; gap: 2px; }
+
+  .tb-btn {
+    width: 16px; height: 14px;
+    background: #c0c0c0;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    font-size: 9px;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .menu-bar {
+    background: #c0c0c0;
+    padding: 2px 4px;
+    display: flex;
+    border-bottom: 1px solid #808080;
+    flex-shrink: 0;
+  }
+
+  .menu-item { padding: 2px 8px; cursor: default; font-size: 11px; }
+  .menu-item:hover { background: #000080; color: #fff; }
+
+  /* Period-correct pull-down menu used for repository access. */
+  .menu-dropdown {
+    position: relative;
+    display: flex;
+  }
+
+  .menu-trigger {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+  }
+
+  .classic-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;
+    z-index: 1000;
+    display: none;
+    min-width: 252px;
+    padding: 3px;
+    background: #c0c0c0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    box-shadow: 2px 2px 0 #000;
+    color: #000;
+  }
+
+  .menu-dropdown:hover .classic-menu,
+  .menu-dropdown:focus-within .classic-menu,
+  .menu-dropdown.open .classic-menu {
+    display: block;
+  }
+
+  .classic-menu-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px;
+    border: 0;
+    background: transparent;
+    padding: 5px 9px 5px 6px;
+    color: #000;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: default;
+  }
+
+  .classic-menu-item:hover,
+  .classic-menu-item:focus {
+    background: #000080;
+    color: #fff;
+    outline: none;
+  }
+
+  .classic-menu-icon {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .classic-menu-shortcut {
+    padding-left: 16px;
+    color: inherit;
+    opacity: .8;
+  }
+
+  .classic-menu-separator {
+    height: 2px;
+    margin: 3px 2px;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #fff;
+  }
+
+  .toolbar {
+    background: #c0c0c0;
+    padding: 3px 4px;
+    border-bottom: 1px solid #808080;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .tool-btn {
+    background: #c0c0c0;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: default;
+    white-space: nowrap;
+  }
+
+  .tool-sep { width: 1px; background: #808080; height: 18px; margin: 0 3px; }
+
+  .main-area { display: flex; flex: 1; overflow: hidden; }
+
+  .tree-panel {
+    width: 200px;
+    min-width: 200px;
+    background: #fff;
+    border-right: 2px solid #808080;
+    overflow-y: auto;
+    padding: 4px 0;
+    flex-shrink: 0;
+  }
+
+  .tree-panel::-webkit-scrollbar { width: 16px; }
+  .tree-panel::-webkit-scrollbar-track { background: #c0c0c0; }
+  .tree-panel::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-top: 1px solid #fff; border-left: 1px solid #fff;
+    border-right: 1px solid #808080; border-bottom: 1px solid #808080;
+  }
+
+  .tree-item {
+    padding: 2px 4px 2px 16px;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .tree-item:hover { background: #000080; color: #fff; }
+  .tree-item.selected { background: #000080; color: #fff; }
+  .tree-section {
+    padding: 5px 4px 2px 6px;
+    font-weight: bold;
+    font-size: 10px;
+    color: #808080;
+    border-bottom: 1px solid #c0c0c0;
+    cursor: default;
+  }
+
+  .content-area {
+    flex: 1;
+    background: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .content-area::-webkit-scrollbar { width: 16px; }
+  .content-area::-webkit-scrollbar-track { background: #c0c0c0; }
+  .content-area::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-top: 1px solid #fff; border-left: 1px solid #fff;
+    border-right: 1px solid #808080; border-bottom: 1px solid #808080;
+  }
+
+  .page { display: none; padding: 14px 18px 24px; }
+  .page.visible { display: block; }
+
+  .page h1 {
+    font-size: 14px; font-weight: bold; color: #000080;
+    border-bottom: 2px solid #000080; padding-bottom: 4px; margin-bottom: 10px;
+  }
+
+  .page h2 {
+    font-size: 12px; font-weight: bold; color: #000;
+    margin: 16px 0 5px;
+    border-bottom: 1px solid #c0c0c0; padding-bottom: 2px;
+  }
+
+  .page h3 {
+    font-size: 11px; font-weight: bold; color: #000080;
+    margin: 10px 0 3px;
+  }
+
+  .page p { font-size: 11px; line-height: 1.55; margin-bottom: 7px; }
+
+  .page ul, .page ol { margin: 3px 0 9px 20px; }
+  .page li { font-size: 11px; line-height: 1.6; margin-bottom: 2px; }
+
+  .inset {
+    background: #fff;
+    border-top: 1px solid #808080; border-left: 1px solid #808080;
+    border-right: 1px solid #fff; border-bottom: 1px solid #fff;
+    padding: 6px 10px; margin: 6px 0 10px;
+  }
+
+  .page code {
+    font-family: "Courier New", monospace; font-size: 11px;
+    background: #fff; border: 1px solid #808080; padding: 0 3px;
+  }
+
+  pre {
+    font-family: "Courier New", monospace; font-size: 11px;
+    background: #fff;
+    border-top: 1px solid #808080; border-left: 1px solid #808080;
+    border-right: 1px solid #fff; border-bottom: 1px solid #fff;
+    padding: 7px 10px; margin: 5px 0 10px;
+    overflow-x: auto; white-space: pre; line-height: 1.5;
+  }
+
+  .page table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 5px 0 12px; }
+  .page th {
+    background: #000080; color: #fff;
+    padding: 3px 8px; text-align: left;
+    font-size: 11px; font-weight: bold; border: 1px solid #808080;
+  }
+  .page td { padding: 2px 8px; border: 1px solid #c0c0c0; vertical-align: top; line-height: 1.45; }
+  .page tr:nth-child(even) td { background: #f0f0f0; }
+  .page td:first-child { font-family: "Courier New", monospace; font-size: 10px; color: #000080; }
+
+  .info-box {
+    background: #ffffe0; border: 1px solid #808080;
+    padding: 5px 8px; margin: 7px 0;
+    font-size: 11px; display: flex; gap: 6px; align-items: flex-start;
+  }
+  .info-box .icon { flex-shrink: 0; font-size: 14px; }
+
+  .status-bar {
+    background: #c0c0c0; border-top: 1px solid #808080;
+    padding: 2px 6px; display: flex; gap: 0; flex-shrink: 0;
+  }
+  .status-panel {
+    border-top: 1px solid #808080; border-left: 1px solid #808080;
+    border-right: 1px solid #fff; border-bottom: 1px solid #fff;
+    padding: 1px 8px; font-size: 10px; margin-right: 4px;
+  }
+
+  .hero-banner {
+    background: #000080; color: #fff;
+    padding: 10px 12px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hero-banner .logo { font-size: 26px; line-height: 1; }
+  .hero-banner h1 { color: #fff; border-bottom: 1px solid #4060a0; font-size: 14px; margin-bottom: 2px; }
+  .hero-banner p { color: #c0d0ff; font-size: 11px; margin: 0; }
+
+  .step-list { margin: 6px 0 10px 0; }
+  .step { display: flex; gap: 8px; margin-bottom: 7px; align-items: flex-start; }
+  .step-num {
+    background: #000080; color: #fff; font-weight: bold; font-size: 10px;
+    width: 18px; height: 18px; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-body { flex: 1; font-size: 11px; line-height: 1.5; }
+  .step-body strong { color: #000080; }
+
+  .file-tree {
+    font-family: "Courier New", monospace; font-size: 11px;
+    background: #fff;
+    border-top: 1px solid #808080; border-left: 1px solid #808080;
+    border-right: 1px solid #fff; border-bottom: 1px solid #fff;
+    padding: 7px 10px; margin: 6px 0 10px; line-height: 1.7;
+  }
+  .file-tree .dir { color: #000080; font-weight: bold; }
+  .file-tree .note { color: #808080; }
+
+  .toc-link {
+    color: #000080; cursor: default; text-decoration: underline;
+  }
+
+
+  /* AdSlicer identity layer -------------------------------------------------
+     The original Windows 95/98 help-system CSS remains the structural base.
+     These overrides introduce the supplied film-eye icon's yellow/black
+     palette without flattening the bevels, chrome, menus, or document model.
+  ------------------------------------------------------------------------- */
+  :root {
+    --adslice-yellow: #ffcc00;
+    --adslice-yellow-hi: #ffe98a;
+    --adslice-yellow-soft: #fff4bd;
+    --adslice-gold: #c99800;
+    --adslice-black: #080808;
+    --adslice-charcoal: #242424;
+    --adslice-desktop: #006f70;
+    --adslice-chrome: #c0c0c0;
+  }
+
+  body {
+    background-color: var(--adslice-desktop);
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.035) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.05) 75%),
+      linear-gradient(45deg, rgba(0,0,0,.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.035) 75%);
+    background-position: 0 0, 4px 4px;
+    background-size: 8px 8px;
+  }
+
+  .window {
+    box-shadow: 2px 2px 0 #000, 5px 5px 0 rgba(0,0,0,.24);
+  }
+
+  .title-bar {
+    background: linear-gradient(to right, var(--adslice-black) 0%, #242000 58%, var(--adslice-gold) 100%);
+    border-bottom: 1px solid #000;
+  }
+
+  .title-bar-text { letter-spacing: .1px; }
+
+  .title-bar-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  .menu-item:hover,
+  .tree-item:hover,
+  .tree-item.selected {
+    background: var(--adslice-yellow);
+    color: var(--adslice-black);
+  }
+
+  .classic-menu-item:hover,
+  .classic-menu-item:focus {
+    background: var(--adslice-yellow);
+    color: var(--adslice-black);
+    outline: 1px dotted var(--adslice-black);
+    outline-offset: -3px;
+  }
+
+  .tree-item.selected {
+    outline: 1px dotted var(--adslice-black);
+    outline-offset: -2px;
+    font-weight: bold;
+  }
+
+  .tree-section {
+    color: #555;
+    background: linear-gradient(to right, #dedede, var(--adslice-yellow-soft));
+  }
+
+  .tool-btn:hover {
+    background: var(--adslice-yellow);
+    color: var(--adslice-black);
+  }
+
+  .tool-btn:active {
+    border-top-color: #808080;
+    border-left-color: #808080;
+    border-right-color: #fff;
+    border-bottom-color: #fff;
+    transform: translate(1px, 1px);
+  }
+
+  .page h1 {
+    color: var(--adslice-black);
+    border-bottom: 3px solid var(--adslice-yellow);
+    padding-bottom: 5px;
+  }
+
+  .page h2 {
+    border-bottom-color: var(--adslice-yellow);
+  }
+
+  .page h3,
+  .toc-link,
+  .step-body strong,
+  .file-tree .dir {
+    color: #6f5300;
+  }
+
+  .page code {
+    border-color: #a88619;
+    background: #fffdf3;
+  }
+
+  .page th {
+    background: var(--adslice-black);
+    color: var(--adslice-yellow);
+    border-color: #5a5a5a;
+  }
+
+  .page tr:nth-child(even) td { background: #fff9df; }
+  .page td:first-child { color: #6f5300; }
+
+  .info-box {
+    background: var(--adslice-yellow-soft);
+    border: 1px solid var(--adslice-gold);
+    box-shadow: inset 1px 1px 0 #fff;
+  }
+
+  .hero-banner {
+    background: var(--adslice-black);
+    color: #fff;
+    border-top: 2px solid #5a5a5a;
+    border-left: 2px solid #5a5a5a;
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+    box-shadow: 3px 3px 0 var(--adslice-yellow);
+    padding: 10px 12px;
+    gap: 12px;
+  }
+
+  .logo-frame {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--adslice-yellow);
+    border-top: 2px solid var(--adslice-yellow-hi);
+    border-left: 2px solid var(--adslice-yellow-hi);
+    border-right: 2px solid #765a00;
+    border-bottom: 2px solid #765a00;
+  }
+
+  .hero-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .hero-banner h1 {
+    color: var(--adslice-yellow);
+    border-bottom: 1px solid #5a4a00;
+    font-size: 17px;
+    letter-spacing: .2px;
+  }
+
+  .hero-banner p { color: #fff3bd; }
+
+  .step-num {
+    background: var(--adslice-black);
+    color: var(--adslice-yellow);
+    border: 1px solid var(--adslice-yellow);
+  }
+
+  .status-bar {
+    background: linear-gradient(to right, var(--adslice-chrome) 0%, var(--adslice-chrome) 76%, #d8c36b 100%);
+  }
+
+  .brand-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+  }
+
+  .brand-pip {
+    width: 8px;
+    height: 8px;
+    background: var(--adslice-yellow);
+    border: 1px solid var(--adslice-black);
+    display: inline-block;
+  }
+
+  ::selection {
+    background: var(--adslice-yellow);
+    color: var(--adslice-black);
+  }
+
+
+  /* Readable desktop scale -------------------------------------------------
+     AdSlicer is intended to remain comfortable at 100% browser zoom. These
+     dimensions preserve the historical Windows help-system geometry while
+     increasing the physical size of every frequently read or clicked element.
+  ------------------------------------------------------------------------- */
+  @media (min-width: 761px) {
+    body {
+      font-size: 16px;
+      padding: 10px;
+    }
+
+    .window {
+      width: 100%;
+      max-width: 1760px;
+      height: calc(100vh - 20px);
+    }
+
+    .title-bar { padding: 5px 6px; }
+    .title-bar-text { font-size: 15px; gap: 8px; }
+    .title-bar-icon { width: 21px; height: 21px; }
+    .title-bar-controls { gap: 3px; }
+    .tb-btn {
+      width: 23px;
+      height: 21px;
+      font-size: 12px;
+    }
+
+    .menu-bar { padding: 3px 5px; }
+    .menu-item {
+      padding: 4px 12px;
+      font-size: 15px;
+    }
+    .classic-menu { min-width: 326px; }
+    .classic-menu-item {
+      grid-template-columns: 27px minmax(0, 1fr) auto;
+      gap: 9px;
+      padding: 7px 12px 7px 8px;
+      font-size: 15px;
+    }
+
+    .toolbar {
+      padding: 5px 6px;
+      gap: 3px;
+    }
+    .tool-btn {
+      padding: 5px 12px;
+      font-size: 15px;
+    }
+    .tool-sep { height: 26px; margin: 0 5px; }
+
+    .tree-panel {
+      width: 272px;
+      min-width: 272px;
+      padding-top: 6px;
+    }
+    .tree-item {
+      padding: 5px 8px 5px 20px;
+      gap: 7px;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .tree-section {
+      padding: 8px 8px 5px;
+      font-size: 13px;
+    }
+
+    .page { padding: 24px 30px 40px; }
+    .page h1 {
+      font-size: 23px;
+      padding-bottom: 7px;
+      margin-bottom: 16px;
+    }
+    .page h2 {
+      font-size: 18px;
+      margin: 25px 0 9px;
+      padding-bottom: 4px;
+    }
+    .page h3 {
+      font-size: 16px;
+      margin: 15px 0 5px;
+    }
+    .page p {
+      font-size: 16px;
+      line-height: 1.65;
+      margin-bottom: 11px;
+    }
+    .page ul,
+    .page ol { margin: 6px 0 14px 28px; }
+    .page li {
+      font-size: 16px;
+      line-height: 1.65;
+      margin-bottom: 4px;
+    }
+
+    .inset {
+      padding: 10px 14px;
+      margin: 10px 0 16px;
+    }
+    .page code { font-size: 14px; padding: 1px 4px; }
+    pre {
+      font-size: 14px;
+      line-height: 1.65;
+      padding: 12px 15px;
+      margin: 9px 0 16px;
+    }
+
+    .page table {
+      font-size: 15px;
+      margin: 9px 0 18px;
+    }
+    .page th {
+      padding: 7px 10px;
+      font-size: 15px;
+    }
+    .page td {
+      padding: 6px 10px;
+      line-height: 1.55;
+    }
+    .page td:first-child { font-size: 14px; }
+
+    .info-box {
+      padding: 10px 12px;
+      margin: 11px 0;
+      gap: 9px;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    .info-box .icon { font-size: 20px; }
+
+    .hero-banner {
+      padding: 17px 19px;
+      margin-bottom: 19px;
+      gap: 17px;
+    }
+    .logo-frame {
+      width: 80px;
+      height: 80px;
+      flex-basis: 80px;
+    }
+    .hero-logo { width: 68px; height: 68px; }
+    .hero-banner h1 { font-size: 25px; margin-bottom: 5px; }
+    .hero-banner p { font-size: 16px; }
+
+    .step-list { margin: 10px 0 16px; }
+    .step { gap: 12px; margin-bottom: 12px; }
+    .step-num {
+      width: 27px;
+      height: 27px;
+      font-size: 14px;
+    }
+    .step-body { font-size: 16px; line-height: 1.6; }
+
+    .file-tree {
+      font-size: 14px;
+      line-height: 1.8;
+      padding: 12px 15px;
+      margin: 10px 0 16px;
+    }
+
+    .status-bar { padding: 3px 6px; }
+    .status-panel {
+      padding: 3px 10px;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+    .brand-pip { width: 10px; height: 10px; }
+  }
+
+  @media (max-width: 760px) {
+    body { padding: 4px; }
+    .window { height: calc(100vh - 8px); }
+    .tree-panel { width: 160px; min-width: 160px; }
+    .toolbar { overflow-x: auto; }
+    .page { padding: 12px 12px 22px; }
+    .hero-banner { align-items: flex-start; }
+  }
+
+  @media (max-width: 560px) {
+    .tree-panel { display: none; }
+    .toolbar .tool-btn { padding-left: 6px; padding-right: 6px; }
+    .title-bar-controls { display: none; }
+    .hero-banner { box-shadow: 2px 2px 0 var(--adslice-yellow); }
+  }
+
+
+  /* Installation, tips, and use-case discovery ---------------------------- */
+  .action-grid,
+  .tip-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 10px 0 18px;
+  }
+
+  .action-card,
+  .tip-card {
+    background: #f6f6f6;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    padding: 12px;
+    min-width: 0;
+  }
+
+  .action-card h2,
+  .tip-card h3 {
+    margin-top: 0;
+  }
+
+  .action-card.recommended {
+    background: var(--adslice-yellow-soft);
+    box-shadow: inset 0 0 0 1px var(--adslice-gold);
+  }
+
+  .action-label {
+    display: inline-block;
+    background: var(--adslice-black);
+    color: var(--adslice-yellow);
+    border: 1px solid #000;
+    padding: 2px 7px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    letter-spacing: .2px;
+  }
+
+  .action-button {
+    display: inline-block;
+    background: #c0c0c0;
+    color: #000;
+    text-decoration: none;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    padding: 6px 12px;
+    margin: 6px 6px 2px 0;
+    font-weight: bold;
+  }
+
+  .action-button:hover,
+  .action-button:focus {
+    background: var(--adslice-yellow);
+    color: var(--adslice-black);
+    outline: 1px dotted #000;
+    outline-offset: -4px;
+  }
+
+  .action-button:active {
+    border-top-color: #808080;
+    border-left-color: #808080;
+    border-right-color: #fff;
+    border-bottom-color: #fff;
+    transform: translate(1px, 1px);
+  }
+
+  .mini-checklist {
+    list-style: none;
+    margin-left: 0 !important;
+  }
+
+  .mini-checklist li::before {
+    content: "✓";
+    display: inline-block;
+    width: 1.25em;
+    color: #6f5300;
+    font-weight: bold;
+  }
+
+  .path-note {
+    color: #555;
+    font-size: .92em;
+  }
+
+  @media (max-width: 900px) {
+    .action-grid,
+    .tip-grid { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .window { height: auto; max-width: none; border: 0; box-shadow: none; }
+    .title-bar, .menu-bar, .toolbar, .tree-panel, .status-bar { display: none; }
+    .content-area { overflow: visible; }
+    .page.visible { padding: 0; }
+    .hero-banner { box-shadow: none; }
+  }
+
+
+  /* Complete classic menu system and About dialog ------------------------- */
+  .menu-bar {
+    position: relative;
+    overflow: visible;
+  }
+
+  .classic-menu-item[disabled] {
+    color: #777;
+    text-shadow: 1px 1px 0 #fff;
+    pointer-events: none;
+  }
+
+  .classic-menu-item[disabled] .classic-menu-shortcut {
+    opacity: .45;
+  }
+
+  .window.contents-hidden .tree-panel {
+    display: none;
+  }
+
+  .about-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(0, 0, 0, .34);
+  }
+
+  .about-backdrop[hidden] {
+    display: none !important;
+  }
+
+  .about-dialog {
+    width: min(590px, calc(100vw - 28px));
+    max-height: calc(100vh - 36px);
+    overflow: hidden;
+    background: #c0c0c0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    box-shadow: 3px 3px 0 #000, 8px 8px 24px rgba(0,0,0,.38);
+    color: #000;
+  }
+
+  .about-title-bar {
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 5px 4px 7px;
+    background: linear-gradient(to right, var(--adslice-black) 0%, #242000 58%, var(--adslice-gold) 100%);
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .about-close {
+    width: 23px;
+    height: 21px;
+    background: #c0c0c0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    color: #000;
+    font: bold 13px/1 "MS Sans Serif", Arial, sans-serif;
+  }
+
+  .about-close:active,
+  .about-button:active {
+    border-top-color: #404040;
+    border-left-color: #404040;
+    border-right-color: #fff;
+    border-bottom-color: #fff;
+    transform: translate(1px, 1px);
+  }
+
+  .about-body {
+    padding: 18px;
+  }
+
+  .about-brand-row {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 17px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .about-logo-frame {
+    display: grid;
+    place-items: center;
+    width: 92px;
+    height: 92px;
+    background: #fff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+  }
+
+  .about-logo {
+    width: 76px;
+    height: 76px;
+    object-fit: contain;
+  }
+
+  .about-heading {
+    margin: 0 0 5px;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--adslice-black);
+  }
+
+  .about-version {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #444;
+  }
+
+  .about-description {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .about-scroll-window {
+    position: relative;
+    height: 156px;
+    overflow: hidden;
+    margin: 13px 0 14px;
+    background: #050505;
+    color: var(--adslice-yellow);
+    border-top: 2px solid #404040;
+    border-left: 2px solid #404040;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+  }
+
+  .about-scroll-window::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(255,255,255,.035) 4px);
+  }
+
+  .about-scroll-content {
+    position: absolute;
+    width: 100%;
+    padding: 0 20px;
+    text-align: center;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.75;
+    animation: aboutCreditsScroll 16s linear infinite;
+    animation-delay: -2.6s;
+  }
+
+  .about-scroll-content strong {
+    display: block;
+    color: #fff4a6;
+    font-size: 16px;
+    letter-spacing: .8px;
+  }
+
+  .about-scroll-content .credit-gap {
+    display: block;
+    height: 18px;
+  }
+
+  @keyframes aboutCreditsScroll {
+    from { transform: translateY(156px); }
+    to { transform: translateY(-100%); }
+  }
+
+  .about-tagline-strip {
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 14px;
+    background: #fff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    color: #111;
+  }
+
+  .about-tagline-track {
+    display: inline-block;
+    min-width: max-content;
+    padding: 5px 0;
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+    animation: aboutTaglineMarquee 13s linear infinite;
+    animation-delay: -1.5s;
+  }
+
+  @keyframes aboutTaglineMarquee {
+    from { transform: translateX(18%); }
+    to { transform: translateX(-58%); }
+  }
+
+  .about-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+  }
+
+  .about-button {
+    min-width: 112px;
+    padding: 6px 13px;
+    background: #c0c0c0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    color: #000;
+    font: inherit;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .about-button:focus {
+    outline: 1px dotted #000;
+    outline-offset: -5px;
+  }
+
+  @media (max-width: 760px) {
+    .menu-bar {
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+
+    .about-body { padding: 12px; }
+    .about-brand-row {
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 11px;
+    }
+    .about-logo-frame { width: 70px; height: 70px; }
+    .about-logo { width: 58px; height: 58px; }
+    .about-heading { font-size: 22px; }
+    .about-description { font-size: 13px; }
+    .about-scroll-window { height: 132px; }
+    @keyframes aboutCreditsScroll {
+      from { transform: translateY(132px); }
+      to { transform: translateY(-100%); }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-scroll-content,
+    .about-tagline-track {
+      animation-play-state: paused;
+    }
+    .about-scroll-content { transform: translateY(8px); }
+    .about-tagline-track { transform: translateX(0); }
+  }
+
+  @media print {
+    .about-backdrop { display: none !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="title-bar">
+    <div class="title-bar-text"><img class="title-bar-icon" src="/assets/adslicer-icon-64.png" alt=""> AdSlicer Help</div>
+    <div class="title-bar-controls">
+      <div class="tb-btn">_</div>
+      <div class="tb-btn">□</div>
+      <div class="tb-btn">✕</div>
+    </div>
+  </div>
+
+  <div class="menu-bar" role="menubar" aria-label="Documentation menus">
+    <div class="menu-dropdown" data-menu>
+      <button class="menu-item menu-trigger" id="file-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">File</button>
+      <div class="classic-menu" role="menu" aria-label="File menu">
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('installation')">
+          <span class="classic-menu-icon" aria-hidden="true">💿</span><span>Installation</span><span></span>
+        </button>
+        <a class="classic-menu-item" href="https://github.com/schwwaaa/AdSlicer/releases" target="_blank" rel="noopener noreferrer" role="menuitem">
+          <span class="classic-menu-icon" aria-hidden="true">↓</span><span>Download Compiled Version...</span><span></span>
+        </a>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('building')">
+          <span class="classic-menu-icon" aria-hidden="true">🔨</span><span>Build from Source</span><span></span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="window.print()">
+          <span class="classic-menu-icon" aria-hidden="true">▧</span><span>Print Current Topic...</span><span class="classic-menu-shortcut">Ctrl+P</span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <a class="classic-menu-item" href="https://github.com/schwwaaa/AdSlicer" target="_blank" rel="noopener noreferrer" role="menuitem">
+          <span class="classic-menu-icon" aria-hidden="true">▣</span><span>View Repository</span><span class="classic-menu-shortcut">Ctrl+G</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" data-menu>
+      <button class="menu-item menu-trigger" id="edit-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">Edit</button>
+      <div class="classic-menu" role="menu" aria-label="Edit menu">
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('parameters')">
+          <span class="classic-menu-icon" aria-hidden="true">🔧</span><span>All Parameters</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('presets')">
+          <span class="classic-menu-icon" aria-hidden="true">💾</span><span>Preset System</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('tuning')">
+          <span class="classic-menu-icon" aria-hidden="true">🎛</span><span>Tuning Guide</span><span></span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('tips')">
+          <span class="classic-menu-icon" aria-hidden="true">★</span><span>Tips &amp; Tricks</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('ml')">
+          <span class="classic-menu-icon" aria-hidden="true">▥</span><span>ML Dataset Reference</span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" data-menu>
+      <button class="menu-item menu-trigger" id="view-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">View</button>
+      <div class="classic-menu" role="menu" aria-label="View menu">
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('home')">
+          <span class="classic-menu-icon" aria-hidden="true">⌂</span><span>Introduction</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('quickstart')">
+          <span class="classic-menu-icon" aria-hidden="true">▶</span><span>Quick Start</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('pipeline')">
+          <span class="classic-menu-icon" aria-hidden="true">⚙</span><span>How It Works</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('output')">
+          <span class="classic-menu-icon" aria-hidden="true">📁</span><span>Output Structure</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('usecases')">
+          <span class="classic-menu-icon" aria-hidden="true">💡</span><span>Use Cases</span><span></span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <button class="classic-menu-item" id="toggle-contents-item" type="button" role="menuitem" onclick="toggleContentsPane()">
+          <span class="classic-menu-icon" aria-hidden="true">▤</span><span id="toggle-contents-label">Hide Contents Pane</span><span class="classic-menu-shortcut">Ctrl+B</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" data-menu>
+      <button class="menu-item menu-trigger" id="go-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">Go</button>
+      <div class="classic-menu" role="menu" aria-label="Go menu">
+        <button class="classic-menu-item" id="go-back-item" type="button" role="menuitem" onclick="goBack()">
+          <span class="classic-menu-icon" aria-hidden="true">←</span><span>Back</span><span class="classic-menu-shortcut">Alt+Left</span>
+        </button>
+        <button class="classic-menu-item" id="go-forward-item" type="button" role="menuitem" onclick="goForward()">
+          <span class="classic-menu-icon" aria-hidden="true">→</span><span>Forward</span><span class="classic-menu-shortcut">Alt+Right</span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <button class="classic-menu-item" id="go-previous-item" type="button" role="menuitem" onclick="goPreviousTopic()">
+          <span class="classic-menu-icon" aria-hidden="true">▲</span><span>Previous Topic</span><span></span>
+        </button>
+        <button class="classic-menu-item" id="go-next-item" type="button" role="menuitem" onclick="goNextTopic()">
+          <span class="classic-menu-icon" aria-hidden="true">▼</span><span>Next Topic</span><span></span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('home')">
+          <span class="classic-menu-icon" aria-hidden="true">⌂</span><span>Contents</span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" data-menu>
+      <button class="menu-item menu-trigger" id="help-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">Help</button>
+      <div class="classic-menu" role="menu" aria-label="Help menu">
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('installation')">
+          <span class="classic-menu-icon" aria-hidden="true">▤</span><span>Installation</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('tips')">
+          <span class="classic-menu-icon" aria-hidden="true">★</span><span>Tips &amp; Tricks</span><span></span>
+        </button>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="show('usecases')">
+          <span class="classic-menu-icon" aria-hidden="true">▶</span><span>Use Cases</span><span></span>
+        </button>
+        <div class="classic-menu-separator" role="separator"></div>
+        <a class="classic-menu-item" href="https://github.com/schwwaaa/AdSlicer" target="_blank" rel="noopener noreferrer" role="menuitem">
+          <span class="classic-menu-icon" aria-hidden="true">▣</span><span>View AdSlicer Repository</span><span class="classic-menu-shortcut">Ctrl+G</span>
+        </a>
+        <a class="classic-menu-item" href="https://github.com/schwwaaa/AdSlicer/issues" target="_blank" rel="noopener noreferrer" role="menuitem">
+          <span class="classic-menu-icon" aria-hidden="true">!</span><span>Report an Issue...</span><span></span>
+        </a>
+        <div class="classic-menu-separator" role="separator"></div>
+        <button class="classic-menu-item" type="button" role="menuitem" onclick="openAboutDialog()">
+          <span class="classic-menu-icon" aria-hidden="true">?</span><span>About AdSlicer</span><span class="classic-menu-shortcut">F1</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="tool-btn" onclick="show('home')">🏠 Contents</div>
+    <div class="tool-sep"></div>
+    <div class="tool-btn" onclick="show('installation')">💿 Installation</div>
+    <div class="tool-btn" onclick="show('quickstart')">▶ Quick Start</div>
+    <div class="tool-btn" onclick="show('pipeline')">⚙ How It Works</div>
+    <div class="tool-btn" onclick="show('tips')">★ Tips &amp; Tricks</div>
+    <div class="tool-btn" onclick="show('usecases')">💡 Use Cases</div>
+    <div class="tool-sep"></div>
+    <div class="tool-btn" onclick="window.print()">🖨 Print</div>
+  </div>
+
+  <div class="main-area">
+    <div class="tree-panel">
+      <div class="tree-section">Contents</div>
+      <div class="tree-item selected" onclick="show('home')" id="nav-home">🏠 Introduction</div>
+
+      <div class="tree-section">Getting Started</div>
+      <div class="tree-item" onclick="show('installation')" id="nav-installation">💿 Installation</div>
+      <div class="tree-item" onclick="show('quickstart')" id="nav-quickstart">▶ Quick Start</div>
+      <div class="tree-item" onclick="show('output')" id="nav-output">📁 Output Structure</div>
+
+      <div class="tree-section">Reference</div>
+      <div class="tree-item" onclick="show('pipeline')" id="nav-pipeline">⚙ How It Works</div>
+      <div class="tree-item" onclick="show('parameters')" id="nav-parameters">🔧 All Parameters</div>
+      <div class="tree-item" onclick="show('presets')" id="nav-presets">💾 Preset System</div>
+
+      <div class="tree-section">Guides</div>
+      <div class="tree-item" onclick="show('tips')" id="nav-tips">★ Tips &amp; Tricks</div>
+      <div class="tree-item" onclick="show('tuning')" id="nav-tuning">🎛 Tuning Guide</div>
+      <div class="tree-item" onclick="show('ml')" id="nav-ml">📊 ML Dataset</div>
+      <div class="tree-item" onclick="show('usecases')" id="nav-usecases">💡 Use Cases</div>
+      <div class="tree-item" onclick="show('building')" id="nav-building">🔨 Building from Source</div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- HOME -->
+      <div class="page visible" id="page-home">
+        <div class="hero-banner">
+          <div class="logo-frame"><img class="hero-logo" src="/assets/adslicer-icon-256.png" alt="AdSlicer film-eye logo"></div>
+          <div>
+            <h1>AdSlicer</h1>
+            <p>Archival Boundary Detection & Segment Slicing — Help Documentation</p>
+          </div>
+        </div>
+
+        <p>AdSlicer is an archival boundary-detection and segment-slicing application built for long-form VHS captures, analog transfers, and TV recordings. It analyzes candidate boundaries, identifies likely commercial blocks, and prepares a reviewable export plan that outputs:</p>
+
+        <ul>
+          <li>A <strong>clean show file</strong> (ads removed)</li>
+          <li>A folder of <strong>isolated commercial clips</strong></li>
+          <li>Full diagnostic logs in <strong>JSON, CSV, and EDL</strong></li>
+          <li><strong>ffmeta chapter markers</strong> for media player navigation</li>
+          <li>A <strong>structured ML dataset</strong> (<code>dataset.jsonl</code>) with 74 per-segment feature columns</li>
+          <li>A <strong>run manifest</strong> recording all parameters and detection statistics</li>
+        </ul>
+
+        <p>The pipeline is self-contained (ffmpeg bundled), batch-friendly, and designed for noisy analog sources where black slugs vary in length and clarity.</p>
+
+        <h2>Topics</h2>
+        <div class="inset">
+          <table style="border:none; width:100%;">
+            <tr><td style="border:none; padding:2px 6px; width:22px;">💿</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('installation')">Installation</span> — Download a compiled application or build AdSlicer yourself</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">★</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('tips')">Tips &amp; Tricks</span> — Practical advice for faster review and safer exports</td></tr>
+            <tr><td style="border:none; padding:2px 6px; width:22px;">✂️</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('pipeline')">How It Works</span> — Detection pipeline, confidence scoring, export modes</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">▶</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('quickstart')">Quick Start</span> — Get from launch to a clean show master</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">🔧</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('parameters')">All Parameters</span> — Complete parameter reference</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">💾</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('presets')">Preset System</span> — Built-in presets, saving, and file format</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">🎛</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('tuning')">Tuning Guide</span> — Fixing false positives, missed breaks, noisy tape</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">📊</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('ml')">ML Dataset Output</span> — The 74-column dataset.jsonl format</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">💡</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('usecases')">Use Cases</span> — Archiving, batch processing, ML, compilations</td></tr>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- INSTALLATION -->
+      <div class="page" id="page-installation">
+        <h1>Installation</h1>
+        <p>There are two supported ways to install AdSlicer. Most users should download a compiled release. Developers, contributors, and users who need a custom build can compile the application from source.</p>
+
+        <div class="action-grid">
+          <section class="action-card recommended">
+            <span class="action-label">RECOMMENDED</span>
+            <h2>Download the Compiled Application</h2>
+            <p>Open the project’s GitHub Releases page and download the newest package for your computer. The release build includes the AdSlicer application and its required FFmpeg/FFprobe sidecars.</p>
+            <ul class="mini-checklist">
+              <li>No Rust or Tauri installation required</li>
+              <li>No separate FFmpeg setup required</li>
+              <li>Best choice for archivists and everyday users</li>
+            </ul>
+            <a class="action-button" href="https://github.com/schwwaaa/AdSlicer/releases" target="_blank" rel="noopener noreferrer">Open GitHub Releases</a>
+          </section>
+
+          <section class="action-card">
+            <span class="action-label">DEVELOPER</span>
+            <h2>Build AdSlicer Yourself</h2>
+            <p>Clone the repository, install the Rust/Tauri requirements, prepare the bundled media binaries, and build the target for your platform.</p>
+            <ul class="mini-checklist">
+              <li>Useful for development and custom modifications</li>
+              <li>Produces platform-native application bundles</li>
+              <li>Requires Rust, Cargo, Tauri CLI, and build tools</li>
+            </ul>
+            <a class="action-button" href="https://github.com/schwwaaa/AdSlicer" target="_blank" rel="noopener noreferrer">Open Repository</a>
+            <button class="action-button" type="button" onclick="show('building')">View Build Instructions</button>
+          </section>
+        </div>
+
+        <h2>Compiled Release Workflow</h2>
+        <ol>
+          <li>Open <strong>GitHub Releases</strong>.</li>
+          <li>Choose the newest stable release.</li>
+          <li>Download the package matching your operating system.</li>
+          <li>Extract or mount the package, then move AdSlicer into your normal Applications or Programs location.</li>
+          <li>Launch AdSlicer and choose an input video plus an output directory.</li>
+        </ol>
+
+        <div class="info-box">
+          <span class="icon">ℹ</span>
+          <div>Compiled releases are the simplest installation path. Building from source is not required to process video or use the normal application workflow.</div>
+        </div>
+
+        <h2>Build-from-Source Summary</h2>
+        <pre>git clone https://github.com/schwwaaa/AdSlicer.git
+cd AdSlicer
+chmod +x build.sh
+./build.sh setup-bins
+./build.sh mac-universal   # macOS universal application
+# or
+./build.sh windows         # Windows x86_64</pre>
+        <p>See <span class="toc-link" onclick="show('building')">Building from Source</span> for prerequisites, development mode, sidecar setup, and target-specific commands.</p>
+      </div>
+
+      <!-- QUICK START -->
+      <div class="page" id="page-quickstart">
+        <h1>Quick Start</h1>
+
+        <h2>1. Choose your input</h2>
+        <p>Select a single video file, or switch to <strong>Batch Folder</strong> mode and select a directory. All matching video files inside will be queued.</p>
+
+        <h2>2. Set your output folder</h2>
+        <p>A subfolder is created per input file — you'll never lose track of which output came from which tape. Results are never overwritten; re-processing appends <code>_1</code>, <code>_2</code>, etc.</p>
+
+        <h2>3. Pick a preset</h2>
+        <p>Open the <strong>Presets</strong> menu and choose the one closest to your source material. See <span class="toc-link" onclick="show('presets')">Preset System</span> for descriptions.</p>
+
+        <h2>4. Dry run first</h2>
+        <p>Enable <strong>Dry Run</strong> before committing to a full export. This runs the full detection pipeline and writes all logs, but cuts no media. Review <code>detect.json</code> and check <code>dataset.jsonl</code> for cuts where only <code>sig_black_boundary</code> fired and confidence is below 0.90 — those are the weakest detections and worth inspecting first.</p>
+
+        <h2>5. Final export</h2>
+        <p>Disable Dry Run. Enable <strong>Re-encode</strong> for frame-accurate archival cuts (H.264/AAC). Run.</p>
+
+        <pre>Recommended workflow:
+
+  1. Enable Dry Run
+  2. Review activity log and detect.json
+  3. Adjust parameters if needed, re-run dry
+  4. Disable Dry Run, enable Re-encode
+  5. Run final export</pre>
+
+        <div class="info-box">
+          <span class="icon">💡</span>
+          <div>We default to <code>-c copy</code> for speed. Stream copy snaps to the nearest keyframe — a few frames of error at each boundary. Enable <code>reencode</code> for surgical precision.</div>
+        </div>
+      </div>
+
+      <!-- OUTPUT STRUCTURE -->
+      <div class="page" id="page-output">
+        <h1>Output Structure</h1>
+
+        <div class="file-tree">
+<span class="dir">&lt;outdir&gt;/</span>
+  <span class="dir">&lt;basename&gt;/</span>
+    <span class="dir">commercials/</span>
+      &lt;basename&gt;_ad_0001.mp4
+      &lt;basename&gt;_ad_0002.mp4
+      ...
+    <span class="dir">show/</span>
+      <span class="dir">_parts/</span>
+        part_0001.mp4
+        part_0002.mp4
+      &lt;basename&gt;_show.mp4
+    <span class="dir">logs/</span>
+      detect.json              <span class="note">← full structured plan</span>
+      detect.csv               <span class="note">← flat interval table</span>
+      detect.edl               <span class="note">← EDL (Kodi, MPC-HC, mkvmerge)</span>
+      chapters.ffmeta          <span class="note">← ffmpeg chapter metadata</span>
+      run_manifest.json        <span class="note">← all parameters + detection counts</span>
+      dataset.jsonl            <span class="note">← ML feature vectors (74 columns)</span>
+      ffmpeg_blackdetect.log   <span class="note">← verbosity ≥ 1</span>
+      ffmpeg_silencedetect.log <span class="note">← verbosity ≥ 1</span>
+      ffmpeg_uniformdetect.log <span class="note">← verbosity ≥ 2</span>
+      ffmpeg_scenechange.log   <span class="note">← verbosity ≥ 2</span>
+        </div>
+
+        <h2>Embedding chapter markers</h2>
+        <p>Keep segments become <code>Content N</code> chapters; commercial blocks become <code>Advertisement N</code>. Embed into the show file:</p>
+        <pre>ffmpeg -i show.mp4 -i logs/chapters.ffmeta \
+  -map_metadata 1 -c copy show_with_chapters.mp4</pre>
+        <p>Recognized by VLC, mpv, Kodi, and any player that reads ffmpeg metadata.</p>
+      </div>
+
+      <!-- HOW IT WORKS / PIPELINE -->
+      <div class="page" id="page-pipeline">
+        <h1>How It Works</h1>
+
+        <p>Each commercial candidate passes through four independent detection passes in sequence. Every signal that fires is recorded against the interval and reflected in its confidence score.</p>
+
+        <h2>Detection Passes</h2>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body"><strong>Black Frame Detection</strong><br>Uses ffmpeg <code>blackdetect</code> to locate near-black frames. Segments shorter than <code>blackMinDur</code> are discarded. Segments within <code>mergeGap</code> seconds are merged.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body"><strong>Audio Silence Corroboration</strong> <em>(Comskip: validate_silence)</em><br>Uses ffmpeg <code>silencedetect</code>. Candidates overlapping a silence segment by ≥ 0.5 s receive <code>silence_overlap</code> and a <strong>+0.05 confidence boost</strong>. Set <code>silenceNoiseDb</code> ≥ 0 to disable.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body"><strong>Uniform Frame Corroboration</strong> <em>(Comskip: validate_uniform)</em><br>Uses ffmpeg <code>showinfo</code> to compute per-frame luma stddev. Frames with stddev ≤ <code>uniformMaxStddev</code> are classified as uniform slates. Candidates overlapping ≥ 0.3 s receive <code>uniform_overlap</code> and <strong>+0.04 boost</strong>. Set <code>uniformMaxStddev</code> to 0 to disable.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body"><strong>Scene Change Rate Scoring</strong> <em>(Comskip: validate_scenechange)</em><br>Uses ffmpeg <code>select=scene</code>. Blocks exceeding 1.3× the file average scene rate receive <code>high_scene_rate</code> and <strong>+0.04 boost</strong>. Set <code>sceneThreshold</code> to 0 to disable.</div>
+          </div>
+        </div>
+
+        <h2>Scoring Guards</h2>
+        <table>
+          <thead><tr><th>Guard</th><th>Parameter</th><th>Comskip equivalent</th></tr></thead>
+          <tbody>
+            <tr><td>Uncorroborated penalty</td><td>automatic</td><td>punish_modifier</td></tr>
+            <tr><td>Minimum show segment</td><td>minShowSegment</td><td>min_show_segment_length</td></tr>
+            <tr><td>Edge protection</td><td>alwaysKeepFirst / alwaysKeepLast</td><td>always_keep_first/last_seconds</td></tr>
+            <tr><td>30s boundary snapping</td><td>requireDiv5</td><td>require_div5</td></tr>
+            <tr><td>Asymmetric trim</td><td>removeBefore / removeAfter</td><td>remove_before / remove_after</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Confidence Score</h2>
+        <p>Every <code>CutInterval</code> carries a <code>confidence</code> float (0.0–1.0) and a <code>signals</code> list. The activity log renders confidence as a star rating:</p>
+        <table>
+          <thead><tr><th>Score</th><th>Display</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>≥ 1.0</td><td>★★★</td><td>Multiple corroborating signals</td></tr>
+            <tr><td>≥ 0.8</td><td>★★☆</td><td>At least one corroborating signal</td></tr>
+            <tr><td>&lt; 0.8</td><td>★☆☆</td><td>Black boundary only — no corroboration</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PARAMETERS -->
+      <div class="page" id="page-parameters">
+        <h1>All Parameters</h1>
+
+        <h2>Input / Output</h2>
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>inputMode</td><td>singleFile | batchDir</td><td>Process one file or a whole folder</td></tr>
+            <tr><td>inputPath</td><td>path</td><td>Input file or folder path</td></tr>
+            <tr><td>glob</td><td>pattern</td><td>Comma-separated globs for batch mode (e.g. <code>*.mp4,*.mov,*.dv</code>)</td></tr>
+            <tr><td>outdir</td><td>path</td><td>Base output directory — a subfolder is created per input file</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Black Frame Detection</h2>
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>blackMinDur</td><td>0.10 s</td><td>Minimum black segment duration. Shorter flashes are discarded.</td></tr>
+            <tr><td>pixTh</td><td>0.08</td><td>Pixel luma threshold for <code>blackdetect</code>. Lower = stricter black definition.</td></tr>
+            <tr><td>picTh</td><td>0.98</td><td>Fraction of pixels per frame that must be below <code>pixTh</code>.</td></tr>
+            <tr><td>mergeGap</td><td>1.5 s</td><td>Merge black segments separated by ≤ this gap. Prevents flickering slugs from splitting boundaries.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Cut Behaviour</h2>
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>edgePadPre</td><td>0.20 s</td><td>Padding added before each cut boundary.</td></tr>
+            <tr><td>edgePadPost</td><td>0.06 s</td><td>Padding added after each cut boundary.</td></tr>
+            <tr><td>minCommercial</td><td>5 s</td><td>Minimum gap to classify as a commercial break.</td></tr>
+            <tr><td>maxCommercial</td><td>240 s</td><td>Maximum gap to classify as a commercial break.</td></tr>
+            <tr><td>includeBlack</td><td>false</td><td>Include surrounding black frames inside exported commercial clips.</td></tr>
+            <tr><td>reencode</td><td>false</td><td>Re-encode output with H.264/AAC for frame-accurate cuts.</td></tr>
+            <tr><td>dryRun</td><td>false</td><td>Write logs only — no media files are created.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Advanced Detection (Comskip-derived)</h2>
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Comskip equiv.</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>silenceNoiseDb</td><td>-40 dB</td><td>max_silence</td><td>Audio noise floor. Set ≥ 0 to disable silence detection.</td></tr>
+            <tr><td>silenceMinDur</td><td>0.5 s</td><td>min_silence</td><td>Minimum silence duration to register as a segment.</td></tr>
+            <tr><td>minShowSegment</td><td>30 s</td><td>min_show_segment_length</td><td>Minimum keep-segment length. Cuts that would leave shorter keeps are demoted.</td></tr>
+            <tr><td>alwaysKeepFirst</td><td>0 s</td><td>always_keep_first_seconds</td><td>Hard-protect first N seconds from being cut.</td></tr>
+            <tr><td>alwaysKeepLast</td><td>0 s</td><td>always_keep_last_seconds</td><td>Hard-protect last N seconds from being cut.</td></tr>
+            <tr><td>uniformMaxStddev</td><td>8.0</td><td>non_uniformity</td><td>Luma stddev ceiling for uniform frame detection. Set to 0 to disable.</td></tr>
+            <tr><td>sceneThreshold</td><td>0.4</td><td>schange_threshold</td><td>Scene change sensitivity. Set to 0 to disable.</td></tr>
+            <tr><td>removeBefore</td><td>0 s</td><td>remove_before</td><td>Trim from the content side of each cut.</td></tr>
+            <tr><td>removeAfter</td><td>0 s</td><td>remove_after</td><td>Trim from the ad side of each cut.</td></tr>
+            <tr><td>requireDiv5</td><td>false</td><td>require_div5</td><td>Snap or drop candidates not within 3 s of a 30-second multiple.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Verbosity</h2>
+        <table>
+          <thead><tr><th>Value</th><th>Output</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>Errors only</td></tr>
+            <tr><td>1</td><td>Milestones + raw blackdetect/silencedetect logs written to <code>logs/</code></td></tr>
+            <tr><td>2</td><td>Full step-by-step + all raw filter logs written to <code>logs/</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PRESETS -->
+      <div class="page" id="page-presets">
+        <h1>Preset System</h1>
+        <p>AdSlicer ships with three built-in presets and a full save/load system.</p>
+
+        <h2>Built-in Presets</h2>
+        <table>
+          <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>default.json</td><td>Balanced starting point for typical VHS</td></tr>
+            <tr><td>vhs_noisy.json</td><td>Loose thresholds for degraded/worn tape</td></tr>
+            <tr><td>broadcast_strict.json</td><td>Strict thresholds with 30s snapping for clean off-air captures</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Preset Menu</h2>
+        <pre>Presets
+  ── BUILT-IN ──────────────
+  Broadcast strict
+  Default
+  VHS noisy
+  ── MY PRESETS ────────────
+  my_custom_settings
+  ──────────────────────────
+  Save Current as Preset…
+  ──────────────────────────
+  Open User Presets Folder…
+  Reload Presets</pre>
+
+        <h2>User Preset Locations</h2>
+        <table>
+          <thead><tr><th>Platform</th><th>Path</th></tr></thead>
+          <tbody>
+            <tr><td>macOS</td><td><code>~/Library/Application Support/net.schwwaaa.adslice/presets/</code></td></tr>
+            <tr><td>Windows</td><td><code>%APPDATA%\net.schwwaaa.adslice\presets\</code></td></tr>
+            <tr><td>Linux</td><td><code>~/.config/net.schwwaaa.adslice/presets/</code></td></tr>
+          </tbody>
+        </table>
+
+        <p>Use <strong>Presets → Open User Presets Folder…</strong> to open this location. Drop any <code>.json</code> file there and use <strong>Reload Presets</strong> to make it appear in the menu.</p>
+
+        <h2>Preset File Format</h2>
+        <p>Plain JSON. <code>_preset</code> sets the menu label; <code>_description</code> sets the tooltip. Unrecognized keys are silently ignored.</p>
+        <pre>{
+  "_preset": "My custom VHS settings",
+  "_description": "Tuned for my specific deck and capture card.",
+  "blackMinDur": 0.10,
+  "pixTh": 0.08,
+  "picTh": 0.98,
+  "mergeGap": 1.5,
+  "minCommercial": 5,
+  "maxCommercial": 240,
+  "silenceNoiseDb": -40,
+  "requireDiv5": false
+}</pre>
+
+        <h2>Adding a Built-in Preset to the Build</h2>
+        <p>Drop a <code>.json</code> file into <code>src-tauri/presets/</code> and rebuild. The <code>tauri.conf.json</code> resources glob picks it up — no code changes needed.</p>
+      </div>
+
+
+      <!-- TIPS AND TRICKS -->
+      <div class="page" id="page-tips">
+        <h1>Tips &amp; Tricks</h1>
+        <p>AdSlicer works best as a review-assisted archival tool: analyze first, inspect the uncertain boundaries, then render only after the plan looks correct. These practices reduce accidental content loss and make large tape collections much faster to process.</p>
+
+        <div class="tip-grid">
+          <section class="tip-card">
+            <h3>Dry Run Before Every New Source Type</h3>
+            <p>Run detection without exporting media when you change tape decks, capture hardware, channels, decades, or recording quality. One short dry run is cheaper than re-rendering a multi-hour tape.</p>
+          </section>
+          <section class="tip-card">
+            <h3>Review Weak Boundaries First</h3>
+            <p>Start with short intervals, low-confidence candidates, and cuts supported only by <code>sig_black_boundary</code>. These are the areas most likely to need manual inspection or parameter adjustment.</p>
+          </section>
+          <section class="tip-card">
+            <h3>Tune One Representative Tape</h3>
+            <p>Before processing a folder, choose one recording that represents the batch. Tune that file, save the settings as a preset, and then apply the preset to the remaining captures.</p>
+          </section>
+          <section class="tip-card">
+            <h3>Keep the Original Capture Untouched</h3>
+            <p>Export into a separate project folder. Preserve the full source recording as the archival master, then treat the clean show and isolated commercials as derived access files.</p>
+          </section>
+        </div>
+
+        <h2>Fast, Safe Review Workflow</h2>
+        <ol>
+          <li>Import the full recording.</li>
+          <li>Run detection with <strong>Dry Run</strong> enabled.</li>
+          <li>Inspect suspect short intervals and low-confidence boundaries first.</li>
+          <li>Adjust only the settings needed for the source.</li>
+          <li>Repeat the dry run until the detection plan is trustworthy.</li>
+          <li>Enable <strong>Re-encode</strong> for the final frame-accurate archival export.</li>
+          <li>Sort the rendered outputs into shows, commercials, promos, station IDs, and other archival categories.</li>
+        </ol>
+
+        <h2>Choose Speed or Precision Intentionally</h2>
+        <table>
+          <thead><tr><th>Goal</th><th>Recommended Mode</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Test a detection plan</td><td>Dry Run</td><td>Writes the plan and diagnostics without spending time rendering media.</td></tr>
+            <tr><td>Make a quick review copy</td><td>Stream copy</td><td>Very fast, but boundaries may snap to nearby keyframes.</td></tr>
+            <tr><td>Create the final archive output</td><td>Re-encode</td><td>Provides frame-accurate cuts and consistent H.264/AAC output.</td></tr>
+            <tr><td>Process many related tapes</td><td>Saved preset + batch mode</td><td>Reuses a tested configuration across a consistent collection.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Source-Specific Tricks</h2>
+        <h3>Noisy or Near-Black VHS Transitions</h3>
+        <ul>
+          <li>Raise <code>pixTh</code> slightly and lower <code>picTh</code> so analog black does not have to be perfectly clean.</li>
+          <li>Increase <code>mergeGap</code> when a black separator flickers or contains brief tracking noise.</li>
+          <li>Keep <code>requireDiv5</code> disabled when tape timing has drifted away from exact broadcast durations.</li>
+        </ul>
+
+        <h3>Protect Openings and End Credits</h3>
+        <ul>
+          <li>Use <code>alwaysKeepFirst</code> to protect cold opens, station intros, and leading material.</li>
+          <li>Use <code>alwaysKeepLast</code> to protect credits, post-credit tags, and tape-end material.</li>
+          <li>Increase <code>minShowSegment</code> when short dark scenes are being mistaken for breaks.</li>
+        </ul>
+
+        <h3>Organize the Output Immediately</h3>
+        <ul>
+          <li>Keep the generated <code>logs/</code> folder with every processed tape; it is the audit trail for how the result was produced.</li>
+          <li>Rename or catalog commercials only after the automatic segmentation is complete.</li>
+          <li>Use <code>chapters.ffmeta</code>, EDL, CSV, or JSON output when another archival or editorial tool needs the boundary data.</li>
+        </ul>
+
+        <div class="info-box">
+          <span class="icon">★</span>
+          <div>The goal is not to inspect every frame. Let AdSlicer narrow the recording to a small number of suspect boundaries, then spend human attention only where it matters.</div>
+        </div>
+      </div>
+
+      <!-- TUNING -->
+      <div class="page" id="page-tuning">
+        <h1>Tuning Guide</h1>
+        <p>Thresholds may require tuning for darker or noisier analog captures. Always <strong>Dry Run</strong> first and review <code>dataset.jsonl</code> before committing to export.</p>
+
+        <h2>Too many false positives (content being cut)</h2>
+        <ul>
+          <li>Raise <code>blackMinDur</code> (0.15–0.25) — require longer slugs</li>
+          <li>Raise <code>picTh</code> (0.99) — require nearly pure black frames</li>
+          <li>Increase <code>minShowSegment</code> (60–120 s) — prevent short content being consumed</li>
+          <li>Enable <code>requireDiv5</code> for clean broadcast — non-multiples of 30 s are not real ad breaks</li>
+          <li>Raise <code>minCommercial</code> — filter breaks too short to be real commercials</li>
+          <li>Check <code>dataset.jsonl</code> for cuts where only <code>sig_black_boundary</code> fired — weakest detections</li>
+        </ul>
+
+        <h2>Missed commercials (breaks not detected)</h2>
+        <ul>
+          <li>Lower <code>blackMinDur</code> (0.06–0.08) — accept shorter slugs</li>
+          <li>Raise <code>pixTh</code> (0.10–0.14) — more permissive black definition</li>
+          <li>Lower <code>picTh</code> (0.90–0.95) — allow noisier black frames</li>
+          <li>Increase <code>mergeGap</code> for flickering VHS slug patterns</li>
+          <li>Lower <code>sceneThreshold</code> (0.25–0.35) — catch more cuts within blocks</li>
+        </ul>
+
+        <h2>Noisy or degraded VHS</h2>
+        <ul>
+          <li>Raise <code>pixTh</code> + lower <code>picTh</code> — the standard analog adjustment</li>
+          <li>Raise <code>uniformMaxStddev</code> (12–18) — VHS black slugs are never truly uniform</li>
+          <li>Set <code>removeBefore 0.1</code> — recovers content clipped by ambiguous slug entry points</li>
+          <li>Disable <code>requireDiv5</code> — VHS timing is irregular</li>
+          <li>Lower <code>silenceNoiseDb</code> to -35 dB — VHS audio floor is noisier</li>
+        </ul>
+
+        <h2>Clean off-air broadcast</h2>
+        <ul>
+          <li>Enable <code>requireDiv5</code> — US TV commercials are exact 15/30/60/90 s units</li>
+          <li>Set <code>alwaysKeepFirst 15</code> and <code>alwaysKeepLast 15</code> — protect cold opens and credits</li>
+          <li>Lower <code>uniformMaxStddev</code> to 5–6 — broadcast slates are near-perfect</li>
+          <li>Raise <code>sceneThreshold</code> to 0.45 — hard cuts only; avoid dissolve false positives</li>
+        </ul>
+
+        <h2>Recommended workflow</h2>
+        <ol>
+          <li>Run with <code>dryRun</code> enabled — review <code>detect.json</code> and the activity log</li>
+          <li>Check <code>dataset.jsonl</code> — confidence below 0.90 or only <code>sig_black_boundary</code> firing is worth inspecting</li>
+          <li>Adjust parameters and re-run dry until the plan is correct</li>
+          <li>Remove <code>dryRun</code> and enable <code>reencode</code> for final archival export</li>
+        </ol>
+      </div>
+
+      <!-- ML DATASET -->
+      <div class="page" id="page-ml">
+        <h1>ML Dataset Output</h1>
+        <p>Every run writes <code>logs/dataset.jsonl</code> — one JSON object per line, one line per segment, 74 columns. Load it directly:</p>
+        <pre>import pandas as pd
+df = pd.read_json("logs/dataset.jsonl", lines=True)</pre>
+
+        <h2>Column Groups</h2>
+
+        <h3>Identity (4 cols)</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>run_id</td><td>string</td><td>ISO-8601 UTC timestamp of the processing run</td></tr>
+            <tr><td>source_file</td><td>string</td><td>Input filename stem</td></tr>
+            <tr><td>segment_index</td><td>int</td><td>Index within this label type</td></tr>
+            <tr><td>timeline_position</td><td>int</td><td>Sequential position in the overall file timeline</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Timing (9 cols)</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>start_s, end_s, dur_s</td><td>Absolute timestamps and duration in seconds</td></tr>
+            <tr><td>start_norm, end_norm, dur_norm</td><td>Position and duration as fraction of file length (0–1)</td></tr>
+            <tr><td>offset_from_start_s</td><td>Seconds from start of recording</td></tr>
+            <tr><td>offset_from_end_s</td><td>Seconds from end of recording</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Signal Indicators — all 0.0 or 1.0 (11 cols)</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Fires when</th></tr></thead>
+          <tbody>
+            <tr><td>sig_black_boundary</td><td>Interval is bracketed by a black slug</td></tr>
+            <tr><td>sig_within_commercial_range</td><td>Duration within [min_commercial, max_commercial]</td></tr>
+            <tr><td>sig_silence_overlap</td><td>Silence corroboration fired</td></tr>
+            <tr><td>sig_uniform_overlap</td><td>Uniform frame corroboration fired</td></tr>
+            <tr><td>sig_high_scene_rate</td><td>Scene rate exceeds 1.3× file average</td></tr>
+            <tr><td>sig_demoted_min_show_segment</td><td>Was a commercial candidate, demoted by show guard</td></tr>
+            <tr><td>sig_always_keep_first/last</td><td>Interval falls within the always-keep window</td></tr>
+            <tr><td>sig_content_between_commercials</td><td>Standard keep between two commercial blocks</td></tr>
+            <tr><td>sig_div5_snapped</td><td>Boundary was snapped to a 30 s multiple</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Classification (3 cols)</h3>
+        <table>
+          <thead><tr><th>Column</th><th>Values</th></tr></thead>
+          <tbody>
+            <tr><td>label</td><td>"commercial" or "keep"</td></tr>
+            <tr><td>label_int</td><td>1 = commercial, 0 = keep</td></tr>
+            <tr><td>confidence</td><td>Detection confidence score 0.0–1.0</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Usage Examples</h2>
+        <pre>import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+df = pd.read_json("logs/dataset.jsonl", lines=True)
+
+# Feature matrix
+X = df[[
+    "dur_s", "dur_norm", "start_norm",
+    "black_left_dur_s", "black_right_dur_s",
+    "silence_coverage", "has_silence_overlap",
+    "scene_change_rate", "scene_change_rate_vs_avg",
+    "sig_black_boundary", "sig_silence_overlap",
+]]
+y = df["label_int"]
+
+# Compare across parameter tuning runs
+runs = pd.concat([
+    pd.read_json("run1/logs/dataset.jsonl", lines=True),
+    pd.read_json("run2/logs/dataset.jsonl", lines=True),
+])
+runs.groupby("param_scene_threshold")["run_commercial_ratio"].mean()
+
+# Inspect low-confidence cuts
+df[(df["label"] == "commercial") & (df["confidence"] < 0.9)]</pre>
+
+        <div class="info-box">
+          <span class="icon">ℹ</span>
+          <div>All <code>param_*</code> columns are fully denormalised. Individual files can be concatenated across runs and remain independently queryable.</div>
+        </div>
+      </div>
+
+      <!-- USE CASES -->
+      <div class="page" id="page-usecases">
+        <h1>Use Cases</h1>
+        <p>AdSlicer is designed for recordings where the commercials, program material, transitions, and broadcast artifacts are all historically useful—but need to be separated into practical, reviewable outputs.</p>
+
+        <h2>Preserving a Complete Broadcast and a Clean Viewing Copy</h2>
+        <p>A collector digitizes an off-air movie, sports broadcast, or television block from VHS. AdSlicer preserves the original capture, creates a clean show master, isolates commercial blocks, and writes detection metadata so both versions remain traceable to the same source.</p>
+
+        <h2>Processing Large VHS and Broadcast Collections</h2>
+        <p>An archive, library, preservation group, or individual collector has hundreds of related tapes. A representative tape is tuned first, its settings are saved as a preset, and batch mode then produces consistent folder structures and diagnostics across the collection.</p>
+
+        <h2>Recovering Vintage Commercials, Promos, and Station IDs</h2>
+        <p>Commercial blocks can be exported as separate clips for historical research, brand studies, broadcast design reference, compilation editing, or cataloging. The program is not merely deleting advertisements—it is separating two valuable classes of archival material.</p>
+
+        <h2>Preparing Ad-Free Program Masters</h2>
+        <p>Editors and collectors can create watchable copies of cartoons, movies, music programs, news, and episodic television while retaining the source capture and isolated advertisements elsewhere in the project.</p>
+
+        <h2>Boundary Review and Quality Control</h2>
+        <p>Detection logs identify short, weak, or unusual candidate intervals that deserve attention. Reviewers can focus on suspect boundaries instead of manually scrubbing through every hour of the recording.</p>
+
+        <h2>Building Research and Machine-Learning Datasets</h2>
+        <p>The structured <code>dataset.jsonl</code>, <code>detect.json</code>, CSV, EDL, and run manifest outputs provide labeled timing, confidence, signal, and parameter data for commercial-detection research, comparative testing, and future model development.</p>
+
+        <h2>Creating Editorial Compilations</h2>
+        <p>Once commercial blocks are extracted, an editor can sort clips by brand, year, network, product category, visual style, or campaign. The same workflow also supports promo reels, station-identification collections, and historical broadcast packages.</p>
+
+        <h2>Integrating With Other Archive Tools</h2>
+        <p>EDL, chapter metadata, CSV, and JSON outputs can be handed to media players, command-line processes, database ingest tools, or nonlinear editors without forcing every downstream system to repeat the detection pass.</p>
+
+        <div class="info-box">
+          <span class="icon">💡</span>
+          <div>AdSlicer’s most important archival advantage is that it keeps both sides of the broadcast useful: program material becomes easier to watch, while commercials and interstitials remain available for research and preservation.</div>
+        </div>
+      </div>
+
+      <!-- BUILDING -->
+      <div class="page" id="page-building">
+        <h1>Building from Source</h1>
+        <p>This path is intended for developers, contributors, and users who need a custom application build. Users who only want to run AdSlicer should use the compiled package described under <span class="toc-link" onclick="show('installation')">Installation</span>.</p>
+
+        <h2>Prerequisites</h2>
+        <ul>
+          <li>Git</li>
+          <li>Rust and Cargo</li>
+          <li>Tauri CLI</li>
+          <li>Platform build tools for macOS or Windows</li>
+          <li><code>curl</code> or <code>wget</code>, plus <code>unzip</code></li>
+        </ul>
+
+        <h2>Clone the repository</h2>
+        <pre>git clone https://github.com/schwwaaa/AdSlicer.git
+cd AdSlicer
+chmod +x build.sh</pre>
+
+        <h2>First-time sidecar setup</h2>
+        <p>Download the static FFmpeg and FFprobe binaries that Tauri bundles with the application. The target-specific filenames are required before compilation.</p>
+        <pre>./build.sh setup-bins</pre>
+
+        <h2>Dev mode</h2>
+        <pre>cd src-tauri
+cargo tauri dev</pre>
+
+        <h2>Release builds</h2>
+        <table>
+          <thead><tr><th>Command</th><th>Target</th></tr></thead>
+          <tbody>
+            <tr><td>./build.sh</td><td>Auto-detect current OS</td></tr>
+            <tr><td>./build.sh mac-universal</td><td>macOS arm64 + x86_64 fat binary</td></tr>
+            <tr><td>./build.sh mac-arm</td><td>macOS Apple Silicon only</td></tr>
+            <tr><td>./build.sh mac-x86</td><td>macOS Intel only</td></tr>
+            <tr><td>./build.sh windows</td><td>Windows x86_64</td></tr>
+          </tbody>
+        </table>
+
+        <p>ffmpeg and ffprobe are bundled automatically. Users need no external dependencies.</p>
+
+        <h2>Adding a built-in preset</h2>
+        <p>Drop a <code>.json</code> file into <code>src-tauri/presets/</code> and run <code>./build.sh</code>. The <code>tauri.conf.json</code> resources glob picks it up — no code changes needed.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-panel" id="status-text">Introduction</div>
+    <div class="status-panel brand-status"><span class="brand-pip" aria-hidden="true"></span>AdSlicer Help v2.0</div>
+  </div>
+</div>
+
+
+<div class="about-backdrop" id="about-backdrop" hidden>
+  <section class="about-dialog" id="about-dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" aria-describedby="about-description">
+    <div class="about-title-bar">
+      <span>About AdSlicer</span>
+      <button class="about-close" id="about-close" type="button" aria-label="Close About AdSlicer">×</button>
+    </div>
+    <div class="about-body">
+      <div class="about-brand-row">
+        <div class="about-logo-frame">
+          <img class="about-logo" src="/assets/adslicer-icon-64.png" alt="AdSlicer film-eye icon">
+        </div>
+        <div>
+          <h2 class="about-heading" id="about-title">AdSlicer</h2>
+          <p class="about-version">Application v0.1.0 · Help System v2.0</p>
+          <p class="about-description" id="about-description">A focused archival utility for detecting broadcast boundaries, reviewing suspect transitions, and separating program material from commercials without discarding either side of the recording.</p>
+        </div>
+      </div>
+
+      <div class="about-scroll-window" aria-label="AdSlicer program overview">
+        <div class="about-scroll-content" id="about-scroll-content">
+          <strong>ARCHIVAL BOUNDARY DETECTION<br>&amp; SEGMENT SLICING</strong>
+          <span class="credit-gap"></span>
+          Import a full VHS or broadcast recording<br>
+          Analyze candidate endpoints<br>
+          Review short, weak, or unusual boundaries<br>
+          Correct only what needs attention<br>
+          Render approved segments<br>
+          Preserve commercials and shows separately<br>
+          <span class="credit-gap"></span>
+          Detection powered by FFmpeg<br>
+          Desktop application built with Rust + Tauri<br>
+          Designed for archival media workflows<br>
+          <span class="credit-gap"></span>
+          AdSlicer · schwwaaa
+        </div>
+      </div>
+
+      <div class="about-tagline-strip" aria-label="AdSlicer tagline">
+        <div class="about-tagline-track">ARCHIVAL BOUNDARY DETECTION &amp; SEGMENT SLICING&nbsp;&nbsp;•&nbsp;&nbsp;ARCHIVAL BOUNDARY DETECTION &amp; SEGMENT SLICING&nbsp;&nbsp;•&nbsp;&nbsp;</div>
+      </div>
+
+      <div class="about-actions">
+        <a class="about-button" href="https://github.com/schwwaaa/AdSlicer" target="_blank" rel="noopener noreferrer">Repository</a>
+        <button class="about-button" id="about-ok" type="button">OK</button>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  const pages = ['home','installation','quickstart','output','pipeline','parameters','presets','tips','tuning','ml','usecases','building'];
+  const labels = {
+    home:'Introduction', installation:'Installation', quickstart:'Quick Start', output:'Output Structure',
+    pipeline:'How It Works', parameters:'All Parameters', presets:'Preset System',
+    tips:'Tips & Tricks', tuning:'Tuning Guide', ml:'ML Dataset Output', usecases:'Use Cases', building:'Building from Source'
+  };
+  const repositoryUrl = 'https://github.com/schwwaaa/AdSlicer';
+
+  let currentPage = 'home';
+  let topicHistory = ['home'];
+  let topicHistoryIndex = 0;
+  let contentsVisible = true;
+
+  function renderPage(id) {
+    if (!pages.includes(id)) return;
+
+    pages.forEach(p => {
+      const page = document.getElementById('page-' + p);
+      if (page) page.classList.remove('visible');
+      const nav = document.getElementById('nav-' + p);
+      if (nav) nav.classList.remove('selected');
+    });
+
+    const targetPage = document.getElementById('page-' + id);
+    if (!targetPage) return;
+    targetPage.classList.add('visible');
+
+    const nav = document.getElementById('nav-' + id);
+    if (nav) nav.classList.add('selected');
+
+    currentPage = id;
+    document.getElementById('status-text').textContent = labels[id] || id;
+    document.querySelector('.content-area').scrollTop = 0;
+    updateNavigationState();
+  }
+
+  function show(id, options = {}) {
+    if (!pages.includes(id)) return;
+    const record = options.record !== false;
+
+    if (record && id !== currentPage) {
+      topicHistory = topicHistory.slice(0, topicHistoryIndex + 1);
+      topicHistory.push(id);
+      topicHistoryIndex = topicHistory.length - 1;
+    }
+
+    renderPage(id);
+    closeAllMenus();
+  }
+
+  function goBack() {
+    if (topicHistoryIndex <= 0) return;
+    topicHistoryIndex -= 1;
+    renderPage(topicHistory[topicHistoryIndex]);
+    closeAllMenus();
+  }
+
+  function goForward() {
+    if (topicHistoryIndex >= topicHistory.length - 1) return;
+    topicHistoryIndex += 1;
+    renderPage(topicHistory[topicHistoryIndex]);
+    closeAllMenus();
+  }
+
+  function goPreviousTopic() {
+    const index = pages.indexOf(currentPage);
+    if (index > 0) show(pages[index - 1]);
+  }
+
+  function goNextTopic() {
+    const index = pages.indexOf(currentPage);
+    if (index >= 0 && index < pages.length - 1) show(pages[index + 1]);
+  }
+
+  function setDisabled(id, disabled) {
+    const element = document.getElementById(id);
+    if (element) element.disabled = disabled;
+  }
+
+  function updateNavigationState() {
+    setDisabled('go-back-item', topicHistoryIndex <= 0);
+    setDisabled('go-forward-item', topicHistoryIndex >= topicHistory.length - 1);
+    const pageIndex = pages.indexOf(currentPage);
+    setDisabled('go-previous-item', pageIndex <= 0);
+    setDisabled('go-next-item', pageIndex >= pages.length - 1);
+  }
+
+  function toggleContentsPane() {
+    contentsVisible = !contentsVisible;
+    document.querySelector('.window').classList.toggle('contents-hidden', !contentsVisible);
+    const label = document.getElementById('toggle-contents-label');
+    if (label) label.textContent = contentsVisible ? 'Hide Contents Pane' : 'Show Contents Pane';
+    closeAllMenus();
+  }
+
+  const menuDropdowns = Array.from(document.querySelectorAll('[data-menu]'));
+
+  function positionMenu(dropdown) {
+    const panel = dropdown.querySelector('.classic-menu');
+    if (!panel) return;
+    panel.style.transform = '';
+    const padding = 6;
+    const rect = panel.getBoundingClientRect();
+    let shift = 0;
+
+    if (rect.right > window.innerWidth - padding) {
+      shift -= rect.right - (window.innerWidth - padding);
+    }
+    if (rect.left + shift < padding) {
+      shift += padding - (rect.left + shift);
+    }
+    if (shift) panel.style.transform = `translateX(${Math.round(shift)}px)`;
+  }
+
+  function setMenu(dropdown, open) {
+    menuDropdowns.forEach(menu => {
+      if (menu !== dropdown) {
+        menu.classList.remove('open');
+        const otherTrigger = menu.querySelector('.menu-trigger');
+        const otherPanel = menu.querySelector('.classic-menu');
+        if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+        if (otherPanel) otherPanel.style.transform = '';
+      }
+    });
+
+    dropdown.classList.toggle('open', open);
+    const trigger = dropdown.querySelector('.menu-trigger');
+    const panel = dropdown.querySelector('.classic-menu');
+    if (trigger) trigger.setAttribute('aria-expanded', String(open));
+
+    if (open) {
+      requestAnimationFrame(() => positionMenu(dropdown));
+    } else if (panel) {
+      panel.style.transform = '';
+    }
+  }
+
+  function closeAllMenus() {
+    menuDropdowns.forEach(menu => setMenu(menu, false));
+  }
+
+  menuDropdowns.forEach(dropdown => {
+    const trigger = dropdown.querySelector('.menu-trigger');
+    const items = Array.from(dropdown.querySelectorAll('.classic-menu-item:not([disabled])'));
+
+    trigger.addEventListener('click', event => {
+      event.stopPropagation();
+      setMenu(dropdown, !dropdown.classList.contains('open'));
+    });
+
+    trigger.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setMenu(dropdown, true);
+        const first = items.find(item => !item.disabled);
+        if (first) requestAnimationFrame(() => first.focus());
+      }
+    });
+
+    items.forEach((item, index) => {
+      item.addEventListener('click', closeAllMenus);
+      item.addEventListener('keydown', event => {
+        const enabledItems = items.filter(candidate => !candidate.disabled);
+        const currentIndex = enabledItems.indexOf(item);
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          enabledItems[(currentIndex + 1) % enabledItems.length].focus();
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          enabledItems[(currentIndex - 1 + enabledItems.length) % enabledItems.length].focus();
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          closeAllMenus();
+          trigger.focus();
+        }
+      });
+    });
+  });
+
+  document.addEventListener('click', event => {
+    if (!event.target.closest('[data-menu]')) closeAllMenus();
+  });
+
+  window.addEventListener('resize', () => {
+    const openMenu = menuDropdowns.find(menu => menu.classList.contains('open'));
+    if (openMenu) positionMenu(openMenu);
+  });
+
+  const aboutBackdrop = document.getElementById('about-backdrop');
+  const aboutDialog = document.getElementById('about-dialog');
+  const aboutClose = document.getElementById('about-close');
+  const aboutOk = document.getElementById('about-ok');
+  const aboutScrollContent = document.getElementById('about-scroll-content');
+  let lastFocusedElement = null;
+
+  function restartAboutAnimation() {
+    if (!aboutScrollContent) return;
+    aboutScrollContent.style.animation = 'none';
+    void aboutScrollContent.offsetHeight;
+    aboutScrollContent.style.animation = '';
+  }
+
+  function openAboutDialog() {
+    closeAllMenus();
+    lastFocusedElement = document.activeElement;
+    aboutBackdrop.hidden = false;
+    restartAboutAnimation();
+    requestAnimationFrame(() => aboutOk.focus());
+  }
+
+  function closeAboutDialog() {
+    aboutBackdrop.hidden = true;
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+      lastFocusedElement.focus();
+    }
+  }
+
+  aboutClose.addEventListener('click', closeAboutDialog);
+  aboutOk.addEventListener('click', closeAboutDialog);
+  aboutBackdrop.addEventListener('mousedown', event => {
+    if (event.target === aboutBackdrop) closeAboutDialog();
+  });
+
+  aboutDialog.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(aboutDialog.querySelectorAll('button, a[href]'));
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      if (!aboutBackdrop.hidden) {
+        closeAboutDialog();
+      } else {
+        closeAllMenus();
+      }
+    }
+
+    if (event.key === 'F1') {
+      event.preventDefault();
+      openAboutDialog();
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'g') {
+      event.preventDefault();
+      window.open(repositoryUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+      event.preventDefault();
+      toggleContentsPane();
+    }
+
+    if (event.altKey && event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goBack();
+    }
+
+    if (event.altKey && event.key === 'ArrowRight') {
+      event.preventDefault();
+      goForward();
+    }
+  });
+
+  updateNavigationState();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>AdSlicer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <div id="app" class="app-root">
+
+        <!-- ═══ Menu Bar ═══ -->
+        <div class="menu-bar" id="menuBar" data-tauri-drag-region>
+
+            <div class="menu-item" data-menu="file">
+                <span class="menu-item-label">File</span>
+                <div class="menu-dropdown">
+                    <div class="menu-dd-item" data-action="file-open"><span class="dd-check"></span><span class="dd-text">Open File…</span><span class="dd-accel">Ctrl+O</span></div>
+                    <div class="menu-dd-item" data-action="file-open-folder"><span class="dd-check"></span><span class="dd-text">Open Folder…</span><span class="dd-accel">Ctrl+Shift+O</span></div>
+                    <div class="menu-dd-item" data-action="file-output"><span class="dd-check"></span><span class="dd-text">Set Output Dir…</span></div>
+                    <div class="menu-dd-sep"></div>
+                    <div class="menu-dd-item" data-action="file-save-preset"><span class="dd-check"></span><span class="dd-text">Save Preset…</span><span class="dd-accel">Ctrl+S</span></div>
+                    <div class="menu-dd-item" data-action="file-load-preset"><span class="dd-check"></span><span class="dd-text">Load Preset…</span><span class="dd-accel">Ctrl+L</span></div>
+
+                </div>
+            </div>
+
+            <div class="menu-item" data-menu="edit">
+                <span class="menu-item-label">Edit</span>
+                <div class="menu-dropdown">
+                    <div class="menu-dd-item" data-action="edit-reset"><span class="dd-check"></span><span class="dd-text">Reset All Parameters</span></div>
+                    <div class="menu-dd-item" data-action="edit-clear-log"><span class="dd-check"></span><span class="dd-text">Clear Activity Log</span></div>
+                </div>
+            </div>
+
+            <div class="menu-item" data-menu="view">
+                <span class="menu-item-label">View</span>
+                <div class="menu-dropdown">
+                    <div class="menu-dd-item" data-action="view-log-quiet"><span class="dd-check"></span><span class="dd-text">Log: Quiet</span></div>
+                    <div class="menu-dd-item" data-action="view-log-info"><span class="dd-check"></span><span class="dd-text">Log: Info</span></div>
+                    <div class="menu-dd-item" data-action="view-log-debug"><span class="dd-check">✓</span><span class="dd-text">Log: Debug</span></div>
+                    <div class="menu-dd-sep"></div>
+                    <div class="menu-dd-item" data-action="view-open-output"><span class="dd-check"></span><span class="dd-text">Open Output Folder…</span></div>
+                    <div class="menu-dd-item" data-action="view-open-log"><span class="dd-check"></span><span class="dd-text">Open Session Log…</span></div>
+                </div>
+            </div>
+
+            <div class="menu-item" data-menu="presets" id="presetsMenu">
+                <span class="menu-item-label">Presets</span>
+                <div class="menu-dropdown" id="presetsDropdown">
+                    <!-- populated dynamically by loadPresetsMenu() -->
+                    <div class="menu-dd-item" data-action="preset-save"><span class="dd-check"></span><span class="dd-text">Save Current as Preset…</span></div>
+                    <div class="menu-dd-sep"></div>
+                    <div class="menu-dd-item" data-action="preset-open-folder"><span class="dd-check"></span><span class="dd-text">Open User Presets Folder…</span></div>
+                    <div class="menu-dd-item" data-action="preset-reload"><span class="dd-check"></span><span class="dd-text">Reload Presets</span></div>
+                </div>
+            </div>
+
+            <div class="menu-item" data-menu="help">
+                <span class="menu-item-label">Help</span>
+                <div class="menu-dropdown">
+                    <div class="menu-dd-item" data-action="help-docs"><span class="dd-check"></span><span class="dd-text">Documentation…</span></div>
+                    <div class="menu-dd-item" data-action="help-tips"><span class="dd-check"></span><span class="dd-text">Tips &amp; Tricks…</span></div>
+                    <div class="menu-dd-item" data-action="help-usecases"><span class="dd-check"></span><span class="dd-text">Use Cases…</span></div>
+                    <div class="menu-dd-sep"></div>
+                    <div class="menu-dd-item" data-action="help-about"><span class="dd-check"></span><span class="dd-text">About AdSlicer…</span></div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /menu-bar -->
+
+        <!-- ═══ Main Layout ═══ -->
+        <main class="layout">
+
+            <!-- LEFT COLUMN -->
+            <div class="column column-left">
+
+                <!-- Source & Output panel -->
+                <div class="panel-wrap">
+                    <span class="panel-label">Source &amp; Output</span>
+                    <div class="panel-outer">
+
+                        <div class="row">
+                            <label data-tip="Choose whether to process a single video file, or an entire folder of files in batch mode.">Mode</label>
+                            <div class="field-group">
+                                <label class="inline"><input type="radio" name="mode" value="singleFile" checked /> Single File</label>
+                                <label class="inline"><input type="radio" name="mode" value="batchDir" /> Batch Folder</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label id="inputLabel" data-tip="Path to the input video file (Single File mode), or path to the folder containing your video files (Batch Folder mode).">Input Path</label>
+                            <input id="inputPath" class="text" type="text" />
+                            <button id="pickInput" class="btn" data-tip="Browse for the input file or folder.">Browse…</button>
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Comma-separated glob patterns for Batch Folder mode. Matches all listed formats recursively. E.g. *.mp4,*.mov,*.mkv">Glob Pattern</label>
+                            <input id="globPattern" class="text" type="text" value="*.mp4,*.mov,*.mkv,*.avi,*.m4v,*.wmv,*.flv,*.webm,*.mpg,*.mpeg,*.mts,*.m2ts,*.ts,*.vob,*.3gp,*.dv" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Directory where all output files will be saved. A subfolder is created per input file automatically.">Output Dir</label>
+                            <input id="outputDir" class="text" type="text" />
+                            <button id="pickOutput" class="btn" data-tip="Browse for the output directory.">Browse…</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Black Frame Detection panel -->
+                <div class="panel-wrap">
+                    <span class="panel-label">Black Frame Detection</span>
+                    <div class="panel-outer">
+
+                        <div class="row">
+                            <label data-tip="Minimum duration (seconds) a black segment must last to count as a commercial boundary. Shorter flashes are ignored. Recommended: 0.10–0.50s.">Min Black Dur (s)</label>
+                            <input id="blackMinDur" type="number" step="0.01" value="0.10" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Pixel luminance threshold (0–1). Pixels below this value are counted as black. Lower = stricter. Recommended: 0.05–0.12.">Pixel Threshold</label>
+                            <input id="pixTh" type="number" step="0.01" value="0.08" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Fraction of pixels per frame that must be black for it to count as a black frame (0–1). 0.98 = 98% of pixels must be black. Recommended: 0.90–0.99.">Frame Black Ratio</label>
+                            <input id="picTh" type="number" step="0.01" value="0.98" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Black segments separated by less than this gap (seconds) are merged into one. Eliminates near-duplicate detections. Recommended: 0.5–3.0s.">Merge Gap (s)</label>
+                            <input id="mergeGap" type="number" step="0.1" value="1.5" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Cut Parameters panel -->
+                <div class="panel-wrap">
+                    <span class="panel-label">Cut Parameters</span>
+                    <div class="panel-outer">
+
+                        <div class="row">
+                            <label data-tip="Seconds before the black boundary to start the cut, for clean transitions. Recommended: 0.1–0.5s.">Edge Pad (Pre, s)</label>
+                            <input id="edgePadPre" type="number" step="0.01" value="0.2" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Seconds after the black boundary to end the cut, for clean exits. Recommended: 0.02–0.15s.">Edge Pad (Post, s)</label>
+                            <input id="edgePadPost" type="number" step="0.01" value="0.06" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Minimum seconds between two black segments to classify the interval as a commercial. Shorter gaps are treated as show content. Recommended: 5–15s.">Min Commercial (s)</label>
+                            <input id="minCommercial" type="number" step="1" value="5" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Maximum seconds between two black segments that can still be classified as a commercial. Longer gaps are treated as show content. Recommended: 120–300s.">Max Commercial (s)</label>
+                            <input id="maxCommercial" type="number" step="1" value="240" />
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Include the bounding black frames inside the exported commercial clip. Disable to trim to content only.">Include Black Frames</label>
+                            <input id="includeBlack" type="checkbox" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Analyze the video and write detection logs WITHOUT creating any media output. Use to preview what would be cut.">Dry Run (Log Only)</label>
+                            <input id="dryRun" type="checkbox" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Render preview: cap each exported segment at this many seconds so you can quickly check cut accuracy, encode quality, and loudnorm levels without waiting for a full export. 0 = disabled (full export). Recommended: 30–60s.">Preview Duration (s)</label>
+                            <input id="previewDur" type="number" step="5" min="0" max="600" value="0" />
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Remove this many seconds from the very start of the assembled show output. Trims tape leader, pre-roll noise, or deck startup artefacts. Applied after commercial detection — independent of Always Keep First. 0 = disabled.">Trim Head (s)</label>
+                            <input id="trimHead" type="number" step="0.5" min="0" max="300" value="0" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Remove this many seconds from the very end of the assembled show output. Trims deck shutoff noise and post-roll artefacts. Applied after commercial detection — independent of Always Keep Last. 0 = disabled.">Trim Tail (s)</label>
+                            <input id="trimTail" type="number" step="0.5" min="0" max="300" value="0" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Amount of detail in the activity log. Quiet=errors only. Info=milestones. Debug=full step-by-step output.">Log Verbosity</label>
+                            <select id="verbosity">
+              <option value="0">Quiet  (errors only)</option>
+              <option value="1">Info   (milestones)</option>
+              <option value="2" selected>Debug  (full detail)</option>
+            </select>
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Shell command to run after a successful export. Tokens replaced before execution: %show% = show file path, %outdir% = output folder, %input% = source file, %base% = filename stem. Example: cp '%show%' /Volumes/NAS/Shows/ — Leave empty to disable. Failures are logged as warnings and do not stop the job.">Post-processing Command</label>
+                            <input id="postCommand" class="text" type="text" placeholder="e.g. open '%outdir%'" style="flex:1;" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Output Settings panel -->
+                <div class="panel-wrap">
+                    <span class="panel-label">Output Settings</span>
+                    <div class="panel-outer">
+
+                        <div class="row">
+                            <label data-tip="Output mode. Cut: remove commercials, export clean show + isolated ad clips. Chapters: embed chapter markers into a copy of the source without removing anything — full broadcast preserved with navigation.">Output Mode</label>
+                            <select id="outputMode">
+              <option value="cut" selected>Cut  (remove commercials)</option>
+              <option value="chapters">Chapters only  (preserve full broadcast)</option>
+            </select>
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Video encode mode. Copy = stream copy, fast but keyframe-snapping. H.264/H.265/AV1 = full re-encode for frame-accurate cuts. ProRes = lossless archival.">Video Codec</label>
+                            <select id="encodeMode">
+              <option value="copy" selected>Copy  (stream copy, fast)</option>
+              <option value="h264">H.264  (libx264)</option>
+              <option value="h265">H.265 / HEVC  (libx265)</option>
+              <option value="av1">AV1  (libsvtav1)</option>
+              <option value="prores">ProRes  (archival)</option>
+            </select>
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="GPU hardware encoder. None = CPU encode. NVENC = NVIDIA, QSV = Intel QuickSync, AMF = AMD. Requires compatible hardware and drivers. Ignored in Copy mode.">GPU Accelerator</label>
+                            <select id="gpuAccel">
+              <option value="none" selected>None  (CPU)</option>
+              <option value="nvenc">NVENC  (NVIDIA)</option>
+              <option value="qsv">QuickSync  (Intel)</option>
+              <option value="amf">AMF  (AMD)</option>
+            </select>
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Video quality (CRF). Lower = higher quality, larger file. H.264: 18 (high) to 28 (small). H.265: 24–32. AV1: 28–40. Ignored in Copy and ProRes modes.">Video CRF</label>
+                            <input id="videoCrf" type="number" step="1" min="0" max="63" value="18" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Encode speed preset. Slower presets produce smaller files at equal quality. Ignored in Copy, ProRes, and GPU modes.">Encode Preset</label>
+                            <select id="videoPreset">
+              <option value="ultrafast">Ultrafast</option>
+              <option value="veryfast" selected>Very fast</option>
+              <option value="fast">Fast</option>
+              <option value="medium">Medium</option>
+              <option value="slow">Slow</option>
+            </select>
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Audio codec. AAC = universal compatibility. AC3 = Dolby Digital, common in broadcast. Copy = pass through original audio unchanged (fastest).">Audio Codec</label>
+                            <select id="audioCodec">
+              <option value="aac" selected>AAC</option>
+              <option value="ac3">AC3  (Dolby Digital)</option>
+              <option value="copy">Copy  (pass through)</option>
+            </select>
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Audio bitrate in kbps. 0 = let ffmpeg choose a sensible default. Common values: 128, 192, 256, 320. Ignored when Audio Codec is Copy.">Audio Bitrate (kbps)</label>
+                            <input id="audioBitrateKbps" type="number" step="32" min="0" max="640" value="0" />
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="EBU R128 loudness normalisation on the show output. Adjusts audio gain so the programme plays at a consistent -23 LUFS regardless of source level. Essential for VHS where recording levels vary. Forces audio re-encode even in Copy mode.">Loudnorm (EBU R128)</label>
+                            <input id="loudnorm" type="checkbox" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Apply yadif deinterlace filter. Use for interlaced broadcast captures (most VHS and off-air recordings). Ignored in Copy mode.">Deinterlace</label>
+                            <input id="deinterlace" type="checkbox" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Scale output video width in pixels (height adjusts automatically to maintain aspect ratio). 0 = no scaling. Common values: 1920, 1280, 720, 480. Ignored in Copy mode.">Scale Width (px)</label>
+                            <input id="scaleWidth" type="number" step="2" min="0" max="7680" value="0" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Advanced Detection panel (Comskip-derived enhancements) -->
+                <div class="panel-wrap">
+                    <span class="panel-label">Advanced Detection</span>
+                    <div class="panel-outer">
+
+                        <div class="row">
+                            <label data-tip="Audio silence noise floor in dB. Frames quieter than this threshold are counted as silence. Typical VHS: -35 to -45 dB. Silence segments overlapping commercial candidates raise their confidence score. Set to 0 to disable silence detection.">Silence Noise (dB)</label>
+                            <input id="silenceNoiseDb" type="number" step="1" value="-40" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Minimum silence duration (seconds) to register as a silence segment. Shorter quiet gaps are ignored. Recommended: 0.3–1.0s.">Silence Min Dur (s)</label>
+                            <input id="silenceMinDur" type="number" step="0.1" value="0.5" />
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Minimum content segment length (seconds). Commercial cuts that would leave a keep segment shorter than this are rejected. Protects against slicing into show content. 0 = no guard. Recommended: 20–60s.">Min Show Segment (s)</label>
+                            <input id="minShowSegment" type="number" step="1" value="30" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Always preserve this many seconds at the start of the recording. Any commercial candidate overlapping this window is dropped. Prevents cutting into cold opens and tape leader. Recommended: 0–30s.">Always Keep First (s)</label>
+                            <input id="alwaysKeepFirst" type="number" step="1" value="0" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Always preserve this many seconds at the end of the recording. Any commercial candidate overlapping this window is dropped. Prevents cutting into credit sequences and tape tail. Recommended: 0–30s.">Always Keep Last (s)</label>
+                            <input id="alwaysKeepLast" type="number" step="1" value="0" />
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Uniform frame detection: luma standard deviation ceiling (0–255 scale). Frames where the entire image has stddev below this value are classified as uniform slates (black cards, color cards). These corroborate commercial boundaries and boost confidence. 0 = disabled. Comskip equivalent: non_uniformity. Recommended: 6–12.">Uniform Max Stddev</label>
+                            <input id="uniformMaxStddev" type="number" step="0.5" value="8" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Scene change sensitivity (0.0–1.0). Frames where the inter-frame pixel difference exceeds this value are counted as scene changes. Commercial blocks with more scene changes per second than the file average get a confidence boost. 0 = disabled. Comskip equivalent: schange_threshold. Recommended: 0.3–0.5.">Scene Change Threshold</label>
+                            <input id="sceneThreshold" type="number" step="0.05" value="0.4" />
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="row">
+                            <label data-tip="Asymmetric trim: seconds to remove from the CONTENT side of each cut point. Recovers content that blackdetect clips when the slug boundary is ambiguous on noisy tape. Comskip equivalent: remove_before. Recommended: 0–0.5s.">Remove Before (s)</label>
+                            <input id="removeBefore" type="number" step="0.05" value="0" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="Asymmetric trim: seconds to remove from the AD side of each cut point. Comskip equivalent: remove_after. Recommended: 0–0.3s.">Remove After (s)</label>
+                            <input id="removeAfter" type="number" step="0.05" value="0" />
+                        </div>
+
+                        <div class="row">
+                            <label data-tip="30-second boundary snapping (Comskip: require_div5). When enabled, commercial candidates whose duration is not within 3 seconds of a multiple of 30s are either snapped to the nearest 30s boundary or dropped. US TV ads are always 15/30/60/90s. Useful for clean broadcast captures; disable for VHS where timing is irregular.">Require 30s Boundary</label>
+                            <input id="requireDiv5" type="checkbox" />
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- /column-left -->
+
+            <!-- RIGHT COLUMN -->
+            <div class="column column-right">
+
+                <!-- Logo -->
+                <div class="logo-panel">
+                    <img src="icon.png" alt="AdSlicer" class="logo-image" />
+                    <h1>AdSlicer</h1>
+                    <div class="header-sub">
+                        <h2>Broadcast Archival Commercial Cutter v0.1.0</div>
+                    </h2>
+                    <nav class="logo-links">
+                        <h3>
+                            </hw><a href="https://schwwaaa.github.io/AdSlicer-docs/how-it-works/" class="link">How it Works</a>
+                            <he<span class="sep">|</span>
+                                <a href="https://schwwaaa.github.io/AdSlicer-docs/" class="link">Tips &amp; Tricks</a>
+                                <span class="sep">|</span>
+                                <a href="https://schwwaaa.github.io/AdSlicer-docs/use-cases/" class="link">Use Cases</a>
+                        </h3>
+                    </nav>
+                </div>
+
+                <!-- Transport -->
+                <div class="transport-panel">
+                    <div class="transport-row">
+                        <div class="transport-buttons">
+                            <button id="startBtn" class="btn primary" data-tip="Start processing with current settings. The activity log updates in real-time.">▶  Start</button>
+                            <button id="stopBtn" class="btn danger" data-tip="Cancel the running job. Output folder may contain partial files.">■  Stop</button>
+                        </div>
+                        <div class="status-indicator">
+                            <div id="statusLed" class="status-led idle"></div>
+                            <span id="status">Idle</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Console -->
+                <div class="console-panel">
+                    <div class="console-titlebar">
+                        <span>ACTIVITY LOG</span>
+                        <div class="console-titlebar-right">
+                            <div id="consoleLed" class="console-led"></div>
+                            <button class="console-clear-btn" id="clearConsole">CLR</button>
+                        </div>
+                    </div>
+                    <div id="console" class="console-body"></div>
+                </div>
+
+            </div>
+            <!-- /column-right -->
+
+        </main>
+
+        <!-- Status Bar -->
+        <div class="app-statusbar">
+            <span class="statusbar-section" id="sb-status">Ready</span>
+            <span class="statusbar-section" id="sb-file">No file selected</span>
+            <span class="statusbar-section statusbar-right" id="sb-version">AdSlicer v0.1.0</span>
+        </div>
+
+
+        <!-- ═══ Save Preset Modal ═══ -->
+        <div id="save-preset-modal" class="web-modal" style="display:none;">
+            <div class="web-modal-inner" style="max-width:400px;">
+                <div class="web-modal-titlebar">
+                    <img src="icon.png" class="web-modal-icon" alt="" />
+                    <span class="web-modal-title">Save Preset</span>
+                    <button class="web-modal-close" id="save-preset-close">&#x2715;</button>
+                </div>
+                <div style="padding:16px 20px 20px;">
+                    <label style="display:block;margin-bottom:6px;font-size:13px;color:var(--color-text-secondary);">Preset name</label>
+                    <input id="save-preset-name" class="text" type="text" placeholder="e.g. my_vhs_settings" style="width:100%;box-sizing:border-box;margin-bottom:8px;" />
+                    <p style="font-size:11px;color:var(--color-text-tertiary);margin:0 0 16px;">Letters, numbers, hyphens and underscores only. Saved to your presets folder as a .json file.</p>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;">
+                        <button class="btn" id="save-preset-cancel">Cancel</button>
+                        <button class="btn primary" id="save-preset-confirm">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Web Modal ═══ -->
+        <div id="web-modal" class="web-modal" style="display:none;">
+            <div class="web-modal-inner">
+                <div class="web-modal-titlebar">
+                    <img src="icon.png" class="web-modal-icon" alt="" />
+                    <span class="web-modal-title" id="web-modal-title">Documentation</span>
+                    <button class="web-modal-close" id="web-modal-close" title="Close">&#x2715;</button>
+                </div>
+                <iframe id="web-modal-frame" class="web-modal-frame" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+            </div>
+        </div>
+    </div>
+    <!-- /app-root -->
+
+    <!-- JS-rendered tooltip — lives outside app-root to avoid clipping -->
+    <div id="app-tooltip"></div>
+    <script src="main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+{"main":{"identifier":"main","description":"Main window","local":true,"windows":["main"],"permissions":["core:app:default","core:window:default","core:event:default","core:path:default","dialog:default"]}}
