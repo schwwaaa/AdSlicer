@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/schwwaaa/AdSlicer/blob/main/assets/adslicer-icon-256.png?raw=true" width="176" alt="AdSlicer film-eye logo">
+  <img src="https://github.com/schwwaaa/AdSlicer/blob/main/docs/assets/adslicer-icon-256.png?raw=true" width="176" alt="AdSlicer film-eye logo">
 </p>
 
 <h1 align="center">AdSlicer</h1>
