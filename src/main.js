@@ -819,9 +819,9 @@ function handleMenuAction(action) {
     case "preset-save":        openSavePresetModal(); break;
     case "preset-open-folder": openPresetsFolder(); break;
     case "preset-reload":      loadPresetsMenu(); break;
-    case "help-docs":    openModal("https://schwwaaa.github.io/AdSlicer-docs/", "Documentation"); break;
+    case "help-docs":    openModal("https://schwwaaa.github.io/AdSlicer", "Documentation"); break;
     case "help-faq":
-    case "help-tips":    openModal("https://schwwaaa.github.io/AdSlicer-docs/", "Tips & Tricks"); break;
+    case "help-tips":    openModal("https://schwwaaa.github.io/AdSlicer/", "Tips & Tricks"); break;
     case "help-usecases": openModal("https://schwwaaa.github.io/AdSlicer-docs/use-cases/", "Use Cases"); break;
     case "help-about":   showAbout(); break;
     default: break;
@@ -878,7 +878,6 @@ function syncVerbosityCheck(active) {
 function showAbout() {
   logBlank();
   logLine("header", "  AdSlicer  v0.1.0");
-  logLine("system", "  AdSlicer");
   logLine("system", "  Broadcast Archival Commercial Slicer");
   logLine("system", "  ─────────────────────────────────────");
   logLine("system", "  Cuts commercials from VHS + broadcast");

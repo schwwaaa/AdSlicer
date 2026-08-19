@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "clip_file": "example_vhs_boundary.mkv",
+  "source_tape": "optional human-readable tape identifier",
+  "source_recording_notes": "era/network/show/capture notes if known",
+  "capture_characteristics": {
+    "interlaced": true,
+    "raised_black": false,
+    "tracking_noise": false,
+    "other": ""
+  },
+  "expected": {
+    "should_be_boundary": true,
+    "boundary_frame": null,
+    "boundary_time_s": null,
+    "event_type": "one_frame_black",
+    "acceptable_error_frames": 1
+  },
+  "why_this_clip_matters": "Describe the detector edge case this clip represents.",
+  "review_notes": ""
+}

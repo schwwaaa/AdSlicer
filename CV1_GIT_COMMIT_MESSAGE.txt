@@ -1,0 +1,6 @@
+chore(cv1): add OpenCV evidence probe and isolate Cargo workspace
+
+- add optional OpenCV analysis feature and standalone evidence probe
+- add synthetic validation corpus and reproducible CV-1 checks
+- preserve existing AdSlicer detection/planning/render behavior
+- declare src-tauri as its own workspace root so parent Cargo manifests cannot interfere
