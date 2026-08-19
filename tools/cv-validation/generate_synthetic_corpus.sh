@@ -81,4 +81,50 @@ say "07 uniform blue color card"
   -filter_complex "[0:v][1:v][2:v]concat=n=3:v=1:a=0[v]" -map "[v]" "${ENC[@]}" \
   "$OUT/07_uniform_blue_slate.mkv"
 
+# 08: two black separators around a 12-second synthetic "commercial" block.
+# CV-4 should pair the EXIT of the first dark interval with the ENTRY of the
+# second interval, rather than proposing the black slugs themselves as edits.
+say "08 synthetic commercial block"
+"$FFMPEG" -hide_banner -loglevel error -y \
+  -f lavfi -i "testsrc2=size=${SIZE}:rate=${RATE}:duration=5" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.2" \
+  -f lavfi -i "smptebars=size=${SIZE}:rate=${RATE}:duration=12" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.2" \
+  -f lavfi -i "testsrc=size=${SIZE}:rate=${RATE}:duration=5" \
+  -filter_complex "[0:v][1:v][2:v][3:v][4:v]concat=n=5:v=1:a=0[v]" -map "[v]" "${ENC[@]}" \
+  "$OUT/08_commercial_block.mkv"
+
+# 09: structural segmentation control. Three true top-level black separators
+# create four complete source segments. A fourth *internal* uniform black fade
+# sits in the middle of the 30-second third segment with the same visual source
+# on both sides. Complete Segments should preserve that 30-second block while
+# Every Separator is allowed to expose the internal fade.
+say "09 structural segmentation with internal black fade"
+"$FFMPEG" -hide_banner -loglevel error -y \
+  -f lavfi -i "testsrc2=size=${SIZE}:rate=${RATE}:duration=3" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.2" \
+  -f lavfi -i "smptebars=size=${SIZE}:rate=${RATE}:duration=15" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.2" \
+  -f lavfi -i "testsrc=size=${SIZE}:rate=${RATE}:duration=15" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.1" \
+  -f lavfi -i "testsrc=size=${SIZE}:rate=${RATE}:duration=15" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.2" \
+  -f lavfi -i "color=c=red:size=${SIZE}:rate=${RATE}:duration=3" \
+  -filter_complex "[0:v][1:v][2:v][3:v][4:v][5:v][6:v][7:v][8:v]concat=n=9:v=1:a=0[v]" \
+  -map "[v]" "${ENC[@]}" "$OUT/09_structural_full_timeline.mkv"
+
+# 10: raised-uniform VHS-black regression. The first separator is deliberately
+# above the normal dark_mean_luma/near-black thresholds (RGB gray ~36) but is
+# spatially flat. This reproduces the real missed AFHV -> migraine boundary:
+# Complete Segments must recover it without globally raising black sensitivity.
+say "10 raised uniform VHS-black separator"
+"$FFMPEG" -hide_banner -loglevel error -y \
+  -f lavfi -i "testsrc2=size=${SIZE}:rate=${RATE}:duration=3" \
+  -f lavfi -i "color=c=0x242424:size=${SIZE}:rate=${RATE}:duration=0.5" \
+  -f lavfi -i "smptebars=size=${SIZE}:rate=${RATE}:duration=15" \
+  -f lavfi -i "color=c=black:size=${SIZE}:rate=${RATE}:duration=0.2" \
+  -f lavfi -i "color=c=red:size=${SIZE}:rate=${RATE}:duration=3" \
+  -filter_complex "[0:v][1:v][2:v][3:v][4:v]concat=n=5:v=1:a=0[v]" \
+  -map "[v]" "${ENC[@]}" "$OUT/10_raised_uniform_separator.mkv"
+
 printf '\nSynthetic OpenCV validation corpus generated in:\n  %s\n' "$OUT"

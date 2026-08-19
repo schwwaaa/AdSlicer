@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-boundary-candidates",
+  "score_version": "cv3-heuristic-v1",
+  "source_temporal_file": "opencv_temporal_events.json",
+  "source_temporal_sha256": "137edc781dc6cf09b2ec662f65a7cfa5d177b8763dcf21dba6e7dde1a2c5715f",
+  "config": {
+    "candidate_score_min": 0.45,
+    "review_score_min": 0.6,
+    "strong_score_min": 0.8,
+    "strict_black_bonus_ratio": 0.95,
+    "near_black_bonus_ratio": 0.98,
+    "strong_edge_delta": 80.0,
+    "medium_edge_delta": 40.0,
+    "strong_luma_contrast": 40.0,
+    "medium_luma_contrast": 20.0,
+    "chromatic_penalty": 0.25,
+    "scene_only_score_cap": 0.35,
+    "chromatic_dark_score_cap": 0.35
+  },
+  "summary": {
+    "total_observations": 4,
+    "total_candidates": 4,
+    "evidence_only": 0,
+    "counts_by_tier": {
+      "review": 2,
+      "strong": 2
+    },
+    "counts_by_role": {
+      "interval_entry": 2,
+      "interval_exit": 2
+    },
+    "first_candidate_pts_s": 3.0,
+    "last_candidate_pts_s": 18.667
+  },
+  "candidates": [
+    {
+      "observation_index": 0,
+      "source_event_index": 0,
+      "source_event_kind": "near_black_interval",
+      "role": "interval_entry",
+      "anchor_frame": 90,
+      "anchor_pts_s": 3.0,
+      "evidence_start_frame": 90,
+      "evidence_end_frame": 104,
+      "evidence_start_pts_s": 3.0,
+      "evidence_end_pts_s": 3.467,
+      "boundary_score": 0.66,
+      "tier": "review",
+      "is_candidate": true,
+      "edge_delta": 91.39368489583332,
+      "luma_contrast": 88.57075260416666,
+      "max_black_pixel_ratio": 0.0,
+      "max_near_black_pixel_ratio": 0.0,
+      "chromatic_dark": false,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "strong visual edge delta 91.39",
+        "strong luma contrast 88.57"
+      ],
+      "cautions": []
+    },
+    {
+      "observation_index": 1,
+      "source_event_index": 0,
+      "source_event_kind": "near_black_interval",
+      "role": "interval_exit",
+      "anchor_frame": 104,
+      "anchor_pts_s": 3.467,
+      "evidence_start_frame": 90,
+      "evidence_end_frame": 104,
+      "evidence_start_pts_s": 3.0,
+      "evidence_end_pts_s": 3.467,
+      "boundary_score": 0.62,
+      "tier": "review",
+      "is_candidate": true,
+      "edge_delta": 71.2895703125,
+      "luma_contrast": 57.81821614583332,
+      "max_black_pixel_ratio": 0.0,
+      "max_near_black_pixel_ratio": 0.0,
+      "chromatic_dark": false,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "visual edge delta 71.29",
+        "strong luma contrast 57.82"
+      ],
+      "cautions": []
+    },
+    {
+      "observation_index": 2,
+      "source_event_index": 1,
+      "source_event_kind": "black_interval",
+      "role": "interval_entry",
+      "anchor_frame": 555,
+      "anchor_pts_s": 18.5,
+      "evidence_start_frame": 555,
+      "evidence_end_frame": 560,
+      "evidence_start_pts_s": 18.5,
+      "evidence_end_pts_s": 18.667,
+      "boundary_score": 0.8999999999999999,
+      "tier": "strong",
+      "is_candidate": true,
+      "edge_delta": 93.81821614583332,
+      "luma_contrast": 93.81821614583332,
+      "max_black_pixel_ratio": 1.0,
+      "max_near_black_pixel_ratio": 1.0,
+      "chromatic_dark": false,
+      "reasons": [
+        "source temporal event black_interval",
+        "strict-black evidence 1.000",
+        "near-black evidence 1.000",
+        "strong visual edge delta 93.82",
+        "strong luma contrast 93.82"
+      ],
+      "cautions": []
+    },
+    {
+      "observation_index": 3,
+      "source_event_index": 1,
+      "source_event_kind": "black_interval",
+      "role": "interval_exit",
+      "anchor_frame": 560,
+      "anchor_pts_s": 18.667,
+      "evidence_start_frame": 555,
+      "evidence_end_frame": 560,
+      "evidence_start_pts_s": 18.5,
+      "evidence_end_pts_s": 18.667,
+      "boundary_score": 0.8599999999999999,
+      "tier": "strong",
+      "is_candidate": true,
+      "edge_delta": 76.0,
+      "luma_contrast": 76.0,
+      "max_black_pixel_ratio": 1.0,
+      "max_near_black_pixel_ratio": 1.0,
+      "chromatic_dark": false,
+      "reasons": [
+        "source temporal event black_interval",
+        "strict-black evidence 1.000",
+        "near-black evidence 1.000",
+        "visual edge delta 76.00",
+        "strong luma contrast 76.00"
+      ],
+      "cautions": []
+    }
+  ],
+  "evidence_only": []
+}

@@ -37,6 +37,22 @@ OPTIONAL ANALYSIS OVERRIDES:
   --stride N           Analyze every Nth frame (default: 1; use 1 for validation)
   --max-frames N       Stop after N analyzed frames (default: entire source)
 
+CV-4 SHADOW PLANNER OVERRIDES:
+  --min-commercial S   Minimum proposed removal duration (default: 5)
+  --max-commercial S   Maximum proposed removal duration (default: 240)
+  --min-show-segment S Minimum preserved gap guard (default: 30)
+  --edge-pad-pre S     Start padding (default: 0.20)
+  --edge-pad-post S    End padding (default: 0.06)
+  --skip-legacy        Skip current-AdSlicer default-plan comparison
+
+CV-5 WATCHABLE EDIT VALIDATION:
+  --preview-context S   Seconds before/after each proposed cut (default: 2)
+  --preview-limit N     Max proposed edits to render (default: 20; 0 = all)
+  --skip-edit-previews  Analyze/plan only; do not create validation videos
+
+CV-6 STRUCTURAL SEGMENTATION:
+  --segment-render-mode MODE  both|complete|every|none (default: both)
+
 SYNTHETIC REGRESSION SUITE:
   ./test-opencv.sh --synthetic
 
@@ -60,6 +76,16 @@ BLACK_LUMA=""
 NEAR_BLACK=""
 STRIDE=""
 MAX_FRAMES=""
+MIN_COMMERCIAL=""
+MAX_COMMERCIAL=""
+MIN_SHOW_SEGMENT=""
+EDGE_PAD_PRE=""
+EDGE_PAD_POST=""
+SKIP_LEGACY=0
+PREVIEW_CONTEXT=""
+PREVIEW_LIMIT=""
+SKIP_EDIT_PREVIEWS=0
+SEGMENT_RENDER_MODE=""
 POSITIONAL=()
 
 while [[ $# -gt 0 ]]; do
@@ -102,6 +128,54 @@ while [[ $# -gt 0 ]]; do
       MAX_FRAMES="$2"
       shift 2
       ;;
+    --min-commercial)
+      [[ $# -ge 2 ]] || { echo "ERROR: --min-commercial requires seconds" >&2; exit 2; }
+      MIN_COMMERCIAL="$2"
+      shift 2
+      ;;
+    --max-commercial)
+      [[ $# -ge 2 ]] || { echo "ERROR: --max-commercial requires seconds" >&2; exit 2; }
+      MAX_COMMERCIAL="$2"
+      shift 2
+      ;;
+    --min-show-segment)
+      [[ $# -ge 2 ]] || { echo "ERROR: --min-show-segment requires seconds" >&2; exit 2; }
+      MIN_SHOW_SEGMENT="$2"
+      shift 2
+      ;;
+    --edge-pad-pre)
+      [[ $# -ge 2 ]] || { echo "ERROR: --edge-pad-pre requires seconds" >&2; exit 2; }
+      EDGE_PAD_PRE="$2"
+      shift 2
+      ;;
+    --edge-pad-post)
+      [[ $# -ge 2 ]] || { echo "ERROR: --edge-pad-post requires seconds" >&2; exit 2; }
+      EDGE_PAD_POST="$2"
+      shift 2
+      ;;
+    --skip-legacy)
+      SKIP_LEGACY=1
+      shift
+      ;;
+    --preview-context)
+      [[ $# -ge 2 ]] || { echo "ERROR: --preview-context requires seconds" >&2; exit 2; }
+      PREVIEW_CONTEXT="$2"
+      shift 2
+      ;;
+    --preview-limit)
+      [[ $# -ge 2 ]] || { echo "ERROR: --preview-limit requires an integer" >&2; exit 2; }
+      PREVIEW_LIMIT="$2"
+      shift 2
+      ;;
+    --skip-edit-previews)
+      SKIP_EDIT_PREVIEWS=1
+      shift
+      ;;
+    --segment-render-mode)
+      [[ $# -ge 2 ]] || { echo "ERROR: --segment-render-mode requires both|complete|every|none" >&2; exit 2; }
+      SEGMENT_RENDER_MODE="$2"
+      shift 2
+      ;;
     --)
       shift
       while [[ $# -gt 0 ]]; do POSITIONAL+=("$1"); shift; done
@@ -128,6 +202,10 @@ if [[ $SYNTHETIC -eq 1 ]]; then
   ./run_probe_suite.sh
   ./run_temporal_suite.sh
   ./run_boundary_suite.sh
+  ./run_shadow_suite.sh
+  ./run_edit_validation_suite.sh
+  ./run_structural_suite.sh
+  ./run_raised_uniform_suite.sh
   echo
   echo "Synthetic regression complete."
   exit 0
@@ -188,6 +266,16 @@ PIPELINE_ARGS=(
 [[ -n "$NEAR_BLACK" ]] && PIPELINE_ARGS+=(--near-black "$NEAR_BLACK")
 [[ -n "$STRIDE" ]] && PIPELINE_ARGS+=(--stride "$STRIDE")
 [[ -n "$MAX_FRAMES" ]] && PIPELINE_ARGS+=(--max-frames "$MAX_FRAMES")
+[[ -n "$MIN_COMMERCIAL" ]] && PIPELINE_ARGS+=(--min-commercial "$MIN_COMMERCIAL")
+[[ -n "$MAX_COMMERCIAL" ]] && PIPELINE_ARGS+=(--max-commercial "$MAX_COMMERCIAL")
+[[ -n "$MIN_SHOW_SEGMENT" ]] && PIPELINE_ARGS+=(--min-show-segment "$MIN_SHOW_SEGMENT")
+[[ -n "$EDGE_PAD_PRE" ]] && PIPELINE_ARGS+=(--edge-pad-pre "$EDGE_PAD_PRE")
+[[ -n "$EDGE_PAD_POST" ]] && PIPELINE_ARGS+=(--edge-pad-post "$EDGE_PAD_POST")
+[[ "$SKIP_LEGACY" -eq 1 ]] && PIPELINE_ARGS+=(--skip-legacy)
+[[ -n "$PREVIEW_CONTEXT" ]] && PIPELINE_ARGS+=(--preview-context "$PREVIEW_CONTEXT")
+[[ -n "$PREVIEW_LIMIT" ]] && PIPELINE_ARGS+=(--preview-limit "$PREVIEW_LIMIT")
+[[ "$SKIP_EDIT_PREVIEWS" -eq 1 ]] && PIPELINE_ARGS+=(--skip-edit-previews)
+[[ -n "$SEGMENT_RENDER_MODE" ]] && PIPELINE_ARGS+=(--segment-render-mode "$SEGMENT_RENDER_MODE")
 
 cargo run \
   --manifest-path "$ROOT/src-tauri/Cargo.toml" \

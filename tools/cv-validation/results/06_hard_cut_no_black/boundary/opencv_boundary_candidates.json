@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-boundary-candidates",
+  "score_version": "cv3-heuristic-v1",
+  "source_temporal_file": "opencv_temporal_events.json",
+  "source_temporal_sha256": "e4663b5ac222d0b94f4375d703384e366bb2f38383b415408b9592c10ee172b6",
+  "config": {
+    "candidate_score_min": 0.45,
+    "review_score_min": 0.6,
+    "strong_score_min": 0.8,
+    "strict_black_bonus_ratio": 0.95,
+    "near_black_bonus_ratio": 0.98,
+    "strong_edge_delta": 80.0,
+    "medium_edge_delta": 40.0,
+    "strong_luma_contrast": 40.0,
+    "medium_luma_contrast": 20.0,
+    "chromatic_penalty": 0.25,
+    "scene_only_score_cap": 0.35,
+    "chromatic_dark_score_cap": 0.35
+  },
+  "summary": {
+    "total_observations": 1,
+    "total_candidates": 0,
+    "evidence_only": 1,
+    "counts_by_tier": {
+      "evidence_only": 1
+    },
+    "counts_by_role": {
+      "scene_only": 1
+    },
+    "first_candidate_pts_s": null,
+    "last_candidate_pts_s": null
+  },
+  "candidates": [],
+  "evidence_only": [
+    {
+      "observation_index": 0,
+      "source_event_index": 0,
+      "source_event_kind": "scene_discontinuity",
+      "role": "scene_only",
+      "anchor_frame": 90,
+      "anchor_pts_s": 3.0,
+      "evidence_start_frame": 90,
+      "evidence_end_frame": 90,
+      "evidence_start_pts_s": 3.0,
+      "evidence_end_pts_s": 3.0,
+      "boundary_score": 0.35,
+      "tier": "evidence_only",
+      "is_candidate": false,
+      "edge_delta": 88.27,
+      "luma_contrast": 30.862526041666683,
+      "max_black_pixel_ratio": 0.15,
+      "max_near_black_pixel_ratio": 0.29256510416666665,
+      "chromatic_dark": false,
+      "reasons": [
+        "source temporal event scene_discontinuity",
+        "strong visual edge delta 88.27",
+        "luma contrast 30.86"
+      ],
+      "cautions": [
+        "scene change alone is not sufficient for a commercial boundary"
+      ]
+    }
+  ]
+}

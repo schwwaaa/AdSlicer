@@ -1,0 +1,24 @@
+AdSlicer CV-6.1a — Raised-Black Regression Fix
+
+Reason:
+CV-6.1 recovered sustained raised-gray VHS separator floors but admitted a single
+uniform rising-shoulder frame in the synthetic temporal fade case, widening the
+established fade valley from frames 92–95 to 92–96.
+
+Fix:
+- Raised-uniform fallback is now distinct from normal strict/near-black evidence.
+- Raised-uniform fallback must persist for >= 3 analyzed frames before being
+  promoted into the dark-event stream.
+- One- and two-frame true black/near-black separators remain supported by the
+  original evidence path.
+- The existing CV-2 fade-valley expected result remains unchanged.
+
+Validation performed in packaging environment:
+- Independent OpenCV/Python mirror: temporal luma valley = frames 92–95,
+  valley frame 94 (restored).
+- Uploaded missed segment: raised-uniform event remains detected around frames
+  79–95 (~2.64–3.17s), preserving the recovered ~3.14s structural boundary.
+- Synthetic raised-uniform separator still produces explicit raised-dark event
+  evidence.
+
+Production AdSlicer planning/rendering/UI behavior remains untouched.

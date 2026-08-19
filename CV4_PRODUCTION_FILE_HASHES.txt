@@ -1,0 +1,9 @@
+CV-4 production safety hash check
+
+MATCH  8093fa0fde3bfce4c59ef241181e968491b8a8b45c22e93d6d114deccf92222f  src-tauri/src/adslicer/job.rs
+MATCH  382f335fa9480e85b7b15855d3585eb4c79a4a5cb189b02e7ce0ad5384ce5a1b  src-tauri/src/adslicer/detect.rs
+MATCH  a783129f4d30fbb8f4fbdbdabed487947d4507570680bcc5b24024f51ad00c68  src-tauri/src/adslicer/cut.rs
+MATCH  5a70ac26a0afa376026c8eff6a9317b6a88dde855194c8f5d8d5b94f55d5dfa4  src-tauri/src/adslicer/models.rs
+MATCH  2e9d715d0e72f0996fc3ad33582ccfeaf7fc3585b20f4af6a3f6a03498f825c7  src/main.js
+MATCH  e6fee2737578cf6e27912fbc85dfe15f0206ef316640c35904def3409fffdf48  src/index.html
+MATCH  124b392222e223d187135ea01c9e6973a47b6ae9caac6ed2fcad5e7ad9bc1e2f  src/style.css

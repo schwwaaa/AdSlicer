@@ -1,0 +1,22 @@
+CV-6 package note
+
+Baseline: accepted CV-5 package derived from the user's current AdSlicer source.
+Production AdSlicer job/detect/cut/models/frontend files remain unchanged.
+
+CV-6 adds:
+- structural vs internal vs ambiguous transition classification
+- within-event luma-uniformity evidence
+- multi-second before/after context comparison
+- Complete Segments and Every Separator policies
+- full-timeline coverage assertions (no missing residual, no overlap)
+- complete-segment and every-separator validation renders
+- synthetic internal-black-fade regression case
+
+Current real validation target (adslicer-commercial-test-1.mp4):
+Complete Segments should produce 7 top-level clips from ~6 structural boundaries.
+Every Separator may expose the additional ambiguous dark/fade event near ~75s.
+
+Runtime note: this packaging environment does not include Cargo/Rust, so Rust compilation
+remains a Mac runtime gate. Shell, Python, TOML, FFmpeg synthetic generation, argument
+forwarding, full-segment FFmpeg rendering mechanics, core-file hashes, and independent
+feature calibration were validated here.

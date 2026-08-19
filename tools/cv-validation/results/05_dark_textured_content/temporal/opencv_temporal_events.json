@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-temporal-evidence",
+  "source_evidence_file": "opencv_frame_metrics.jsonl",
+  "source_evidence_sha256": "536df79a02735673b0aee561e784c0e98e3503eb2a595bb6db59ba48a8603272",
+  "config": {
+    "near_black_ratio_min": 0.9,
+    "strict_black_ratio_min": 0.9,
+    "dark_mean_luma_max": 32.0,
+    "raised_uniform_luma_max": 40.0,
+    "raised_uniform_stddev_max": 6.0,
+    "raised_uniform_min_run_frames": 3,
+    "micro_bridge_frames": 2,
+    "context_frames": 5,
+    "fade_step_luma_min": 5.0,
+    "fade_monotonic_steps_min": 2,
+    "fade_magnitude_min": 20.0,
+    "scene_delta_min": 40.0,
+    "scene_suppression_frames": 5,
+    "short_event_max_frames": 2,
+    "chromatic_saturation_min": 120.0,
+    "chromatic_channel_spread_min": 40.0
+  },
+  "summary": {
+    "total_events": 0,
+    "counts_by_kind": {},
+    "first_event_pts_s": null,
+    "last_event_pts_s": null
+  },
+  "events": []
+}

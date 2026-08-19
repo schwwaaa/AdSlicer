@@ -130,3 +130,42 @@ python3 ./evaluate_temporal_reference.py
 
 The Python mirror is not production code. It is an independent early-stage reference
 for checking that the Rust event rules have not drifted unexpectedly.
+
+---
+
+# CV-3 / CV-4 Unified Validation
+
+For normal real-media validation, do **not** manually chain intermediate files.
+From the project root use one command:
+
+```bash
+./test-opencv.sh --input "/path/to/video.mp4"
+```
+
+CV-4 extends that same command through shadow edit planning and comparison with the current AdSlicer reset/default plan.
+
+Useful development overrides:
+
+```bash
+./test-opencv.sh \
+  --input "/path/to/video.mp4" \
+  --min-commercial 5 \
+  --max-commercial 240 \
+  --min-show-segment 30 \
+  --edge-pad-pre 0.20 \
+  --edge-pad-post 0.06
+```
+
+Skip the legacy comparison pass when only OpenCV behavior is being inspected:
+
+```bash
+./test-opencv.sh --input "/path/to/video.mp4" --skip-legacy
+```
+
+The full synthetic regression remains one command:
+
+```bash
+./test-opencv.sh --synthetic
+```
+
+CV-4 adds `08_commercial_block.mkv`, which contains two controlled black separators around a 12-second synthetic block. The acceptance check verifies that CV-4 proposes the content *between* the separators rather than the black slugs themselves.

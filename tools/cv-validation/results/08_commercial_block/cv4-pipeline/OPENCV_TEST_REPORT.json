@@ -1,0 +1,584 @@
+{
+  "analysis_config": {
+    "black_luma_max": 16,
+    "max_analyzed_frames": null,
+    "near_black_luma_max": 32,
+    "sample_stride": 1
+  },
+  "boundaries": {
+    "counts_by_role": {
+      "interval_entry": 2,
+      "interval_exit": 2
+    },
+    "counts_by_tier": {
+      "strong": 4
+    },
+    "evidence_only": 0,
+    "first_candidate_pts_s": 5.0,
+    "last_candidate_pts_s": 17.367,
+    "total_candidates": 4,
+    "total_observations": 4
+  },
+  "edit_validation": null,
+  "edit_validation_note": "skipped by --skip-edit-previews",
+  "engine": "adslicer-opencv-validation-pipeline",
+  "full_segment_validation": {
+    "config": {
+      "audio_bitrate": "160k",
+      "audio_codec": "aac",
+      "mode": "both",
+      "video_codec": "libx264",
+      "video_crf": 18,
+      "video_preset": "veryfast"
+    },
+    "engine": "opencv-full-segmentation-validation",
+    "items": [
+      {
+        "end_s": 5.0,
+        "error": null,
+        "mode": "complete_segments",
+        "output_duration_s": 5.0,
+        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
+        "planned_duration_s": 5.0,
+        "segment_index": 0,
+        "start_s": 0.0,
+        "status": "rendered"
+      },
+      {
+        "end_s": 17.2,
+        "error": null,
+        "mode": "complete_segments",
+        "output_duration_s": 12.2,
+        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
+        "planned_duration_s": 12.2,
+        "segment_index": 1,
+        "start_s": 5.0,
+        "status": "rendered"
+      },
+      {
+        "end_s": 22.4,
+        "error": null,
+        "mode": "complete_segments",
+        "output_duration_s": 5.2,
+        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
+        "planned_duration_s": 5.199999999999999,
+        "segment_index": 2,
+        "start_s": 17.2,
+        "status": "rendered"
+      },
+      {
+        "end_s": 5.0,
+        "error": null,
+        "mode": "every_separator",
+        "output_duration_s": 5.0,
+        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/renders/every-separator/segment-001.mp4",
+        "planned_duration_s": 5.0,
+        "segment_index": 0,
+        "start_s": 0.0,
+        "status": "rendered"
+      },
+      {
+        "end_s": 17.2,
+        "error": null,
+        "mode": "every_separator",
+        "output_duration_s": 12.2,
+        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/renders/every-separator/segment-002.mp4",
+        "planned_duration_s": 12.2,
+        "segment_index": 1,
+        "start_s": 5.0,
+        "status": "rendered"
+      },
+      {
+        "end_s": 22.4,
+        "error": null,
+        "mode": "every_separator",
+        "output_duration_s": 5.2,
+        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/renders/every-separator/segment-003.mp4",
+        "planned_duration_s": 5.199999999999999,
+        "segment_index": 2,
+        "start_s": 17.2,
+        "status": "rendered"
+      }
+    ],
+    "production_render_performed": false,
+    "render_version": "cv6-segment-render-v1",
+    "schema_version": 1,
+    "summary": {
+      "complete_segments_requested": 3,
+      "every_separator_segments_requested": 3,
+      "rendered_failed": 0,
+      "rendered_ok": 6,
+      "source_has_audio": false
+    }
+  },
+  "full_segment_validation_render_performed": true,
+  "legacy_comparison_note": "current AdSlicer reset defaults; one additional FFmpeg blackdetect pass",
+  "legacy_default_intervals": [
+    {
+      "duration_s": 12.259999999999998,
+      "end_s": 17.259999999999998,
+      "interval_index": 0,
+      "start_s": 5.0
+    }
+  ],
+  "outputs": {
+    "boundaries": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/03-boundary-candidates/opencv_boundary_candidates.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/03-boundary-candidates/opencv_boundary_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/03-boundary-candidates/opencv_boundary_candidates.csv",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/03-boundary-candidates/opencv_boundary_evidence_only.csv"
+    ],
+    "comparison": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/opencv_vs_legacy_comparison.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/opencv_vs_legacy_matches.csv"
+    ],
+    "edit_validation_dir": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/05-edit-validation",
+    "frame_evidence": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/01-frame-evidence/opencv_analysis_manifest.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/01-frame-evidence/opencv_frame_metrics.jsonl",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/01-frame-evidence/opencv_frame_metrics.csv"
+    ],
+    "legacy_plan": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/legacy_default_plan.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/legacy_default_plan.csv"
+    ],
+    "shadow_plan": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/opencv_shadow_plan.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/opencv_shadow_plan_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/opencv_shadow_plan.csv",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/04-shadow-edit-plan/opencv_shadow_rejected.csv"
+    ],
+    "structural_dir": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation",
+    "structural_segmentation": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/opencv_structural_segmentation.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/opencv_structural_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/opencv_structural_events.csv",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/complete_segments_plan.csv",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/06-structural-segmentation/every_separator_plan.csv"
+    ],
+    "temporal": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/02-temporal-events/opencv_temporal_events.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/02-temporal-events/opencv_temporal_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv4-pipeline/02-temporal-events/opencv_temporal_events.csv"
+    ]
+  },
+  "plan_comparison": {
+    "comparison_version": "cv4-comparison-v1",
+    "engine": "opencv-vs-legacy-plan-comparison",
+    "legacy_only_interval_indices": [],
+    "match_iou_min": 0.8,
+    "match_tolerance_s": 0.75,
+    "matches": [
+      {
+        "end_offset_s": 0.0,
+        "intersection_over_union": 0.9999728113104948,
+        "legacy_end_s": 17.259999999999998,
+        "legacy_interval_index": 0,
+        "legacy_start_s": 5.0,
+        "shadow_end_s": 17.259999999999998,
+        "shadow_interval_index": 0,
+        "shadow_start_s": 5.000333333333333,
+        "start_offset_s": 0.00033333333333285253
+      }
+    ],
+    "opencv_only_interval_indices": [],
+    "schema_version": 1,
+    "summary": {
+      "average_abs_boundary_offset_s": 0.00016666666666642627,
+      "legacy_intervals": 1,
+      "legacy_only_intervals": 0,
+      "matched_intervals": 1,
+      "max_abs_boundary_offset_s": 0.00033333333333285253,
+      "opencv_only_intervals": 0,
+      "shadow_intervals": 1
+    }
+  },
+  "production_cut_plan_modified": false,
+  "production_render_performed": false,
+  "render_performed": false,
+  "schema_version": 4,
+  "shadow_plan": {
+    "boundary_candidates_consumed": 4,
+    "counts_by_tier": {
+      "strong": 1
+    },
+    "first_removal_start_s": 5.000333333333333,
+    "last_removal_end_s": 17.259999999999998,
+    "proposed_removals": 1,
+    "rejected_pairs": 0,
+    "remove_ratio": 0.5473065476190475,
+    "source_duration_s": 22.4,
+    "total_keep_s": 10.140333333333334,
+    "total_remove_s": 12.259666666666664
+  },
+  "shadow_plan_config": {
+    "always_keep_first": 0.0,
+    "always_keep_last": 0.0,
+    "edge_pad_post": 0.06,
+    "edge_pad_pre": 0.2,
+    "frame_duration_s": 0.03333333333333333,
+    "include_black": false,
+    "legacy_match_iou_min": 0.8,
+    "legacy_match_tolerance_s": 0.75,
+    "max_commercial": 240.0,
+    "min_commercial": 5.0,
+    "min_show_segment": 30.0,
+    "review_score_min": 0.6,
+    "strong_score_min": 0.8
+  },
+  "shadow_removals": [
+    {
+      "cautions": [],
+      "duration_s": 12.259666666666664,
+      "end_anchor_s": 17.2,
+      "end_observation_index": 2,
+      "end_role": "interval_entry",
+      "end_s": 17.259999999999998,
+      "end_score": 0.8999999999999999,
+      "end_source_event_index": 1,
+      "interval_index": 0,
+      "interval_score": 0.8999999999999999,
+      "reasons": [
+        "start boundary interval_exit score 0.900",
+        "end boundary interval_entry score 0.900",
+        "duration 12.260s within shadow planning window",
+        "AdSlicer-style edge padding: -0.200s / +0.060s"
+      ],
+      "start_anchor_s": 5.200333333333333,
+      "start_observation_index": 1,
+      "start_role": "interval_exit",
+      "start_s": 5.000333333333333,
+      "start_score": 0.8999999999999999,
+      "start_source_event_index": 0,
+      "tier": "strong"
+    }
+  ],
+  "source": {
+    "duration_s": 22.4,
+    "file": "08_commercial_block.mkv",
+    "fps": 30.0,
+    "frames_analyzed": 672,
+    "height": 240,
+    "opencv_version": "4.14.0",
+    "path": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/08_commercial_block.mkv",
+    "sha256": "a941f06eb7c1af5081a8712e032b154d926a745a4674655bb8b5641cc33f0f75",
+    "size_bytes": 4989678,
+    "width": 320
+  },
+  "stages": [
+    "cv1_frame_evidence",
+    "cv2_temporal_evidence",
+    "cv3_shadow_boundary_candidates",
+    "cv4_shadow_edit_plan",
+    "cv5_watchable_edit_validation",
+    "cv6_structural_segmentation"
+  ],
+  "structural_segmentation": {
+    "complete_segments": {
+      "boundaries": [
+        {
+          "boundary_index": 0,
+          "promoted_from_ambiguous": false,
+          "pts_s": 5.0,
+          "role": "structural_separator",
+          "separator_score": 1.0,
+          "source_structural_event_index": 0,
+          "source_temporal_event_index": 0,
+          "structural_score": 0.24769098241667725
+        },
+        {
+          "boundary_index": 1,
+          "promoted_from_ambiguous": false,
+          "pts_s": 17.2,
+          "role": "structural_separator",
+          "separator_score": 1.0,
+          "source_structural_event_index": 1,
+          "source_temporal_event_index": 1,
+          "structural_score": 0.21740052118644476
+        }
+      ],
+      "coverage": {
+        "boundary_count": 2,
+        "coverage_pass": true,
+        "coverage_ratio": 1.0,
+        "covered_duration_s": 22.4,
+        "overlap_duration_s": 0.0,
+        "segment_count": 3,
+        "source_duration_s": 22.4,
+        "uncovered_duration_s": 0.0
+      },
+      "mode": "complete_segments",
+      "segments": [
+        {
+          "broadcast_duration_fit": 1.0,
+          "duration_s": 5.0,
+          "end_s": 5.0,
+          "left_boundary_index": null,
+          "nearest_broadcast_duration_s": 5.0,
+          "right_boundary_index": 0,
+          "segment_index": 0,
+          "source_edge_segment": true,
+          "start_s": 0.0
+        },
+        {
+          "broadcast_duration_fit": 0.0,
+          "duration_s": 12.2,
+          "end_s": 17.2,
+          "left_boundary_index": 0,
+          "nearest_broadcast_duration_s": 10.0,
+          "right_boundary_index": 1,
+          "segment_index": 1,
+          "source_edge_segment": false,
+          "start_s": 5.0
+        },
+        {
+          "broadcast_duration_fit": 0.9000000000000004,
+          "duration_s": 5.199999999999999,
+          "end_s": 22.4,
+          "left_boundary_index": 1,
+          "nearest_broadcast_duration_s": 5.0,
+          "right_boundary_index": null,
+          "segment_index": 2,
+          "source_edge_segment": true,
+          "start_s": 17.2
+        }
+      ]
+    },
+    "config": {
+      "ambiguous_promotion_duration_gain_min": 0.35,
+      "ambiguous_promotion_structural_min": 0.18,
+      "ambiguous_separator_score_min": 0.55,
+      "boundary_dedupe_s": 0.35,
+      "context_guard_s": 0.25,
+      "context_window_s": 3.0,
+      "duration_match_tolerance_s": 2.0,
+      "every_separator_score_min": 0.58,
+      "preferred_durations_s": [
+        15.0,
+        30.0,
+        60.0,
+        10.0,
+        20.0,
+        5.0,
+        45.0,
+        90.0
+      ],
+      "scene_delta_min": 40.0,
+      "source_edge_duration_fit_min": 0.7,
+      "source_edge_max_residual_s": 7.0,
+      "structural_combined_score_min": 0.2,
+      "structural_separator_score_min": 0.82,
+      "uniform_stddev_review_max": 16.0,
+      "uniform_stddev_strong_max": 8.0
+    },
+    "engine": "opencv-structural-segmentation",
+    "events": [
+      {
+        "after_context": {
+          "duration_s": 2.734,
+          "frame_count": 83,
+          "mean_blue": 103.93391927083326,
+          "mean_frame_delta": 0.0,
+          "mean_green": 92.60954427083355,
+          "mean_luma": 93.81821614583345,
+          "mean_red": 92.66092447916684,
+          "mean_saturation": 180.61691406250026,
+          "mean_stddev_luma": 71.92962390959778,
+          "scene_changes": 0,
+          "scene_rate_per_s": 0.0
+        },
+        "anchor_pts_s": 5.0,
+        "before_context": {
+          "duration_s": 2.7330000000000005,
+          "frame_count": 83,
+          "mean_blue": 129.67382875251,
+          "mean_frame_delta": 3.166591522339356,
+          "mean_green": 122.4152335906124,
+          "mean_luma": 123.62327685742974,
+          "mean_red": 123.70504094503009,
+          "mean_saturation": 240.1725956952813,
+          "mean_stddev_luma": 65.65724926587338,
+          "scene_changes": 0,
+          "scene_rate_per_s": 0.0
+        },
+        "cautions": [],
+        "context_change_score": 0.24769098241667725,
+        "duration_s": 0.16699999999999982,
+        "end_pts_s": 5.167,
+        "max_black_pixel_ratio": 1.0,
+        "max_near_black_pixel_ratio": 1.0,
+        "mean_saturation": 0.0,
+        "mean_stddev_luma": 0.0,
+        "min_mean_luma": 0.0,
+        "peak_delta_mean": 124.19026041666666,
+        "reasons": [
+          "separator score 1.00",
+          "uniformity score 1.00 from luma stddev 0.00",
+          "darkness score 1.00",
+          "context change 0.25",
+          "context luminance reset 0.37",
+          "strong immediate visual reset 1.00"
+        ],
+        "role": "structural_separator",
+        "separator_score": 1.0,
+        "source_temporal_event_index": 0,
+        "source_temporal_kind": "black_interval",
+        "start_pts_s": 5.0,
+        "structural_event_index": 0,
+        "structural_score": 0.24769098241667725,
+        "valley_pts_s": 5.0
+      },
+      {
+        "after_context": {
+          "duration_s": 2.7340000000000018,
+          "frame_count": 83,
+          "mean_blue": 129.88757922314255,
+          "mean_frame_delta": 0.39066170933734934,
+          "mean_green": 126.76900665160642,
+          "mean_luma": 126.19744164156623,
+          "mean_red": 123.63528112449801,
+          "mean_saturation": 196.50340392821286,
+          "mean_stddev_luma": 82.733123607793,
+          "scene_changes": 0,
+          "scene_rate_per_s": 0.0
+        },
+        "anchor_pts_s": 17.2,
+        "before_context": {
+          "duration_s": 2.7329999999999988,
+          "frame_count": 83,
+          "mean_blue": 103.93391927083326,
+          "mean_frame_delta": 0.0,
+          "mean_green": 92.60954427083355,
+          "mean_luma": 93.81821614583345,
+          "mean_red": 92.66092447916684,
+          "mean_saturation": 180.61691406250026,
+          "mean_stddev_luma": 71.92962390959778,
+          "scene_changes": 0,
+          "scene_rate_per_s": 0.0
+        },
+        "cautions": [],
+        "context_change_score": 0.21740052118644476,
+        "duration_s": 0.1670000000000016,
+        "end_pts_s": 17.367,
+        "max_black_pixel_ratio": 1.0,
+        "max_near_black_pixel_ratio": 1.0,
+        "mean_saturation": 0.0,
+        "mean_stddev_luma": 0.0,
+        "min_mean_luma": 0.0,
+        "peak_delta_mean": 128.0896484375,
+        "reasons": [
+          "separator score 1.00",
+          "uniformity score 1.00 from luma stddev 0.00",
+          "darkness score 1.00",
+          "context change 0.22",
+          "context texture reset 0.36",
+          "context luminance reset 0.40",
+          "strong immediate visual reset 1.00"
+        ],
+        "role": "structural_separator",
+        "separator_score": 1.0,
+        "source_temporal_event_index": 1,
+        "source_temporal_kind": "black_interval",
+        "start_pts_s": 17.2,
+        "structural_event_index": 1,
+        "structural_score": 0.21740052118644476,
+        "valley_pts_s": 17.2
+      }
+    ],
+    "every_separator": {
+      "boundaries": [
+        {
+          "boundary_index": 0,
+          "promoted_from_ambiguous": false,
+          "pts_s": 5.0,
+          "role": "structural_separator",
+          "separator_score": 1.0,
+          "source_structural_event_index": 0,
+          "source_temporal_event_index": 0,
+          "structural_score": 0.24769098241667725
+        },
+        {
+          "boundary_index": 1,
+          "promoted_from_ambiguous": false,
+          "pts_s": 17.2,
+          "role": "structural_separator",
+          "separator_score": 1.0,
+          "source_structural_event_index": 1,
+          "source_temporal_event_index": 1,
+          "structural_score": 0.21740052118644476
+        }
+      ],
+      "coverage": {
+        "boundary_count": 2,
+        "coverage_pass": true,
+        "coverage_ratio": 1.0,
+        "covered_duration_s": 22.4,
+        "overlap_duration_s": 0.0,
+        "segment_count": 3,
+        "source_duration_s": 22.4,
+        "uncovered_duration_s": 0.0
+      },
+      "mode": "every_separator",
+      "segments": [
+        {
+          "broadcast_duration_fit": 1.0,
+          "duration_s": 5.0,
+          "end_s": 5.0,
+          "left_boundary_index": null,
+          "nearest_broadcast_duration_s": 5.0,
+          "right_boundary_index": 0,
+          "segment_index": 0,
+          "source_edge_segment": true,
+          "start_s": 0.0
+        },
+        {
+          "broadcast_duration_fit": 0.0,
+          "duration_s": 12.2,
+          "end_s": 17.2,
+          "left_boundary_index": 0,
+          "nearest_broadcast_duration_s": 10.0,
+          "right_boundary_index": 1,
+          "segment_index": 1,
+          "source_edge_segment": false,
+          "start_s": 5.0
+        },
+        {
+          "broadcast_duration_fit": 0.9000000000000004,
+          "duration_s": 5.199999999999999,
+          "end_s": 22.4,
+          "left_boundary_index": 1,
+          "nearest_broadcast_duration_s": 5.0,
+          "right_boundary_index": null,
+          "segment_index": 2,
+          "source_edge_segment": true,
+          "start_s": 17.2
+        }
+      ]
+    },
+    "production_cut_plan_modified": false,
+    "schema_version": 1,
+    "structural_version": "cv6-structural-v1",
+    "summary": {
+      "ambiguous_promoted_for_complete": 0,
+      "complete_boundaries": 2,
+      "complete_coverage_pass": true,
+      "complete_segments": 3,
+      "counts_by_role": {
+        "structural_separator": 2
+      },
+      "every_separator_boundaries": 2,
+      "every_separator_coverage_pass": true,
+      "every_separator_segments": 3,
+      "structural_events": 2
+    }
+  },
+  "temporal": {
+    "counts_by_kind": {
+      "black_interval": 2
+    },
+    "first_event_pts_s": 5.0,
+    "last_event_pts_s": 17.367,
+    "total_events": 2
+  },
+  "validation_preview_render_performed": false
+}

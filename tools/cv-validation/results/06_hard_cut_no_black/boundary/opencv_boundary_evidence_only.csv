@@ -1,0 +1,2 @@
+observation_index,source_event_index,source_event_kind,role,anchor_frame,anchor_pts_s,evidence_start_frame,evidence_end_frame,evidence_start_pts_s,evidence_end_pts_s,boundary_score,tier,edge_delta,luma_contrast,max_black_pixel_ratio,max_near_black_pixel_ratio,chromatic_dark
+0,0,scene_discontinuity,scene_only,90,3.000000,90,90,3.000000,3.000000,0.350000,evidence_only,88.270000,30.862526,0.15000000,0.29256510,false

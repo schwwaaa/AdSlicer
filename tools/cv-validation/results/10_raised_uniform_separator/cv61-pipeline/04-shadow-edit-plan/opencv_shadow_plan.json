@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-shadow-edit-plan",
+  "planner_version": "cv4-shadow-v1",
+  "config": {
+    "include_black": false,
+    "edge_pad_pre": 0.2,
+    "edge_pad_post": 0.06,
+    "frame_duration_s": 0.03333333333333333,
+    "min_commercial": 5.0,
+    "max_commercial": 240.0,
+    "min_show_segment": 30.0,
+    "always_keep_first": 0.0,
+    "always_keep_last": 0.0,
+    "review_score_min": 0.6,
+    "strong_score_min": 0.8,
+    "legacy_match_tolerance_s": 0.75,
+    "legacy_match_iou_min": 0.8
+  },
+  "summary": {
+    "source_duration_s": 21.7,
+    "boundary_candidates_consumed": 4,
+    "proposed_removals": 1,
+    "rejected_pairs": 0,
+    "total_remove_s": 15.259666666666666,
+    "total_keep_s": 6.440333333333333,
+    "remove_ratio": 0.70321044546851,
+    "counts_by_tier": {
+      "review": 1
+    },
+    "first_removal_start_s": 3.300333333333333,
+    "last_removal_end_s": 18.56
+  },
+  "removals": [
+    {
+      "interval_index": 0,
+      "start_s": 3.300333333333333,
+      "end_s": 18.56,
+      "duration_s": 15.259666666666666,
+      "start_anchor_s": 3.5003333333333333,
+      "end_anchor_s": 18.5,
+      "start_observation_index": 1,
+      "end_observation_index": 2,
+      "start_role": "interval_exit",
+      "end_role": "interval_entry",
+      "start_source_event_index": 0,
+      "end_source_event_index": 1,
+      "start_score": 0.62,
+      "end_score": 0.8999999999999999,
+      "interval_score": 0.669,
+      "tier": "review",
+      "reasons": [
+        "start boundary interval_exit score 0.620",
+        "end boundary interval_entry score 0.900",
+        "duration 15.260s within shadow planning window",
+        "AdSlicer-style edge padding: -0.200s / +0.060s"
+      ],
+      "cautions": []
+    }
+  ],
+  "rejected": []
+}

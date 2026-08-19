@@ -17,6 +17,9 @@ CFG = {
     "near_black_ratio_min": 0.90,
     "strict_black_ratio_min": 0.90,
     "dark_mean_luma_max": 32.0,
+    "raised_uniform_luma_max": 40.0,
+    "raised_uniform_stddev_max": 6.0,
+    "raised_uniform_min_run_frames": 3,
     "micro_bridge_frames": 2,
     "context_frames": 5,
     "fade_step_luma_min": 5.0,
@@ -58,7 +61,33 @@ def spread(r):
 
 
 def analyze(rows):
-    dark_pos = [i for i, r in enumerate(rows) if r["near_black_pixel_ratio"] >= CFG["near_black_ratio_min"] or r["mean_luma"] <= CFG["dark_mean_luma_max"]]
+    base_dark = [
+        r["near_black_pixel_ratio"] >= CFG["near_black_ratio_min"]
+        or r["mean_luma"] <= CFG["dark_mean_luma_max"]
+        for r in rows
+    ]
+    raised_candidate = [
+        r["mean_luma"] > CFG["dark_mean_luma_max"]
+        and r["mean_luma"] <= CFG["raised_uniform_luma_max"]
+        and r["stddev_luma"] <= CFG["raised_uniform_stddev_max"]
+        for r in rows
+    ]
+    raised_sustained = [False] * len(rows)
+    i = 0
+    min_run = max(1, int(CFG["raised_uniform_min_run_frames"]))
+    while i < len(rows):
+        if not raised_candidate[i]:
+            i += 1
+            continue
+        start = i
+        i += 1
+        while i < len(rows) and raised_candidate[i]:
+            i += 1
+        if i - start >= min_run:
+            for j in range(start, i):
+                raised_sustained[j] = True
+
+    dark_pos = [i for i in range(len(rows)) if base_dark[i] or raised_sustained[i]]
     groups = []
     if dark_pos:
         start = prev = dark_pos[0]

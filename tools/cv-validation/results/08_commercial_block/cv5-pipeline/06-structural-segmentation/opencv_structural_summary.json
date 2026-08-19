@@ -1,0 +1,13 @@
+{
+  "structural_events": 2,
+  "counts_by_role": {
+    "structural_separator": 2
+  },
+  "complete_segments": 3,
+  "complete_boundaries": 2,
+  "every_separator_segments": 3,
+  "every_separator_boundaries": 2,
+  "ambiguous_promoted_for_complete": 0,
+  "complete_coverage_pass": true,
+  "every_separator_coverage_pass": true
+}

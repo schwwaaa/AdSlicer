@@ -1,0 +1,14 @@
+AdSlicer CV-5 Edit Validation
+==============================
+These are disposable validation renders from the OpenCV SHADOW plan.
+Production AdSlicer cuts were NOT changed.
+
+Shadow removals available: 1
+Validation previews rendered: 1
+Validation previews failed: 0
+Skipped by preview limit: 0
+Source audio detected: no
+
+Edit 001: 5.000s -> 17.260s | 12.260s | score 0.90 | strong | rendered
+  removed content: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4
+  resulting edit:  /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4

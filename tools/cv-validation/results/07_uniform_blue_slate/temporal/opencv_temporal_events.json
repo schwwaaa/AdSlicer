@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-temporal-evidence",
+  "source_evidence_file": "opencv_frame_metrics.jsonl",
+  "source_evidence_sha256": "91b227f65f88ed87ceca041b34c3b66f1a78af2f83abc4c4289d58594383cc8b",
+  "config": {
+    "near_black_ratio_min": 0.9,
+    "strict_black_ratio_min": 0.9,
+    "dark_mean_luma_max": 32.0,
+    "raised_uniform_luma_max": 40.0,
+    "raised_uniform_stddev_max": 6.0,
+    "raised_uniform_min_run_frames": 3,
+    "micro_bridge_frames": 2,
+    "context_frames": 5,
+    "fade_step_luma_min": 5.0,
+    "fade_monotonic_steps_min": 2,
+    "fade_magnitude_min": 20.0,
+    "scene_delta_min": 40.0,
+    "scene_suppression_frames": 5,
+    "short_event_max_frames": 2,
+    "chromatic_saturation_min": 120.0,
+    "chromatic_channel_spread_min": 40.0
+  },
+  "summary": {
+    "total_events": 1,
+    "counts_by_kind": {
+      "chromatic_dark": 1
+    },
+    "first_event_pts_s": 3.0,
+    "last_event_pts_s": 3.467
+  },
+  "events": [
+    {
+      "event_index": 0,
+      "kind": "chromatic_dark",
+      "start_frame": 90,
+      "valley_frame": 90,
+      "end_frame": 104,
+      "start_pts_s": 3.0,
+      "valley_pts_s": 3.0,
+      "end_pts_s": 3.467,
+      "duration_frames": 15,
+      "duration_s": 0.4670000000000001,
+      "min_mean_luma": 29.0,
+      "max_black_pixel_ratio": 0.0,
+      "max_near_black_pixel_ratio": 1.0,
+      "mean_stddev_luma": 0.0,
+      "mean_saturation": 255.00000000000003,
+      "max_channel_spread": 255.00000000000003,
+      "chromatic_dark": true,
+      "luma_before_mean": 124.57075260416666,
+      "luma_after_mean": 93.81821614583332,
+      "fall_magnitude": 95.57075260416666,
+      "rise_magnitude": 64.81821614583332,
+      "descending_steps": 1,
+      "ascending_steps": 1,
+      "entry_delta_mean": 96.05701822916669,
+      "exit_delta_mean": 74.3944140625,
+      "peak_delta_mean": 96.05701822916669,
+      "evidence": [
+        "minimum mean luma 29.00",
+        "max near-black ratio 1.000",
+        "mean dark-event luma stddev 0.00",
+        "strong visual discontinuity 96.06",
+        "dark chromatic evidence: saturation 255.00, channel spread 255.00"
+      ]
+    }
+  ]
+}

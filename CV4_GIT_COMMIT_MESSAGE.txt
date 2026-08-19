@@ -1,0 +1,11 @@
+feat(opencv): add CV-4 shadow edit planning and legacy plan comparison
+
+- pair CV-3 boundary roles into non-destructive proposed removal intervals
+- preserve separator entry/exit semantics and source-frame edge timing
+- apply AdSlicer-style edge padding, commercial-duration gates, and show-segment guards
+- record accepted and rejected shadow proposals with reproducible evidence
+- compare shadow removals against the current AdSlicer reset/default plan
+- add matched, OpenCV-only, legacy-only, IoU, and boundary-offset diagnostics
+- extend the unified test command through CV-4 without requiring intermediate files
+- add synthetic commercial-block regression coverage for end-to-end edit planning
+- keep production detector, planner, renderer, and frontend unchanged

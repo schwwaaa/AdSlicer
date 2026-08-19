@@ -1,0 +1,18 @@
+AdSlicer CV Pass 05 — Watchable Edit Validation
+
+Baseline: accepted CV-4 shadow edit planner with the compile-fix module shim.
+
+Stable media command:
+  ./test-opencv.sh --input "/path/to/video.mp4"
+
+Synthetic regression:
+  ./test-opencv.sh --synthetic
+
+CV-5 adds disposable validation renders only:
+  05-edit-validation/remove-NNN_content.mp4
+  05-edit-validation/remove-NNN_result-preview.mp4
+
+Production AdSlicer cuts are NOT changed and no production render is performed.
+
+Details:
+  docs/development/CV5_EDIT_VALIDATION.md

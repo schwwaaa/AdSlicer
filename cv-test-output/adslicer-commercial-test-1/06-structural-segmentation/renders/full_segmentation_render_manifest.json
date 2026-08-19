@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-full-segmentation-validation",
+  "render_version": "cv6-segment-render-v1",
+  "production_render_performed": false,
+  "config": {
+    "mode": "both",
+    "video_codec": "libx264",
+    "video_crf": 18,
+    "video_preset": "veryfast",
+    "audio_codec": "aac",
+    "audio_bitrate": "160k"
+  },
+  "summary": {
+    "complete_segments_requested": 7,
+    "every_separator_segments_requested": 7,
+    "rendered_ok": 14,
+    "rendered_failed": 0,
+    "source_has_audio": true
+  },
+  "items": [
+    {
+      "mode": "complete_segments",
+      "segment_index": 0,
+      "start_s": 0.0,
+      "end_s": 3.1364666666666667,
+      "planned_duration_s": 3.1364666666666667,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
+      "output_duration_s": 3.136467,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 1,
+      "start_s": 3.1364666666666667,
+      "end_s": 18.385033333333332,
+      "planned_duration_s": 15.248566666666665,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
+      "output_duration_s": 15.248567,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 2,
+      "start_s": 18.385033333333332,
+      "end_s": 33.5335,
+      "planned_duration_s": 15.148466666666664,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
+      "output_duration_s": 15.148467,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 3,
+      "start_s": 33.5335,
+      "end_s": 64.1641,
+      "planned_duration_s": 30.63060000000001,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-004.mp4",
+      "output_duration_s": 30.6306,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 4,
+      "start_s": 64.1641,
+      "end_s": 79.61286666666669,
+      "planned_duration_s": 15.448766666666685,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-005.mp4",
+      "output_duration_s": 15.449,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 5,
+      "start_s": 79.61286666666669,
+      "end_s": 94.92816666666667,
+      "planned_duration_s": 15.31529999999998,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-006.mp4",
+      "output_duration_s": 15.3153,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 6,
+      "start_s": 94.92816666666667,
+      "end_s": 99.23246666666667,
+      "planned_duration_s": 4.304299999999998,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/complete-segments/segment-007.mp4",
+      "output_duration_s": 4.3043,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 0,
+      "start_s": 0.0,
+      "end_s": 3.1364666666666667,
+      "planned_duration_s": 3.1364666666666667,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-001.mp4",
+      "output_duration_s": 3.136467,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 1,
+      "start_s": 3.1364666666666667,
+      "end_s": 18.385033333333332,
+      "planned_duration_s": 15.248566666666665,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-002.mp4",
+      "output_duration_s": 15.248567,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 2,
+      "start_s": 18.385033333333332,
+      "end_s": 33.5335,
+      "planned_duration_s": 15.148466666666664,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-003.mp4",
+      "output_duration_s": 15.148467,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 3,
+      "start_s": 33.5335,
+      "end_s": 64.1641,
+      "planned_duration_s": 30.63060000000001,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-004.mp4",
+      "output_duration_s": 30.6306,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 4,
+      "start_s": 64.1641,
+      "end_s": 79.61286666666669,
+      "planned_duration_s": 15.448766666666685,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-005.mp4",
+      "output_duration_s": 15.449,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 5,
+      "start_s": 79.61286666666669,
+      "end_s": 94.92816666666667,
+      "planned_duration_s": 15.31529999999998,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-006.mp4",
+      "output_duration_s": 15.3153,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "every_separator",
+      "segment_index": 6,
+      "start_s": 94.92816666666667,
+      "end_s": 99.23246666666667,
+      "planned_duration_s": 4.304299999999998,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/06-structural-segmentation/renders/every-separator/segment-007.mp4",
+      "output_duration_s": 4.3043,
+      "status": "rendered",
+      "error": null
+    }
+  ]
+}

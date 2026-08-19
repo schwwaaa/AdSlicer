@@ -366,3 +366,55 @@ Synthetic regression:
 ```
 
 Do not manually chain JSONL/JSON files between CV stages. Intermediate files are diagnostics only. The primary result is `OPENCV_TEST_REPORT.txt` in the generated output folder.
+
+---
+
+## CV-6 — Structural Segmentation validation
+
+Current OpenCV development now runs CV-1 through CV-6 from the same command:
+
+```bash
+./test-opencv.sh --input "/path/to/video.mp4"
+```
+
+CV-6 separates **separator evidence** from **structural role** and produces two full-coverage
+plans:
+
+- **Complete Segments** — conservative top-level segmentation intended to keep full commercials/promos/program pieces intact.
+- **Every Separator** — diagnostic mode that exposes every sufficiently strong separator-like event, including ambiguous internal fades.
+
+Every frame remains accounted for. CV-6 reports uncovered and overlapping duration and
+requires full timeline coverage.
+
+Full validation media is written under:
+
+```text
+cv-test-output/<source>/06-structural-segmentation/renders/
+```
+
+Use `--segment-render-mode complete|every|both|none` to control those disposable validation
+renders. See `docs/development/CV6_STRUCTURAL_SEGMENTATION.md`.
+
+## CV-6.1 raised-black recovery
+
+CV-6.1 adds a conservative VHS-specific recovery path for fades that settle at a
+raised gray floor. A frame can now contribute dark evidence when it is both
+`mean_luma <= 40` and exceptionally uniform (`stddev_luma <= 6`), even if it does
+not meet the normal near-black pixel-ratio threshold. This was added from a real
+missed boundary around 3.14 seconds in the validation source. Structural role
+classification remains separate, so this does not mean every uniform dark fade
+becomes a Complete Segments boundary.
+
+The testing interface is unchanged:
+
+```bash
+./test-opencv.sh --synthetic
+./test-opencv.sh --input "/path/to/video.mp4"
+```
+
+## CV-6.1a regression fix
+
+Raised-gray VHS recovery now requires a sustained run (default: 3 analyzed frames)
+before the secondary raised-uniform fallback is treated as dark evidence. This
+prevents a single uniform shoulder frame from widening an ordinary fade valley,
+while retaining strict/near-black 1–2 frame separator support.

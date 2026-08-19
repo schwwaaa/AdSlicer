@@ -1,0 +1,3 @@
+event_index,temporal_event_index,temporal_kind,anchor_pts_s,start_pts_s,end_pts_s,duration_s,min_mean_luma,max_black_pixel_ratio,max_near_black_pixel_ratio,mean_stddev_luma,mean_saturation,peak_delta_mean,separator_score,context_change_score,structural_score,role
+0,0,black_interval,5.000000,5.000000,5.167000,0.167000,0.000000,1.00000000,1.00000000,0.000000,0.000000,124.190260,1.000000,0.247691,0.247691,structural_separator
+1,1,black_interval,17.200000,17.200000,17.367000,0.167000,0.000000,1.00000000,1.00000000,0.000000,0.000000,128.089648,1.000000,0.217401,0.217401,structural_separator

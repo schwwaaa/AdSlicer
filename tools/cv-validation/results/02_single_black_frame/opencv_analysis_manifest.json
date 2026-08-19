@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-evidence-probe",
+  "app_version": "0.1.0",
+  "source_file": "02_single_black_frame.mkv",
+  "source_path": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/02_single_black_frame.mkv",
+  "source_size_bytes": 1844978,
+  "source_sha256": "e69bc7f877da5eaf5e30d156ffdc3d7a3d8c53c90670e1568163108bc8754c7a",
+  "opencv_version": "4.14.0",
+  "fps_reported": 30.0,
+  "width_reported": 320,
+  "height_reported": 240,
+  "frame_count_reported": 181.0,
+  "frames_decoded": 181,
+  "frames_analyzed": 181,
+  "first_pts_s": 0.0,
+  "last_pts_s": 6.0,
+  "config": {
+    "black_luma_max": 16,
+    "near_black_luma_max": 32,
+    "sample_stride": 1,
+    "max_analyzed_frames": null
+  }
+}

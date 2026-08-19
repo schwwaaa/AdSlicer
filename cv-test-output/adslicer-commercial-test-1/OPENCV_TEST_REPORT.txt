@@ -1,32 +1,54 @@
-AdSlicer OpenCV Validation Report
-=================================
+AdSlicer OpenCV Validation Report — CV-6
+========================================
 Source: /Users/tgm/Documents/SPLASH/videos/adslicer-commercial-test-1.mp4
 OpenCV: 4.14.0
-Analysis config: black<=16 near-black<=32 stride=1 max-frames=all
 Frames analyzed: 2974
-Temporal events: 41
-  fade_valley: 1
-  near_black_interval: 7
-  scene_discontinuity: 33
-Boundary candidates: 12
-Evidence-only observations: 36
-  evidence_only: 36
-  review: 2
-  strong: 1
-  weak: 9
+Temporal events: 42
+Boundary candidates: 11
+Shadow proposed removals: 2
+Shadow rejected pairs: 5
+Shadow remove duration: 21.107s (21.27%)
 
-Top boundary candidates:
-     33.533s | score 0.92 | strong  | fade_valley        | fade_valley
-     79.646s | score 0.74 | review  | interval_exit      | near_black_interval
-     23.590s | score 0.62 | review  | interval_exit      | near_black_interval
-     19.987s | score 0.58 | weak    | interval_entry     | near_black_interval
-     64.264s | score 0.58 | weak    | interval_exit      | near_black_interval
-     79.246s | score 0.58 | weak    | interval_entry     | near_black_interval
-     94.761s | score 0.54 | weak    | interval_entry     | near_black_interval
-     63.964s | score 0.52 | weak    | interval_entry     | near_black_interval
-     74.841s | score 0.52 | weak    | interval_entry     | near_black_interval
-     75.309s | score 0.52 | weak    | interval_exit      | near_black_interval
-     18.385s | score 0.50 | weak    | interval_exit      | near_black_interval
-     22.689s | score 0.50 | weak    | interval_entry     | near_black_interval
+Shadow removals:
+     23.424s ->    33.593s |  10.170s | score 0.67 | review
+     63.964s ->    74.901s |  10.937s | score 0.59 | weak
+
+Legacy comparison:
+  current AdSlicer reset defaults; one additional FFmpeg blackdetect pass
+  Legacy removals: 0
+  Matched intervals: 0
+  OpenCV-only intervals: 2
+  Legacy-only intervals: 0
+
+CV-5 watchable edit validation:
+  disposable validation media rendered from CV-4 shadow removals
+  Validation previews rendered: 2
+  Validation previews failed: 0
+  Skipped by preview limit: 0
+  Edit 001: 23.424s -> 33.593s | rendered
+    removed content: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/05-edit-validation/remove-001_content.mp4
+    resulting edit:  /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/05-edit-validation/remove-001_result-preview.mp4
+  Edit 002: 63.964s -> 74.901s | rendered
+    removed content: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/05-edit-validation/remove-002_content.mp4
+    resulting edit:  /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/cv-test-output/adslicer-commercial-test-1/05-edit-validation/remove-002_result-preview.mp4
 
 Production cut plan modified: NO
+Production render performed: NO
+CV-5/CV-6 validation media may have been rendered; these are disposable QC media only.
+
+CV-6 STRUCTURAL SEGMENTATION
+Structural events: 9
+  ambiguous: 2
+  internal_transition: 2
+  structural_separator: 5
+Complete Segments: 7 clips / 6 boundaries / coverage PASS
+Every Separator: 7 clips / 6 boundaries / coverage PASS
+Complete Segments plan:
+  segment-001: 0.000s -> 3.136s (3.136s)
+  segment-002: 3.136s -> 18.385s (15.249s)
+  segment-003: 18.385s -> 33.533s (15.148s)
+  segment-004: 33.533s -> 64.164s (30.631s)
+  segment-005: 64.164s -> 79.613s (15.449s)
+  segment-006: 79.613s -> 94.928s (15.315s)
+  segment-007: 94.928s -> 99.232s (4.304s)
+Full timeline validation renders: 14 ok / 0 failed

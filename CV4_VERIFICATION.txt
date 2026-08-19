@@ -1,0 +1,12 @@
+CV-4 verification performed in packaging environment
+
+PASS: Cargo.toml parses as TOML.
+PASS: all shell scripts pass `bash -n`.
+PASS: all validation Python scripts compile with py_compile.
+PASS: unified CLI wrapper preserves quoted paths and all CV-4 planner arguments.
+PASS: synthetic corpus generation succeeds with FFmpeg 7.1.5.
+PASS: 08_commercial_block.mkv duration is 22.4 seconds.
+PASS: independent Python/OpenCV 4.13 reference confirms two black intervals and a single duration-valid shadow removal between them.
+PASS: production job.rs/detect.rs/cut.rs/models.rs and frontend files match the user's authoritative AdSlicer upload byte-for-byte.
+
+LIMITATION: Rust/Cargo is not installed in this packaging environment, so the new Rust CV-4 module itself requires runtime compilation/acceptance on the user's Mac. This is why the package includes a one-command synthetic acceptance test.

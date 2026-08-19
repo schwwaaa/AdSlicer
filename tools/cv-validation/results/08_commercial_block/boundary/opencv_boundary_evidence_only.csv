@@ -1,0 +1,1 @@
+observation_index,source_event_index,source_event_kind,role,anchor_frame,anchor_pts_s,evidence_start_frame,evidence_end_frame,evidence_start_pts_s,evidence_end_pts_s,boundary_score,tier,edge_delta,luma_contrast,max_black_pixel_ratio,max_near_black_pixel_ratio,chromatic_dark

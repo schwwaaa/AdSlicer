@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-boundary-candidates",
+  "score_version": "cv3-heuristic-v1",
+  "source_temporal_file": "opencv_temporal_events.json",
+  "source_temporal_sha256": "bc9e721354afc62d8b339778bf7aa395224c3d5edc3cac035e7c5d79d9bfcda6",
+  "config": {
+    "candidate_score_min": 0.45,
+    "review_score_min": 0.6,
+    "strong_score_min": 0.8,
+    "strict_black_bonus_ratio": 0.95,
+    "near_black_bonus_ratio": 0.98,
+    "strong_edge_delta": 80.0,
+    "medium_edge_delta": 40.0,
+    "strong_luma_contrast": 40.0,
+    "medium_luma_contrast": 20.0,
+    "chromatic_penalty": 0.25,
+    "scene_only_score_cap": 0.35,
+    "chromatic_dark_score_cap": 0.35
+  },
+  "summary": {
+    "total_observations": 1,
+    "total_candidates": 1,
+    "evidence_only": 0,
+    "counts_by_tier": {
+      "strong": 1
+    },
+    "counts_by_role": {
+      "separator_anchor": 1
+    },
+    "first_candidate_pts_s": 3.0,
+    "last_candidate_pts_s": 3.0
+  },
+  "candidates": [
+    {
+      "observation_index": 0,
+      "source_event_index": 0,
+      "source_event_kind": "near_black_separator",
+      "role": "separator_anchor",
+      "anchor_frame": 90,
+      "anchor_pts_s": 3.0,
+      "evidence_start_frame": 90,
+      "evidence_end_frame": 91,
+      "evidence_start_pts_s": 3.0,
+      "evidence_end_pts_s": 3.033,
+      "boundary_score": 1.0,
+      "tier": "strong",
+      "is_candidate": true,
+      "edge_delta": 100.85868489583332,
+      "luma_contrast": 100.57075260416666,
+      "max_black_pixel_ratio": 0.0,
+      "max_near_black_pixel_ratio": 1.0,
+      "chromatic_dark": false,
+      "reasons": [
+        "source temporal event near_black_separator",
+        "near-black evidence 1.000",
+        "strong visual edge delta 100.86",
+        "strong luma contrast 100.57",
+        "short separator: 2 frame(s)"
+      ],
+      "cautions": []
+    }
+  ],
+  "evidence_only": []
+}

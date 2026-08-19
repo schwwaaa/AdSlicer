@@ -1,0 +1,15 @@
+CV-4 compile fix
+================
+
+Problem:
+The `adslicer_cv_pipeline` example loaded production modules directly at the
+example crate root. `detect.rs` and `cut.rs` correctly reference
+`crate::adslicer::...`, so the example failed because that namespace did not
+exist.
+
+Fix:
+Added `src-tauri/examples/adslicer_cv_modules.rs`, an example-only module shim
+that recreates the real application's `adslicer` namespace. Updated
+`adslicer_cv_pipeline.rs` to import through `adslicer::...`.
+
+Production detector/planner/render/UI source files were not modified.

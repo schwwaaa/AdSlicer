@@ -1,0 +1,13 @@
+{
+  "total_observations": 1,
+  "total_candidates": 0,
+  "evidence_only": 1,
+  "counts_by_tier": {
+    "evidence_only": 1
+  },
+  "counts_by_role": {
+    "scene_only": 1
+  },
+  "first_candidate_pts_s": null,
+  "last_candidate_pts_s": null
+}

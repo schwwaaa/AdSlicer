@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-full-segmentation-validation",
+  "render_version": "cv6-segment-render-v1",
+  "production_render_performed": false,
+  "config": {
+    "mode": "complete",
+    "video_codec": "libx264",
+    "video_crf": 18,
+    "video_preset": "veryfast",
+    "audio_codec": "aac",
+    "audio_bitrate": "160k"
+  },
+  "summary": {
+    "complete_segments_requested": 4,
+    "every_separator_segments_requested": 0,
+    "rendered_ok": 4,
+    "rendered_failed": 0,
+    "source_has_audio": false
+  },
+  "items": [
+    {
+      "mode": "complete_segments",
+      "segment_index": 0,
+      "start_s": 0.0,
+      "end_s": 3.0,
+      "planned_duration_s": 3.0,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
+      "output_duration_s": 3.0,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 1,
+      "start_s": 3.0,
+      "end_s": 18.2,
+      "planned_duration_s": 15.2,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
+      "output_duration_s": 15.2,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 2,
+      "start_s": 18.2,
+      "end_s": 48.5,
+      "planned_duration_s": 30.3,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
+      "output_duration_s": 30.3,
+      "status": "rendered",
+      "error": null
+    },
+    {
+      "mode": "complete_segments",
+      "segment_index": 3,
+      "start_s": 48.5,
+      "end_s": 51.7,
+      "planned_duration_s": 3.200000000000003,
+      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-004.mp4",
+      "output_duration_s": 3.2,
+      "status": "rendered",
+      "error": null
+    }
+  ]
+}

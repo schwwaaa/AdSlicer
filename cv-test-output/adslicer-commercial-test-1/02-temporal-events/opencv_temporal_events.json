@@ -7,6 +7,9 @@
     "near_black_ratio_min": 0.9,
     "strict_black_ratio_min": 0.9,
     "dark_mean_luma_max": 32.0,
+    "raised_uniform_luma_max": 40.0,
+    "raised_uniform_stddev_max": 6.0,
+    "raised_uniform_min_run_frames": 3,
     "micro_bridge_frames": 2,
     "context_frames": 5,
     "fade_step_luma_min": 5.0,
@@ -19,18 +22,52 @@
     "chromatic_channel_spread_min": 40.0
   },
   "summary": {
-    "total_events": 41,
+    "total_events": 42,
     "counts_by_kind": {
-      "fade_valley": 1,
-      "near_black_interval": 7,
+      "fade_valley": 3,
+      "near_black_interval": 6,
       "scene_discontinuity": 33
     },
-    "first_event_pts_s": 5.038366666666667,
+    "first_event_pts_s": 2.635966666666667,
     "last_event_pts_s": 95.095
   },
   "events": [
     {
       "event_index": 0,
+      "kind": "near_black_interval",
+      "start_frame": 79,
+      "valley_frame": 94,
+      "end_frame": 95,
+      "start_pts_s": 2.635966666666667,
+      "valley_pts_s": 3.1364666666666667,
+      "end_pts_s": 3.1698333333333335,
+      "duration_frames": 17,
+      "duration_s": 0.5338666666666665,
+      "min_mean_luma": 32.352786458333334,
+      "max_black_pixel_ratio": 0.006614583333333333,
+      "max_near_black_pixel_ratio": 0.446640625,
+      "mean_stddev_luma": 3.448567683349861,
+      "mean_saturation": 31.0380330882353,
+      "max_channel_spread": 3.282734374999997,
+      "chromatic_dark": false,
+      "luma_before_mean": 46.396638671874996,
+      "luma_after_mean": 47.921317057291674,
+      "fall_magnitude": 14.043852213541662,
+      "rise_magnitude": 15.56853059895834,
+      "descending_steps": 0,
+      "ascending_steps": 4,
+      "entry_delta_mean": 3.6559733072916667,
+      "exit_delta_mean": 4.263138020833333,
+      "peak_delta_mean": 4.263138020833333,
+      "evidence": [
+        "minimum mean luma 32.35",
+        "max near-black ratio 0.447",
+        "mean dark-event luma stddev 3.45",
+        "raised uniform VHS dark: luma 32.35 <= 40.00, stddev 3.45 <= 6.00"
+      ]
+    },
+    {
+      "event_index": 1,
       "kind": "scene_discontinuity",
       "start_frame": 151,
       "valley_frame": 151,
@@ -43,6 +80,7 @@
       "min_mean_luma": 92.25902994791667,
       "max_black_pixel_ratio": 0.007054036458333334,
       "max_near_black_pixel_ratio": 0.037268880208333334,
+      "mean_stddev_luma": 52.27003621615507,
       "mean_saturation": 16.324166666666667,
       "max_channel_spread": 0.7273535156249977,
       "chromatic_dark": false,
@@ -60,7 +98,7 @@
       ]
     },
     {
-      "event_index": 1,
+      "event_index": 2,
       "kind": "scene_discontinuity",
       "start_frame": 277,
       "valley_frame": 277,
@@ -73,6 +111,7 @@
       "min_mean_luma": 137.31576497395832,
       "max_black_pixel_ratio": 0.011412760416666667,
       "max_near_black_pixel_ratio": 0.022021484375,
+      "mean_stddev_luma": 69.14517884839125,
       "mean_saturation": 106.46883789062501,
       "max_channel_spread": 48.11068359375,
       "chromatic_dark": false,
@@ -90,7 +129,7 @@
       ]
     },
     {
-      "event_index": 2,
+      "event_index": 3,
       "kind": "scene_discontinuity",
       "start_frame": 454,
       "valley_frame": 454,
@@ -103,6 +142,7 @@
       "min_mean_luma": 130.56603190104167,
       "max_black_pixel_ratio": 0.012223307291666667,
       "max_near_black_pixel_ratio": 0.04194661458333333,
+      "mean_stddev_luma": 63.46056904394882,
       "mean_saturation": 106.24480468750001,
       "max_channel_spread": 36.22208007812499,
       "chromatic_dark": false,
@@ -120,38 +160,42 @@
       ]
     },
     {
-      "event_index": 3,
-      "kind": "near_black_interval",
-      "start_frame": 550,
+      "event_index": 4,
+      "kind": "fade_valley",
+      "start_frame": 545,
       "valley_frame": 551,
       "end_frame": 551,
-      "start_pts_s": 18.351666666666667,
+      "start_pts_s": 18.184833333333334,
       "valley_pts_s": 18.385033333333332,
       "end_pts_s": 18.385033333333332,
-      "duration_frames": 2,
-      "duration_s": 0.03336666666666588,
+      "duration_frames": 7,
+      "duration_s": 0.20019999999999882,
       "min_mean_luma": 29.053206380208334,
       "max_black_pixel_ratio": 0.006767578125,
       "max_near_black_pixel_ratio": 0.8795247395833333,
-      "mean_saturation": 32.943486328125005,
+      "mean_stddev_luma": 3.443560963600438,
+      "mean_saturation": 29.096380208333333,
       "max_channel_spread": 3.4198470052083323,
       "chromatic_dark": false,
-      "luma_before_mean": 33.385333984375,
+      "luma_before_mean": 106.10123242187498,
       "luma_after_mean": 52.07574348958333,
-      "fall_magnitude": 4.3321276041666685,
+      "fall_magnitude": 77.04802604166665,
       "rise_magnitude": 23.022537109374998,
-      "descending_steps": 0,
+      "descending_steps": 4,
       "ascending_steps": 5,
-      "entry_delta_mean": 1.169951171875,
+      "entry_delta_mean": 41.67529947916667,
       "exit_delta_mean": 6.273040364583333,
-      "peak_delta_mean": 6.273040364583333,
+      "peak_delta_mean": 41.67529947916667,
       "evidence": [
         "minimum mean luma 29.05",
-        "max near-black ratio 0.880"
+        "max near-black ratio 0.880",
+        "mean dark-event luma stddev 3.44",
+        "fall/rise pattern: 4 descending, 5 ascending steps",
+        "strong visual discontinuity 41.68"
       ]
     },
     {
-      "event_index": 4,
+      "event_index": 5,
       "kind": "near_black_interval",
       "start_frame": 599,
       "valley_frame": 611,
@@ -164,6 +208,7 @@
       "min_mean_luma": 33.26553385416667,
       "max_black_pixel_ratio": 0.0133203125,
       "max_near_black_pixel_ratio": 0.9104329427083333,
+      "mean_stddev_luma": 31.16495208750234,
       "mean_saturation": 49.407534475615535,
       "max_channel_spread": 6.535449218749999,
       "chromatic_dark": false,
@@ -179,11 +224,12 @@
       "evidence": [
         "minimum mean luma 33.27",
         "max near-black ratio 0.910",
+        "mean dark-event luma stddev 31.16",
         "strong visual discontinuity 43.82"
       ]
     },
     {
-      "event_index": 5,
+      "event_index": 6,
       "kind": "scene_discontinuity",
       "start_frame": 650,
       "valley_frame": 650,
@@ -196,6 +242,7 @@
       "min_mean_luma": 146.5312109375,
       "max_black_pixel_ratio": 0.005524088541666666,
       "max_near_black_pixel_ratio": 0.008326822916666667,
+      "mean_stddev_luma": 74.48794581306628,
       "mean_saturation": 45.20653645833334,
       "max_channel_spread": 15.631735026041667,
       "chromatic_dark": false,
@@ -213,7 +260,7 @@
       ]
     },
     {
-      "event_index": 6,
+      "event_index": 7,
       "kind": "near_black_interval",
       "start_frame": 680,
       "valley_frame": 688,
@@ -226,6 +273,7 @@
       "min_mean_luma": 31.207972005208333,
       "max_black_pixel_ratio": 0.013307291666666667,
       "max_near_black_pixel_ratio": 0.9347005208333333,
+      "mean_stddev_luma": 28.564620829426758,
       "mean_saturation": 44.334675060453876,
       "max_channel_spread": 5.287851562500002,
       "chromatic_dark": false,
@@ -241,11 +289,12 @@
       "evidence": [
         "minimum mean luma 31.21",
         "max near-black ratio 0.935",
+        "mean dark-event luma stddev 28.56",
         "strong visual discontinuity 54.32"
       ]
     },
     {
-      "event_index": 7,
+      "event_index": 8,
       "kind": "scene_discontinuity",
       "start_frame": 746,
       "valley_frame": 746,
@@ -258,6 +307,7 @@
       "min_mean_luma": 82.22242513020834,
       "max_black_pixel_ratio": 0.03826171875,
       "max_near_black_pixel_ratio": 0.20214518229166667,
+      "mean_stddev_luma": 51.5162711614414,
       "mean_saturation": 113.790107421875,
       "max_channel_spread": 28.647705078125,
       "chromatic_dark": false,
@@ -275,7 +325,7 @@
       ]
     },
     {
-      "event_index": 8,
+      "event_index": 9,
       "kind": "scene_discontinuity",
       "start_frame": 773,
       "valley_frame": 773,
@@ -288,6 +338,7 @@
       "min_mean_luma": 106.40886067708334,
       "max_black_pixel_ratio": 0.01517578125,
       "max_near_black_pixel_ratio": 0.070986328125,
+      "mean_stddev_luma": 58.33023701644499,
       "mean_saturation": 70.67692708333334,
       "max_channel_spread": 22.10278645833334,
       "chromatic_dark": false,
@@ -305,7 +356,7 @@
       ]
     },
     {
-      "event_index": 9,
+      "event_index": 10,
       "kind": "scene_discontinuity",
       "start_frame": 809,
       "valley_frame": 809,
@@ -318,6 +369,7 @@
       "min_mean_luma": 118.75242838541666,
       "max_black_pixel_ratio": 0.008095703125,
       "max_near_black_pixel_ratio": 0.07895182291666666,
+      "mean_stddev_luma": 81.98254258697285,
       "mean_saturation": 60.9580859375,
       "max_channel_spread": 19.859026692708326,
       "chromatic_dark": false,
@@ -335,7 +387,7 @@
       ]
     },
     {
-      "event_index": 10,
+      "event_index": 11,
       "kind": "scene_discontinuity",
       "start_frame": 824,
       "valley_frame": 824,
@@ -348,6 +400,7 @@
       "min_mean_luma": 131.049501953125,
       "max_black_pixel_ratio": 0.007408854166666667,
       "max_near_black_pixel_ratio": 0.14158854166666668,
+      "mean_stddev_luma": 86.574618327134,
       "mean_saturation": 35.86934244791667,
       "max_channel_spread": 6.609446614583348,
       "chromatic_dark": false,
@@ -365,7 +418,7 @@
       ]
     },
     {
-      "event_index": 11,
+      "event_index": 12,
       "kind": "scene_discontinuity",
       "start_frame": 844,
       "valley_frame": 844,
@@ -378,6 +431,7 @@
       "min_mean_luma": 53.409453125,
       "max_black_pixel_ratio": 0.007350260416666666,
       "max_near_black_pixel_ratio": 0.26696614583333333,
+      "mean_stddev_luma": 37.09288240298055,
       "mean_saturation": 59.69731119791667,
       "max_channel_spread": 12.169514973958336,
       "chromatic_dark": false,
@@ -395,7 +449,7 @@
       ]
     },
     {
-      "event_index": 12,
+      "event_index": 13,
       "kind": "scene_discontinuity",
       "start_frame": 868,
       "valley_frame": 868,
@@ -408,6 +462,7 @@
       "min_mean_luma": 101.5275390625,
       "max_black_pixel_ratio": 0.026865234375,
       "max_near_black_pixel_ratio": 0.19656901041666666,
+      "mean_stddev_luma": 64.31366113452972,
       "mean_saturation": 63.599111328125005,
       "max_channel_spread": 8.751090494791654,
       "chromatic_dark": false,
@@ -425,7 +480,7 @@
       ]
     },
     {
-      "event_index": 13,
+      "event_index": 14,
       "kind": "scene_discontinuity",
       "start_frame": 895,
       "valley_frame": 895,
@@ -438,6 +493,7 @@
       "min_mean_luma": 81.27171549479166,
       "max_black_pixel_ratio": 0.008382161458333334,
       "max_near_black_pixel_ratio": 0.022766927083333333,
+      "mean_stddev_luma": 52.650943867046976,
       "mean_saturation": 191.7621875,
       "max_channel_spread": 54.697470703125,
       "chromatic_dark": false,
@@ -455,7 +511,7 @@
       ]
     },
     {
-      "event_index": 14,
+      "event_index": 15,
       "kind": "fade_valley",
       "start_frame": 1001,
       "valley_frame": 1005,
@@ -468,6 +524,7 @@
       "min_mean_luma": 28.457125651041668,
       "max_black_pixel_ratio": 0.0067350260416666665,
       "max_near_black_pixel_ratio": 0.9517903645833333,
+      "mean_stddev_luma": 3.211979613396729,
       "mean_saturation": 43.45691351996529,
       "max_channel_spread": 4.399973958333334,
       "chromatic_dark": false,
@@ -483,12 +540,13 @@
       "evidence": [
         "minimum mean luma 28.46",
         "max near-black ratio 0.952",
+        "mean dark-event luma stddev 3.21",
         "fall/rise pattern: 5 descending, 4 ascending steps",
         "strong visual discontinuity 72.73"
       ]
     },
     {
-      "event_index": 15,
+      "event_index": 16,
       "kind": "scene_discontinuity",
       "start_frame": 1064,
       "valley_frame": 1064,
@@ -501,6 +559,7 @@
       "min_mean_luma": 91.12273763020833,
       "max_black_pixel_ratio": 0.00931640625,
       "max_near_black_pixel_ratio": 0.03574869791666667,
+      "mean_stddev_luma": 48.12331196909843,
       "mean_saturation": 164.045693359375,
       "max_channel_spread": 79.03662109375,
       "chromatic_dark": false,
@@ -518,7 +577,7 @@
       ]
     },
     {
-      "event_index": 16,
+      "event_index": 17,
       "kind": "scene_discontinuity",
       "start_frame": 1144,
       "valley_frame": 1144,
@@ -531,6 +590,7 @@
       "min_mean_luma": 124.92727213541667,
       "max_black_pixel_ratio": 0.007939453125,
       "max_near_black_pixel_ratio": 0.015481770833333333,
+      "mean_stddev_luma": 56.14543948283076,
       "mean_saturation": 210.33830403645834,
       "max_channel_spread": 139.19638346354168,
       "chromatic_dark": false,
@@ -548,7 +608,7 @@
       ]
     },
     {
-      "event_index": 17,
+      "event_index": 18,
       "kind": "scene_discontinuity",
       "start_frame": 1196,
       "valley_frame": 1196,
@@ -561,6 +621,7 @@
       "min_mean_luma": 109.245791015625,
       "max_black_pixel_ratio": 0.009957682291666667,
       "max_near_black_pixel_ratio": 0.020859375,
+      "mean_stddev_luma": 46.84501089508906,
       "mean_saturation": 186.924658203125,
       "max_channel_spread": 106.04445638020835,
       "chromatic_dark": false,
@@ -578,7 +639,7 @@
       ]
     },
     {
-      "event_index": 18,
+      "event_index": 19,
       "kind": "scene_discontinuity",
       "start_frame": 1244,
       "valley_frame": 1244,
@@ -591,6 +652,7 @@
       "min_mean_luma": 89.44246419270833,
       "max_black_pixel_ratio": 0.008151041666666666,
       "max_near_black_pixel_ratio": 0.013902994791666666,
+      "mean_stddev_luma": 39.74434524172438,
       "mean_saturation": 177.590986328125,
       "max_channel_spread": 67.70703125,
       "chromatic_dark": false,
@@ -608,7 +670,7 @@
       ]
     },
     {
-      "event_index": 19,
+      "event_index": 20,
       "kind": "scene_discontinuity",
       "start_frame": 1279,
       "valley_frame": 1279,
@@ -621,6 +683,7 @@
       "min_mean_luma": 124.25529947916667,
       "max_black_pixel_ratio": 0.010113932291666667,
       "max_near_black_pixel_ratio": 0.030983072916666667,
+      "mean_stddev_luma": 61.00369213159442,
       "mean_saturation": 163.83174479166667,
       "max_channel_spread": 70.42925130208333,
       "chromatic_dark": false,
@@ -638,7 +701,7 @@
       ]
     },
     {
-      "event_index": 20,
+      "event_index": 21,
       "kind": "scene_discontinuity",
       "start_frame": 1307,
       "valley_frame": 1307,
@@ -651,6 +714,7 @@
       "min_mean_luma": 65.45152669270833,
       "max_black_pixel_ratio": 0.008020833333333333,
       "max_near_black_pixel_ratio": 0.035830078125,
+      "mean_stddev_luma": 29.379406262170246,
       "mean_saturation": 175.95761067708335,
       "max_channel_spread": 94.67097005208333,
       "chromatic_dark": false,
@@ -668,7 +732,7 @@
       ]
     },
     {
-      "event_index": 21,
+      "event_index": 22,
       "kind": "scene_discontinuity",
       "start_frame": 1337,
       "valley_frame": 1337,
@@ -681,6 +745,7 @@
       "min_mean_luma": 94.23736002604167,
       "max_black_pixel_ratio": 0.008981119791666667,
       "max_near_black_pixel_ratio": 0.053938802083333334,
+      "mean_stddev_luma": 59.45377678187901,
       "mean_saturation": 201.78621744791667,
       "max_channel_spread": 89.10749674479167,
       "chromatic_dark": false,
@@ -698,7 +763,7 @@
       ]
     },
     {
-      "event_index": 22,
+      "event_index": 23,
       "kind": "scene_discontinuity",
       "start_frame": 1400,
       "valley_frame": 1400,
@@ -711,6 +776,7 @@
       "min_mean_luma": 102.481220703125,
       "max_black_pixel_ratio": 0.0083203125,
       "max_near_black_pixel_ratio": 0.065595703125,
+      "mean_stddev_luma": 60.76097122249205,
       "mean_saturation": 199.7786979166667,
       "max_channel_spread": 104.268125,
       "chromatic_dark": false,
@@ -728,7 +794,7 @@
       ]
     },
     {
-      "event_index": 23,
+      "event_index": 24,
       "kind": "scene_discontinuity",
       "start_frame": 1448,
       "valley_frame": 1448,
@@ -741,6 +807,7 @@
       "min_mean_luma": 175.922548828125,
       "max_black_pixel_ratio": 0.01146484375,
       "max_near_black_pixel_ratio": 0.015237630208333333,
+      "mean_stddev_luma": 58.01461848272535,
       "mean_saturation": 58.464619140625004,
       "max_channel_spread": 27.480800781249997,
       "chromatic_dark": false,
@@ -758,7 +825,7 @@
       ]
     },
     {
-      "event_index": 24,
+      "event_index": 25,
       "kind": "scene_discontinuity",
       "start_frame": 1500,
       "valley_frame": 1500,
@@ -771,6 +838,7 @@
       "min_mean_luma": 93.12548502604167,
       "max_black_pixel_ratio": 0.008317057291666667,
       "max_near_black_pixel_ratio": 0.013421223958333334,
+      "mean_stddev_luma": 47.40091274330973,
       "mean_saturation": 212.01872395833334,
       "max_channel_spread": 109.25963541666668,
       "chromatic_dark": false,
@@ -788,7 +856,7 @@
       ]
     },
     {
-      "event_index": 25,
+      "event_index": 26,
       "kind": "scene_discontinuity",
       "start_frame": 1529,
       "valley_frame": 1529,
@@ -801,6 +869,7 @@
       "min_mean_luma": 109.614873046875,
       "max_black_pixel_ratio": 0.020110677083333334,
       "max_near_black_pixel_ratio": 0.07424479166666667,
+      "mean_stddev_luma": 70.58861526453363,
       "mean_saturation": 195.7947526041667,
       "max_channel_spread": 101.20070963541667,
       "chromatic_dark": false,
@@ -818,7 +887,7 @@
       ]
     },
     {
-      "event_index": 26,
+      "event_index": 27,
       "kind": "scene_discontinuity",
       "start_frame": 1567,
       "valley_frame": 1567,
@@ -831,6 +900,7 @@
       "min_mean_luma": 108.72078125,
       "max_black_pixel_ratio": 0.009075520833333333,
       "max_near_black_pixel_ratio": 0.0391015625,
+      "mean_stddev_luma": 53.54869029399457,
       "mean_saturation": 193.2743359375,
       "max_channel_spread": 111.162783203125,
       "chromatic_dark": false,
@@ -848,7 +918,7 @@
       ]
     },
     {
-      "event_index": 27,
+      "event_index": 28,
       "kind": "scene_discontinuity",
       "start_frame": 1605,
       "valley_frame": 1605,
@@ -861,6 +931,7 @@
       "min_mean_luma": 146.87000325520833,
       "max_black_pixel_ratio": 0.007692057291666667,
       "max_near_black_pixel_ratio": 0.016875,
+      "mean_stddev_luma": 54.86232963953092,
       "mean_saturation": 192.22087239583334,
       "max_channel_spread": 153.679658203125,
       "chromatic_dark": false,
@@ -878,7 +949,7 @@
       ]
     },
     {
-      "event_index": 28,
+      "event_index": 29,
       "kind": "scene_discontinuity",
       "start_frame": 1646,
       "valley_frame": 1646,
@@ -891,6 +962,7 @@
       "min_mean_luma": 94.55140950520833,
       "max_black_pixel_ratio": 0.011741536458333333,
       "max_near_black_pixel_ratio": 0.033701171875,
+      "mean_stddev_luma": 50.475797691920555,
       "mean_saturation": 216.14560221354168,
       "max_channel_spread": 125.91353841145833,
       "chromatic_dark": false,
@@ -908,7 +980,7 @@
       ]
     },
     {
-      "event_index": 29,
+      "event_index": 30,
       "kind": "scene_discontinuity",
       "start_frame": 1707,
       "valley_frame": 1707,
@@ -921,6 +993,7 @@
       "min_mean_luma": 80.59503580729167,
       "max_black_pixel_ratio": 0.011751302083333333,
       "max_near_black_pixel_ratio": 0.053828125,
+      "mean_stddev_luma": 37.15570758599768,
       "mean_saturation": 161.75950520833334,
       "max_channel_spread": 67.37630859375,
       "chromatic_dark": false,
@@ -938,7 +1011,7 @@
       ]
     },
     {
-      "event_index": 30,
+      "event_index": 31,
       "kind": "scene_discontinuity",
       "start_frame": 1816,
       "valley_frame": 1816,
@@ -951,6 +1024,7 @@
       "min_mean_luma": 156.10338216145834,
       "max_black_pixel_ratio": 0.009586588541666666,
       "max_near_black_pixel_ratio": 0.014052734375,
+      "mean_stddev_luma": 45.344739668944115,
       "mean_saturation": 87.124892578125,
       "max_channel_spread": 43.511171875,
       "chromatic_dark": false,
@@ -968,38 +1042,41 @@
       ]
     },
     {
-      "event_index": 31,
-      "kind": "near_black_interval",
-      "start_frame": 1917,
+      "event_index": 32,
+      "kind": "fade_valley",
+      "start_frame": 1899,
       "valley_frame": 1923,
       "end_frame": 1926,
-      "start_pts_s": 63.9639,
+      "start_pts_s": 63.3633,
       "valley_pts_s": 64.1641,
       "end_pts_s": 64.2642,
-      "duration_frames": 10,
-      "duration_s": 0.3003,
+      "duration_frames": 28,
+      "duration_s": 0.9009,
       "min_mean_luma": 23.09154296875,
       "max_black_pixel_ratio": 0.013916015625,
       "max_near_black_pixel_ratio": 0.9995279947916667,
-      "mean_saturation": 38.82094986979167,
+      "mean_stddev_luma": 4.063963785201405,
+      "mean_saturation": 29.939642392113104,
       "max_channel_spread": 6.313837890625003,
       "chromatic_dark": false,
-      "luma_before_mean": 34.1164140625,
+      "luma_before_mean": 68.22286783854167,
       "luma_after_mean": 47.622440104166664,
-      "fall_magnitude": 11.024871093749997,
+      "fall_magnitude": 45.13132486979167,
       "rise_magnitude": 24.530897135416662,
-      "descending_steps": 0,
+      "descending_steps": 5,
       "ascending_steps": 4,
-      "entry_delta_mean": 3.4386979166666665,
+      "entry_delta_mean": 8.039739583333333,
       "exit_delta_mean": 5.168714192708333,
       "peak_delta_mean": 8.280950520833333,
       "evidence": [
         "minimum mean luma 23.09",
-        "max near-black ratio 1.000"
+        "max near-black ratio 1.000",
+        "mean dark-event luma stddev 4.06",
+        "fall/rise pattern: 5 descending, 4 ascending steps"
       ]
     },
     {
-      "event_index": 32,
+      "event_index": 33,
       "kind": "near_black_interval",
       "start_frame": 2243,
       "valley_frame": 2247,
@@ -1012,6 +1089,7 @@
       "min_mean_luma": 23.735182291666668,
       "max_black_pixel_ratio": 0.028645833333333332,
       "max_near_black_pixel_ratio": 0.9975065104166667,
+      "mean_stddev_luma": 15.237093258907272,
       "mean_saturation": 50.24955403645834,
       "max_channel_spread": 4.597659505208334,
       "chromatic_dark": false,
@@ -1026,11 +1104,12 @@
       "peak_delta_mean": 6.450110677083333,
       "evidence": [
         "minimum mean luma 23.74",
-        "max near-black ratio 0.998"
+        "max near-black ratio 0.998",
+        "mean dark-event luma stddev 15.24"
       ]
     },
     {
-      "event_index": 33,
+      "event_index": 34,
       "kind": "near_black_interval",
       "start_frame": 2375,
       "valley_frame": 2386,
@@ -1043,6 +1122,7 @@
       "min_mean_luma": 22.979280598958333,
       "max_black_pixel_ratio": 0.013841145833333334,
       "max_near_black_pixel_ratio": 0.9996744791666666,
+      "mean_stddev_luma": 3.031436751269841,
       "mean_saturation": 51.69762244591347,
       "max_channel_spread": 5.085198567708332,
       "chromatic_dark": false,
@@ -1058,11 +1138,12 @@
       "evidence": [
         "minimum mean luma 22.98",
         "max near-black ratio 1.000",
+        "mean dark-event luma stddev 3.03",
         "strong visual discontinuity 201.95"
       ]
     },
     {
-      "event_index": 34,
+      "event_index": 35,
       "kind": "scene_discontinuity",
       "start_frame": 2463,
       "valley_frame": 2463,
@@ -1075,6 +1156,7 @@
       "min_mean_luma": 95.46155598958333,
       "max_black_pixel_ratio": 0.014244791666666666,
       "max_near_black_pixel_ratio": 0.07126627604166667,
+      "mean_stddev_luma": 55.60249251968669,
       "mean_saturation": 69.15515299479168,
       "max_channel_spread": 18.204352213541668,
       "chromatic_dark": false,
@@ -1092,7 +1174,7 @@
       ]
     },
     {
-      "event_index": 35,
+      "event_index": 36,
       "kind": "scene_discontinuity",
       "start_frame": 2513,
       "valley_frame": 2513,
@@ -1105,6 +1187,7 @@
       "min_mean_luma": 92.48176106770833,
       "max_black_pixel_ratio": 0.012360026041666666,
       "max_near_black_pixel_ratio": 0.07908854166666666,
+      "mean_stddev_luma": 51.95558574395633,
       "mean_saturation": 72.63111328125001,
       "max_channel_spread": 17.772317708333333,
       "chromatic_dark": false,
@@ -1122,7 +1205,7 @@
       ]
     },
     {
-      "event_index": 36,
+      "event_index": 37,
       "kind": "scene_discontinuity",
       "start_frame": 2538,
       "valley_frame": 2538,
@@ -1135,6 +1218,7 @@
       "min_mean_luma": 80.40182291666666,
       "max_black_pixel_ratio": 0.015716145833333334,
       "max_near_black_pixel_ratio": 0.091220703125,
+      "mean_stddev_luma": 41.63811046109953,
       "mean_saturation": 101.201845703125,
       "max_channel_spread": 29.441946614583337,
       "chromatic_dark": false,
@@ -1152,7 +1236,7 @@
       ]
     },
     {
-      "event_index": 37,
+      "event_index": 38,
       "kind": "scene_discontinuity",
       "start_frame": 2563,
       "valley_frame": 2563,
@@ -1165,6 +1249,7 @@
       "min_mean_luma": 103.81490234375,
       "max_black_pixel_ratio": 0.010524088541666667,
       "max_near_black_pixel_ratio": 0.06970377604166667,
+      "mean_stddev_luma": 48.58731652807465,
       "mean_saturation": 55.59589518229167,
       "max_channel_spread": 10.461018880208329,
       "chromatic_dark": false,
@@ -1182,7 +1267,7 @@
       ]
     },
     {
-      "event_index": 38,
+      "event_index": 39,
       "kind": "scene_discontinuity",
       "start_frame": 2592,
       "valley_frame": 2592,
@@ -1195,6 +1280,7 @@
       "min_mean_luma": 82.87730143229167,
       "max_black_pixel_ratio": 0.006686197916666667,
       "max_near_black_pixel_ratio": 0.016689453125,
+      "mean_stddev_luma": 36.64317746630476,
       "mean_saturation": 69.18072265625,
       "max_channel_spread": 15.938678385416665,
       "chromatic_dark": false,
@@ -1212,7 +1298,7 @@
       ]
     },
     {
-      "event_index": 39,
+      "event_index": 40,
       "kind": "scene_discontinuity",
       "start_frame": 2623,
       "valley_frame": 2623,
@@ -1225,6 +1311,7 @@
       "min_mean_luma": 63.11730794270834,
       "max_black_pixel_ratio": 0.04111979166666667,
       "max_near_black_pixel_ratio": 0.18052408854166666,
+      "mean_stddev_luma": 32.57301181764773,
       "mean_saturation": 118.77775065104167,
       "max_channel_spread": 30.63224283854167,
       "chromatic_dark": false,
@@ -1242,34 +1329,37 @@
       ]
     },
     {
-      "event_index": 40,
+      "event_index": 41,
       "kind": "near_black_interval",
-      "start_frame": 2840,
+      "start_frame": 2837,
       "valley_frame": 2845,
       "end_frame": 2850,
-      "start_pts_s": 94.76133333333334,
+      "start_pts_s": 94.66123333333334,
       "valley_pts_s": 94.92816666666667,
       "end_pts_s": 95.095,
-      "duration_frames": 11,
-      "duration_s": 0.3336666666666588,
+      "duration_frames": 14,
+      "duration_s": 0.4337666666666564,
       "min_mean_luma": 28.608723958333332,
       "max_black_pixel_ratio": 0.00669921875,
       "max_near_black_pixel_ratio": 0.9233626302083333,
-      "mean_saturation": 34.04701467803031,
+      "mean_stddev_luma": 3.3822849921824987,
+      "mean_saturation": 32.927291201636905,
       "max_channel_spread": 3.774137369791667,
       "chromatic_dark": false,
-      "luma_before_mean": 101.14550390625,
+      "luma_before_mean": 200.33721549479168,
       "luma_after_mean": 41.67419791666667,
-      "fall_magnitude": 72.53677994791667,
+      "fall_magnitude": 171.72849153645834,
       "rise_magnitude": 13.065473958333339,
       "descending_steps": 1,
       "ascending_steps": 0,
-      "entry_delta_mean": 2.29158203125,
+      "entry_delta_mean": 164.270419921875,
       "exit_delta_mean": 2.5061946614583333,
-      "peak_delta_mean": 2.5061946614583333,
+      "peak_delta_mean": 164.270419921875,
       "evidence": [
         "minimum mean luma 28.61",
-        "max near-black ratio 0.923"
+        "max near-black ratio 0.923",
+        "mean dark-event luma stddev 3.38",
+        "strong visual discontinuity 164.27"
       ]
     }
   ]

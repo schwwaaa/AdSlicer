@@ -6,7 +6,7 @@ CORPUS="$ROOT/corpus"
 RESULTS="$ROOT/results"
 mkdir -p "$RESULTS"
 
-if [[ ! -d "$CORPUS" ]] || ! compgen -G "$CORPUS/*.mkv" > /dev/null; then
+if [[ ! -d "$CORPUS" ]] || ! compgen -G "$CORPUS/*.mkv" > /dev/null || [[ ! -f "$CORPUS/08_commercial_block.mkv" ]]; then
   "$ROOT/generate_synthetic_corpus.sh"
 fi
 

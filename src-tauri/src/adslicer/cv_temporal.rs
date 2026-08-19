@@ -22,6 +22,17 @@ pub struct TemporalAnalysisConfig {
     pub strict_black_ratio_min: f64,
     /// Secondary dark criterion for raised-black analog material.
     pub dark_mean_luma_max: f64,
+    /// Some VHS fades settle above the nominal near-black threshold but become
+    /// spatially almost flat. Treat that combination as dark evidence without
+    /// globally raising the luma threshold for structured program imagery.
+    pub raised_uniform_luma_max: f64,
+    pub raised_uniform_stddev_max: f64,
+    /// Raised-gray fallback must persist for several analyzed frames before it
+    /// is promoted to dark evidence. This prevents a single uniform shoulder
+    /// frame on a normal fade from widening the event, while still recovering
+    /// sustained raised VHS black floors. Strict/near-black 1–2 frame events
+    /// remain supported independently of this fallback.
+    pub raised_uniform_min_run_frames: usize,
     /// Bridge tiny holes inside a dark event without invoking the higher-level
     /// commercial merge-gap logic.
     pub micro_bridge_frames: u64,
@@ -52,6 +63,9 @@ impl Default for TemporalAnalysisConfig {
             near_black_ratio_min: 0.90,
             strict_black_ratio_min: 0.90,
             dark_mean_luma_max: 32.0,
+            raised_uniform_luma_max: 40.0,
+            raised_uniform_stddev_max: 6.0,
+            raised_uniform_min_run_frames: 3,
             micro_bridge_frames: 2,
             context_frames: 5,
             fade_step_luma_min: 5.0,
@@ -109,6 +123,11 @@ pub struct TemporalEvent {
     pub min_mean_luma: f64,
     pub max_black_pixel_ratio: f64,
     pub max_near_black_pixel_ratio: f64,
+    /// Mean within-event luma standard deviation. Low values indicate a
+    /// spatially uniform dark separator; high values indicate structured
+    /// dark imagery such as title cards, faces, or graphics.
+    #[serde(default)]
+    pub mean_stddev_luma: f64,
     pub mean_saturation: f64,
     pub max_channel_spread: f64,
     pub chromatic_dark: bool,
@@ -165,8 +184,48 @@ fn max_channel_spread(f: &FrameMetrics) -> f64 {
         .max((f.mean_green - f.mean_red).abs())
 }
 
-fn is_dark_frame(f: &FrameMetrics, cfg: &TemporalAnalysisConfig) -> bool {
-    f.near_black_pixel_ratio >= cfg.near_black_ratio_min || f.mean_luma <= cfg.dark_mean_luma_max
+fn is_base_dark_frame(f: &FrameMetrics, cfg: &TemporalAnalysisConfig) -> bool {
+    f.near_black_pixel_ratio >= cfg.near_black_ratio_min
+        || f.mean_luma <= cfg.dark_mean_luma_max
+}
+
+fn is_raised_uniform_candidate(f: &FrameMetrics, cfg: &TemporalAnalysisConfig) -> bool {
+    // Only the *raised* portion belongs to this fallback. Anything already at
+    // or below dark_mean_luma_max is handled by the normal dark path.
+    f.mean_luma > cfg.dark_mean_luma_max
+        && f.mean_luma <= cfg.raised_uniform_luma_max
+        && f.stddev_luma <= cfg.raised_uniform_stddev_max
+}
+
+fn sustained_raised_uniform_flags(
+    frames: &[FrameMetrics],
+    cfg: &TemporalAnalysisConfig,
+) -> Vec<bool> {
+    let mut flags = vec![false; frames.len()];
+    let min_run = cfg.raised_uniform_min_run_frames.max(1);
+    let mut i = 0usize;
+
+    while i < frames.len() {
+        if !is_raised_uniform_candidate(&frames[i], cfg) {
+            i += 1;
+            continue;
+        }
+
+        let start = i;
+        i += 1;
+        while i < frames.len() && is_raised_uniform_candidate(&frames[i], cfg) {
+            i += 1;
+        }
+        let end_exclusive = i;
+
+        if end_exclusive - start >= min_run {
+            for flag in &mut flags[start..end_exclusive] {
+                *flag = true;
+            }
+        }
+    }
+
+    flags
 }
 
 fn build_dark_event(
@@ -209,6 +268,7 @@ fn build_dark_event(
     let min_mean_luma = segment.iter().map(|f| f.mean_luma).fold(f64::INFINITY, f64::min);
     let max_black_pixel_ratio = segment.iter().map(|f| f.black_pixel_ratio).fold(0.0, f64::max);
     let max_near_black_pixel_ratio = segment.iter().map(|f| f.near_black_pixel_ratio).fold(0.0, f64::max);
+    let mean_stddev_luma = mean(segment.iter().map(|f| f.stddev_luma)).unwrap_or(0.0);
     let mean_saturation = mean(segment.iter().map(|f| f.mean_saturation)).unwrap_or(0.0);
     let max_channel_spread = segment.iter().map(max_channel_spread).fold(0.0, f64::max);
     let chromatic_dark = mean_saturation >= cfg.chromatic_saturation_min
@@ -260,6 +320,16 @@ fn build_dark_event(
     let mut evidence = Vec::new();
     evidence.push(format!("minimum mean luma {:.2}", min_mean_luma));
     evidence.push(format!("max near-black ratio {:.3}", max_near_black_pixel_ratio));
+    evidence.push(format!("mean dark-event luma stddev {:.2}", mean_stddev_luma));
+    if min_mean_luma > cfg.dark_mean_luma_max
+        && min_mean_luma <= cfg.raised_uniform_luma_max
+        && mean_stddev_luma <= cfg.raised_uniform_stddev_max
+    {
+        evidence.push(format!(
+            "raised uniform VHS dark: luma {:.2} <= {:.2}, stddev {:.2} <= {:.2}",
+            min_mean_luma, cfg.raised_uniform_luma_max, mean_stddev_luma, cfg.raised_uniform_stddev_max
+        ));
+    }
     if max_black_pixel_ratio >= cfg.strict_black_ratio_min {
         evidence.push(format!("strict-black ratio {:.3}", max_black_pixel_ratio));
     }
@@ -293,6 +363,7 @@ fn build_dark_event(
         min_mean_luma,
         max_black_pixel_ratio,
         max_near_black_pixel_ratio,
+        mean_stddev_luma,
         mean_saturation,
         max_channel_spread,
         chromatic_dark,
@@ -340,10 +411,13 @@ pub fn analyze_temporal_events(
 
     // First find dark-like observations, then group them with only a tiny
     // micro-bridge. This is deliberately separate from commercial merging.
+    let raised_uniform_flags = sustained_raised_uniform_flags(frames, cfg);
     let dark_positions: Vec<usize> = frames
         .iter()
         .enumerate()
-        .filter_map(|(i, f)| is_dark_frame(f, cfg).then_some(i))
+        .filter_map(|(i, f)| {
+            (is_base_dark_frame(f, cfg) || raised_uniform_flags[i]).then_some(i)
+        })
         .collect();
 
     let mut grouped_positions: Vec<(usize, usize)> = Vec::new();
@@ -402,6 +476,7 @@ pub fn analyze_temporal_events(
                 min_mean_luma: f.mean_luma,
                 max_black_pixel_ratio: f.black_pixel_ratio,
                 max_near_black_pixel_ratio: f.near_black_pixel_ratio,
+                mean_stddev_luma: f.stddev_luma,
                 mean_saturation: f.mean_saturation,
                 max_channel_spread: max_channel_spread(f),
                 chromatic_dark: false,
@@ -465,12 +540,12 @@ pub fn write_temporal_events(outdir: &Path, result: &TemporalAnalysisResult) -> 
     let mut csv = BufWriter::new(fs::File::create(&csv_path)?);
     writeln!(
         csv,
-        "event_index,kind,start_frame,valley_frame,end_frame,start_pts_s,valley_pts_s,end_pts_s,duration_frames,duration_s,min_mean_luma,max_black_pixel_ratio,max_near_black_pixel_ratio,mean_saturation,max_channel_spread,chromatic_dark,luma_before_mean,luma_after_mean,fall_magnitude,rise_magnitude,descending_steps,ascending_steps,entry_delta_mean,exit_delta_mean,peak_delta_mean"
+        "event_index,kind,start_frame,valley_frame,end_frame,start_pts_s,valley_pts_s,end_pts_s,duration_frames,duration_s,min_mean_luma,max_black_pixel_ratio,max_near_black_pixel_ratio,mean_stddev_luma,mean_saturation,max_channel_spread,chromatic_dark,luma_before_mean,luma_after_mean,fall_magnitude,rise_magnitude,descending_steps,ascending_steps,entry_delta_mean,exit_delta_mean,peak_delta_mean"
     )?;
     for e in &result.events {
         writeln!(
             csv,
-            "{},{},{},{},{},{:.6},{:.6},{:.6},{},{:.6},{:.6},{:.8},{:.8},{:.6},{:.6},{},{:.6},{:.6},{:.6},{:.6},{},{},{:.6},{:.6},{:.6}",
+            "{},{},{},{},{},{:.6},{:.6},{:.6},{},{:.6},{:.6},{:.8},{:.8},{:.6},{:.6},{:.6},{},{:.6},{:.6},{:.6},{:.6},{},{},{:.6},{:.6},{:.6}",
             e.event_index,
             e.kind.as_str(),
             e.start_frame,
@@ -484,6 +559,7 @@ pub fn write_temporal_events(outdir: &Path, result: &TemporalAnalysisResult) -> 
             e.min_mean_luma,
             e.max_black_pixel_ratio,
             e.max_near_black_pixel_ratio,
+            e.mean_stddev_luma,
             e.mean_saturation,
             e.max_channel_spread,
             e.chromatic_dark,

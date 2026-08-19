@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-vs-legacy-plan-comparison",
+  "comparison_version": "cv4-comparison-v1",
+  "match_tolerance_s": 0.75,
+  "match_iou_min": 0.8,
+  "summary": {
+    "shadow_intervals": 2,
+    "legacy_intervals": 0,
+    "matched_intervals": 0,
+    "opencv_only_intervals": 2,
+    "legacy_only_intervals": 0,
+    "average_abs_boundary_offset_s": null,
+    "max_abs_boundary_offset_s": null
+  },
+  "matches": [],
+  "opencv_only_interval_indices": [
+    0,
+    1
+  ],
+  "legacy_only_interval_indices": []
+}

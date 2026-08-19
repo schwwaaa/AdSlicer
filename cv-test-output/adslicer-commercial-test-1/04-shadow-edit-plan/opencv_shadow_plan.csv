@@ -1,0 +1,3 @@
+interval_index,start_s,end_s,duration_s,start_anchor_s,end_anchor_s,start_observation_index,end_observation_index,start_role,end_role,start_score,end_score,interval_score,tier
+0,23.423600,33.593500,10.169900,23.623600,33.533500,10,18,interval_exit,fade_valley,0.620000,0.920000,0.672500,review
+1,63.964100,74.901433,10.937333,64.164100,74.841433,35,36,fade_valley,interval_entry,0.920000,0.520000,0.590000,weak

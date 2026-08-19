@@ -1,0 +1,21 @@
+CV-5 verification performed in packaging environment
+
+PASS — shell syntax: test-opencv.sh, CV-4 suite, CV-5 suite
+PASS — Python syntax: evaluate_edit_validation.py
+PASS — Cargo.toml parses successfully
+PASS — unified CLI flag forwarding tested with input/output paths containing spaces
+PASS — video-only FFmpeg validation mechanics tested
+       proposed interval: 12.260s
+       rendered content: 12.267s
+       resulting splice preview: 1.966s for 1s + 1s context
+PASS — video+audio FFmpeg validation mechanics tested
+       resulting splice contains both video and audio streams
+       resulting splice preview: 1.989s
+PASS — CV-5 evaluator accepted independent synthetic preview outputs: 3/3
+PASS — authoritative production safety hashes match for job.rs, detect.rs, cut.rs,
+       models.rs, main.js, index.html, and style.css
+
+LIMITATION — Cargo/Rust is not installed in the packaging environment, so the
+new Rust CV-5 module requires the normal runtime acceptance compile on the user's
+macOS development machine. FFmpeg mechanics and non-Rust tooling were exercised
+independently before packaging.

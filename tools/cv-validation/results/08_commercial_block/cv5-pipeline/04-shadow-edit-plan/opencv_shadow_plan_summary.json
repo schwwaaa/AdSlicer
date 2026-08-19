@@ -1,0 +1,14 @@
+{
+  "source_duration_s": 22.4,
+  "boundary_candidates_consumed": 4,
+  "proposed_removals": 1,
+  "rejected_pairs": 0,
+  "total_remove_s": 12.259666666666664,
+  "total_keep_s": 10.140333333333334,
+  "remove_ratio": 0.5473065476190475,
+  "counts_by_tier": {
+    "strong": 1
+  },
+  "first_removal_start_s": 5.000333333333333,
+  "last_removal_end_s": 17.259999999999998
+}

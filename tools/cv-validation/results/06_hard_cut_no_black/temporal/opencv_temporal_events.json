@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-temporal-evidence",
+  "source_evidence_file": "opencv_frame_metrics.jsonl",
+  "source_evidence_sha256": "7a07e5ffddc926941a8925029d3a1997f440e355991dd4360c4816feca7ddaa9",
+  "config": {
+    "near_black_ratio_min": 0.9,
+    "strict_black_ratio_min": 0.9,
+    "dark_mean_luma_max": 32.0,
+    "raised_uniform_luma_max": 40.0,
+    "raised_uniform_stddev_max": 6.0,
+    "raised_uniform_min_run_frames": 3,
+    "micro_bridge_frames": 2,
+    "context_frames": 5,
+    "fade_step_luma_min": 5.0,
+    "fade_monotonic_steps_min": 2,
+    "fade_magnitude_min": 20.0,
+    "scene_delta_min": 40.0,
+    "scene_suppression_frames": 5,
+    "short_event_max_frames": 2,
+    "chromatic_saturation_min": 120.0,
+    "chromatic_channel_spread_min": 40.0
+  },
+  "summary": {
+    "total_events": 1,
+    "counts_by_kind": {
+      "scene_discontinuity": 1
+    },
+    "first_event_pts_s": 3.0,
+    "last_event_pts_s": 3.0
+  },
+  "events": [
+    {
+      "event_index": 0,
+      "kind": "scene_discontinuity",
+      "start_frame": 90,
+      "valley_frame": 90,
+      "end_frame": 90,
+      "start_pts_s": 3.0,
+      "valley_pts_s": 3.0,
+      "end_pts_s": 3.0,
+      "duration_frames": 1,
+      "duration_s": 0.0,
+      "min_mean_luma": 93.81821614583332,
+      "max_black_pixel_ratio": 0.15,
+      "max_near_black_pixel_ratio": 0.29256510416666665,
+      "mean_stddev_luma": 71.92962390959791,
+      "mean_saturation": 180.6169140625,
+      "max_channel_spread": 11.324375000000003,
+      "chromatic_dark": false,
+      "luma_before_mean": 124.6807421875,
+      "luma_after_mean": 93.81821614583332,
+      "fall_magnitude": 30.862526041666683,
+      "rise_magnitude": 0.0,
+      "descending_steps": 0,
+      "ascending_steps": 0,
+      "entry_delta_mean": 88.27,
+      "exit_delta_mean": 0.0,
+      "peak_delta_mean": 88.27,
+      "evidence": [
+        "scene discontinuity delta 88.27"
+      ]
+    }
+  ]
+}

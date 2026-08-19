@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-shadow-edit-plan",
+  "planner_version": "cv4-shadow-v1",
+  "config": {
+    "include_black": false,
+    "edge_pad_pre": 0.2,
+    "edge_pad_post": 0.06,
+    "frame_duration_s": 0.03336666666666667,
+    "min_commercial": 5.0,
+    "max_commercial": 240.0,
+    "min_show_segment": 30.0,
+    "always_keep_first": 0.0,
+    "always_keep_last": 0.0,
+    "review_score_min": 0.6,
+    "strong_score_min": 0.8,
+    "legacy_match_tolerance_s": 0.75,
+    "legacy_match_iou_min": 0.8
+  },
+  "summary": {
+    "source_duration_s": 99.23246666666667,
+    "boundary_candidates_consumed": 11,
+    "proposed_removals": 2,
+    "rejected_pairs": 5,
+    "total_remove_s": 21.107233333333355,
+    "total_keep_s": 78.12523333333331,
+    "remove_ratio": 0.21270491445340156,
+    "counts_by_tier": {
+      "review": 1,
+      "weak": 1
+    },
+    "first_removal_start_s": 23.4236,
+    "last_removal_end_s": 74.90143333333336
+  },
+  "removals": [
+    {
+      "interval_index": 0,
+      "start_s": 23.4236,
+      "end_s": 33.5935,
+      "duration_s": 10.169899999999998,
+      "start_anchor_s": 23.6236,
+      "end_anchor_s": 33.5335,
+      "start_observation_index": 10,
+      "end_observation_index": 18,
+      "start_role": "interval_exit",
+      "end_role": "fade_valley",
+      "start_source_event_index": 7,
+      "end_source_event_index": 15,
+      "start_score": 0.62,
+      "end_score": 0.9199999999999999,
+      "interval_score": 0.6725,
+      "tier": "review",
+      "reasons": [
+        "start boundary interval_exit score 0.620",
+        "end boundary fade_valley score 0.920",
+        "duration 10.170s within shadow planning window",
+        "AdSlicer-style edge padding: -0.200s / +0.060s"
+      ],
+      "cautions": []
+    },
+    {
+      "interval_index": 1,
+      "start_s": 63.9641,
+      "end_s": 74.90143333333336,
+      "duration_s": 10.937333333333356,
+      "start_anchor_s": 64.1641,
+      "end_anchor_s": 74.84143333333336,
+      "start_observation_index": 35,
+      "end_observation_index": 36,
+      "start_role": "fade_valley",
+      "end_role": "interval_entry",
+      "start_source_event_index": 32,
+      "end_source_event_index": 33,
+      "start_score": 0.9199999999999999,
+      "end_score": 0.52,
+      "interval_score": 0.5900000000000001,
+      "tier": "weak",
+      "reasons": [
+        "start boundary fade_valley score 0.920",
+        "end boundary interval_entry score 0.520",
+        "duration 10.937s within shadow planning window",
+        "AdSlicer-style edge padding: -0.200s / +0.060s"
+      ],
+      "cautions": [
+        "one or both boundary endpoints are weak; review before promotion"
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "start_anchor_s": 18.385033333333332,
+      "end_anchor_s": 19.986633333333334,
+      "duration_s": 1.8615999999999993,
+      "start_observation_index": 5,
+      "end_observation_index": 6,
+      "reason": "duration 1.862s below min_commercial 5.000s"
+    },
+    {
+      "start_anchor_s": 18.385033333333332,
+      "end_anchor_s": 22.689333333333334,
+      "duration_s": 4.564299999999999,
+      "start_observation_index": 5,
+      "end_observation_index": 9,
+      "reason": "duration 4.564s below min_commercial 5.000s"
+    },
+    {
+      "start_anchor_s": 75.34193333333333,
+      "end_anchor_s": 79.24583333333334,
+      "duration_s": 4.163900000000012,
+      "start_observation_index": 37,
+      "end_observation_index": 38,
+      "reason": "duration 4.164s below min_commercial 5.000s"
+    },
+    {
+      "start_anchor_s": 33.5335,
+      "end_anchor_s": 64.1641,
+      "duration_s": 30.890600000000013,
+      "start_observation_index": 18,
+      "end_observation_index": 35,
+      "reason": "would leave -0.260s preserved fragment below min_show_segment 30.000s"
+    },
+    {
+      "start_anchor_s": 79.67960000000001,
+      "end_anchor_s": 94.66123333333334,
+      "duration_s": 15.24163333333334,
+      "start_observation_index": 39,
+      "end_observation_index": 46,
+      "reason": "would leave 4.578s preserved fragment below min_show_segment 30.000s"
+    }
+  ]
+}

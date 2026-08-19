@@ -1,0 +1,8 @@
+{
+  "total_events": 2,
+  "counts_by_kind": {
+    "black_interval": 2
+  },
+  "first_event_pts_s": 5.0,
+  "last_event_pts_s": 17.367
+}

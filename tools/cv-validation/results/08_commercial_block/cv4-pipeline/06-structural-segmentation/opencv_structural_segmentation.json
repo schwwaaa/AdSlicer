@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-structural-segmentation",
+  "structural_version": "cv6-structural-v1",
+  "production_cut_plan_modified": false,
+  "config": {
+    "scene_delta_min": 40.0,
+    "context_window_s": 3.0,
+    "context_guard_s": 0.25,
+    "uniform_stddev_strong_max": 8.0,
+    "uniform_stddev_review_max": 16.0,
+    "every_separator_score_min": 0.58,
+    "structural_separator_score_min": 0.82,
+    "structural_combined_score_min": 0.2,
+    "ambiguous_separator_score_min": 0.55,
+    "ambiguous_promotion_structural_min": 0.18,
+    "ambiguous_promotion_duration_gain_min": 0.35,
+    "source_edge_max_residual_s": 7.0,
+    "source_edge_duration_fit_min": 0.7,
+    "preferred_durations_s": [
+      15.0,
+      30.0,
+      60.0,
+      10.0,
+      20.0,
+      5.0,
+      45.0,
+      90.0
+    ],
+    "duration_match_tolerance_s": 2.0,
+    "boundary_dedupe_s": 0.35
+  },
+  "summary": {
+    "structural_events": 2,
+    "counts_by_role": {
+      "structural_separator": 2
+    },
+    "complete_segments": 3,
+    "complete_boundaries": 2,
+    "every_separator_segments": 3,
+    "every_separator_boundaries": 2,
+    "ambiguous_promoted_for_complete": 0,
+    "complete_coverage_pass": true,
+    "every_separator_coverage_pass": true
+  },
+  "events": [
+    {
+      "structural_event_index": 0,
+      "source_temporal_event_index": 0,
+      "source_temporal_kind": "black_interval",
+      "start_pts_s": 5.0,
+      "valley_pts_s": 5.0,
+      "end_pts_s": 5.167,
+      "anchor_pts_s": 5.0,
+      "duration_s": 0.16699999999999982,
+      "min_mean_luma": 0.0,
+      "max_black_pixel_ratio": 1.0,
+      "max_near_black_pixel_ratio": 1.0,
+      "mean_stddev_luma": 0.0,
+      "mean_saturation": 0.0,
+      "peak_delta_mean": 124.19026041666666,
+      "separator_score": 1.0,
+      "context_change_score": 0.24769098241667725,
+      "structural_score": 0.24769098241667725,
+      "role": "structural_separator",
+      "before_context": {
+        "frame_count": 83,
+        "duration_s": 2.7330000000000005,
+        "mean_luma": 123.62327685742974,
+        "mean_stddev_luma": 65.65724926587338,
+        "mean_red": 123.70504094503009,
+        "mean_green": 122.4152335906124,
+        "mean_blue": 129.67382875251,
+        "mean_saturation": 240.1725956952813,
+        "mean_frame_delta": 3.166591522339356,
+        "scene_changes": 0,
+        "scene_rate_per_s": 0.0
+      },
+      "after_context": {
+        "frame_count": 83,
+        "duration_s": 2.734,
+        "mean_luma": 93.81821614583345,
+        "mean_stddev_luma": 71.92962390959778,
+        "mean_red": 92.66092447916684,
+        "mean_green": 92.60954427083355,
+        "mean_blue": 103.93391927083326,
+        "mean_saturation": 180.61691406250026,
+        "mean_frame_delta": 0.0,
+        "scene_changes": 0,
+        "scene_rate_per_s": 0.0
+      },
+      "reasons": [
+        "separator score 1.00",
+        "uniformity score 1.00 from luma stddev 0.00",
+        "darkness score 1.00",
+        "context change 0.25",
+        "context luminance reset 0.37",
+        "strong immediate visual reset 1.00"
+      ],
+      "cautions": []
+    },
+    {
+      "structural_event_index": 1,
+      "source_temporal_event_index": 1,
+      "source_temporal_kind": "black_interval",
+      "start_pts_s": 17.2,
+      "valley_pts_s": 17.2,
+      "end_pts_s": 17.367,
+      "anchor_pts_s": 17.2,
+      "duration_s": 0.1670000000000016,
+      "min_mean_luma": 0.0,
+      "max_black_pixel_ratio": 1.0,
+      "max_near_black_pixel_ratio": 1.0,
+      "mean_stddev_luma": 0.0,
+      "mean_saturation": 0.0,
+      "peak_delta_mean": 128.0896484375,
+      "separator_score": 1.0,
+      "context_change_score": 0.21740052118644476,
+      "structural_score": 0.21740052118644476,
+      "role": "structural_separator",
+      "before_context": {
+        "frame_count": 83,
+        "duration_s": 2.7329999999999988,
+        "mean_luma": 93.81821614583345,
+        "mean_stddev_luma": 71.92962390959778,
+        "mean_red": 92.66092447916684,
+        "mean_green": 92.60954427083355,
+        "mean_blue": 103.93391927083326,
+        "mean_saturation": 180.61691406250026,
+        "mean_frame_delta": 0.0,
+        "scene_changes": 0,
+        "scene_rate_per_s": 0.0
+      },
+      "after_context": {
+        "frame_count": 83,
+        "duration_s": 2.7340000000000018,
+        "mean_luma": 126.19744164156623,
+        "mean_stddev_luma": 82.733123607793,
+        "mean_red": 123.63528112449801,
+        "mean_green": 126.76900665160642,
+        "mean_blue": 129.88757922314255,
+        "mean_saturation": 196.50340392821286,
+        "mean_frame_delta": 0.39066170933734934,
+        "scene_changes": 0,
+        "scene_rate_per_s": 0.0
+      },
+      "reasons": [
+        "separator score 1.00",
+        "uniformity score 1.00 from luma stddev 0.00",
+        "darkness score 1.00",
+        "context change 0.22",
+        "context texture reset 0.36",
+        "context luminance reset 0.40",
+        "strong immediate visual reset 1.00"
+      ],
+      "cautions": []
+    }
+  ],
+  "complete_segments": {
+    "mode": "complete_segments",
+    "boundaries": [
+      {
+        "boundary_index": 0,
+        "pts_s": 5.0,
+        "source_structural_event_index": 0,
+        "source_temporal_event_index": 0,
+        "separator_score": 1.0,
+        "structural_score": 0.24769098241667725,
+        "role": "structural_separator",
+        "promoted_from_ambiguous": false
+      },
+      {
+        "boundary_index": 1,
+        "pts_s": 17.2,
+        "source_structural_event_index": 1,
+        "source_temporal_event_index": 1,
+        "separator_score": 1.0,
+        "structural_score": 0.21740052118644476,
+        "role": "structural_separator",
+        "promoted_from_ambiguous": false
+      }
+    ],
+    "segments": [
+      {
+        "segment_index": 0,
+        "start_s": 0.0,
+        "end_s": 5.0,
+        "duration_s": 5.0,
+        "left_boundary_index": null,
+        "right_boundary_index": 0,
+        "nearest_broadcast_duration_s": 5.0,
+        "broadcast_duration_fit": 1.0,
+        "source_edge_segment": true
+      },
+      {
+        "segment_index": 1,
+        "start_s": 5.0,
+        "end_s": 17.2,
+        "duration_s": 12.2,
+        "left_boundary_index": 0,
+        "right_boundary_index": 1,
+        "nearest_broadcast_duration_s": 10.0,
+        "broadcast_duration_fit": 0.0,
+        "source_edge_segment": false
+      },
+      {
+        "segment_index": 2,
+        "start_s": 17.2,
+        "end_s": 22.4,
+        "duration_s": 5.199999999999999,
+        "left_boundary_index": 1,
+        "right_boundary_index": null,
+        "nearest_broadcast_duration_s": 5.0,
+        "broadcast_duration_fit": 0.9000000000000004,
+        "source_edge_segment": true
+      }
+    ],
+    "coverage": {
+      "source_duration_s": 22.4,
+      "segment_count": 3,
+      "boundary_count": 2,
+      "covered_duration_s": 22.4,
+      "uncovered_duration_s": 0.0,
+      "overlap_duration_s": 0.0,
+      "coverage_ratio": 1.0,
+      "coverage_pass": true
+    }
+  },
+  "every_separator": {
+    "mode": "every_separator",
+    "boundaries": [
+      {
+        "boundary_index": 0,
+        "pts_s": 5.0,
+        "source_structural_event_index": 0,
+        "source_temporal_event_index": 0,
+        "separator_score": 1.0,
+        "structural_score": 0.24769098241667725,
+        "role": "structural_separator",
+        "promoted_from_ambiguous": false
+      },
+      {
+        "boundary_index": 1,
+        "pts_s": 17.2,
+        "source_structural_event_index": 1,
+        "source_temporal_event_index": 1,
+        "separator_score": 1.0,
+        "structural_score": 0.21740052118644476,
+        "role": "structural_separator",
+        "promoted_from_ambiguous": false
+      }
+    ],
+    "segments": [
+      {
+        "segment_index": 0,
+        "start_s": 0.0,
+        "end_s": 5.0,
+        "duration_s": 5.0,
+        "left_boundary_index": null,
+        "right_boundary_index": 0,
+        "nearest_broadcast_duration_s": 5.0,
+        "broadcast_duration_fit": 1.0,
+        "source_edge_segment": true
+      },
+      {
+        "segment_index": 1,
+        "start_s": 5.0,
+        "end_s": 17.2,
+        "duration_s": 12.2,
+        "left_boundary_index": 0,
+        "right_boundary_index": 1,
+        "nearest_broadcast_duration_s": 10.0,
+        "broadcast_duration_fit": 0.0,
+        "source_edge_segment": false
+      },
+      {
+        "segment_index": 2,
+        "start_s": 17.2,
+        "end_s": 22.4,
+        "duration_s": 5.199999999999999,
+        "left_boundary_index": 1,
+        "right_boundary_index": null,
+        "nearest_broadcast_duration_s": 5.0,
+        "broadcast_duration_fit": 0.9000000000000004,
+        "source_edge_segment": true
+      }
+    ],
+    "coverage": {
+      "source_duration_s": 22.4,
+      "segment_count": 3,
+      "boundary_count": 2,
+      "covered_duration_s": 22.4,
+      "uncovered_duration_s": 0.0,
+      "overlap_duration_s": 0.0,
+      "coverage_ratio": 1.0,
+      "coverage_pass": true
+    }
+  }
+}

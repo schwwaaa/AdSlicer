@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "engine": "opencv-vs-legacy-plan-comparison",
+  "comparison_version": "cv4-comparison-v1",
+  "match_tolerance_s": 0.75,
+  "match_iou_min": 0.8,
+  "summary": {
+    "shadow_intervals": 1,
+    "legacy_intervals": 1,
+    "matched_intervals": 1,
+    "opencv_only_intervals": 0,
+    "legacy_only_intervals": 0,
+    "average_abs_boundary_offset_s": 0.00016666666666642627,
+    "max_abs_boundary_offset_s": 0.00033333333333285253
+  },
+  "matches": [
+    {
+      "shadow_interval_index": 0,
+      "legacy_interval_index": 0,
+      "shadow_start_s": 5.000333333333333,
+      "shadow_end_s": 17.259999999999998,
+      "legacy_start_s": 5.0,
+      "legacy_end_s": 17.259999999999998,
+      "start_offset_s": 0.00033333333333285253,
+      "end_offset_s": 0.0,
+      "intersection_over_union": 0.9999728113104948
+    }
+  ],
+  "opencv_only_interval_indices": [],
+  "legacy_only_interval_indices": []
+}
