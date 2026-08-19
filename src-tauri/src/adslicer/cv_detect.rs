@@ -9,7 +9,7 @@ use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fs;
-use std::io::{BufWriter, Write};
+use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -91,7 +91,7 @@ pub struct CvAnalysisResult {
 }
 
 
-fn sha256_file(path: &Path) -> Result<String> {
+pub fn sha256_file(path: &Path) -> Result<String> {
     let mut file = fs::File::open(path)?;
     let mut hasher = Sha256::new();
     let mut buffer = [0u8; 1024 * 1024];
@@ -278,6 +278,22 @@ pub fn analyze_video_with_opencv(_input: &Path, _config: &CvAnalysisConfig) -> R
     Err(anyhow!(
         "OpenCV analysis is not enabled. Build with --features opencv-analysis"
     ))
+}
+
+pub fn read_frame_metrics_jsonl(path: &Path) -> Result<Vec<FrameMetrics>> {
+    let file = fs::File::open(path)?;
+    let reader = BufReader::new(file);
+    let mut frames = Vec::new();
+    for (line_no, line) in reader.lines().enumerate() {
+        let line = line?;
+        if line.trim().is_empty() {
+            continue;
+        }
+        let frame: FrameMetrics = serde_json::from_str(&line)
+            .map_err(|e| anyhow!("Invalid frame metrics JSONL at line {}: {e}", line_no + 1))?;
+        frames.push(frame);
+    }
+    Ok(frames)
 }
 
 pub fn write_cv_evidence(outdir: &Path, result: &CvAnalysisResult) -> Result<Vec<PathBuf>> {

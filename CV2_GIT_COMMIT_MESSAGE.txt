@@ -1,0 +1,10 @@
+feat(opencv): add temporal evidence engine in shadow mode
+
+- interpret cached CV-1 frame metrics without decoding media again
+- group strict-black, near-black, and micro-bridged dark events
+- classify one/two-frame separators, dark intervals, fade valleys, and chromatic-dark events
+- preserve scene discontinuities as separate temporal evidence
+- record fall/rise shape, local luma context, color diagnostics, and entry/exit deltas
+- add JSON/CSV temporal event outputs with evidence-file hashing
+- add synthetic temporal ground truth, Rust runner, and independent Python reference validator
+- keep FFmpeg detector, planner, renderer, and production edit behavior unchanged

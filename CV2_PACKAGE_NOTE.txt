@@ -1,0 +1,8 @@
+CV-2 TEMPORAL EVIDENCE ENGINE
+
+- Built on the accepted current-code CV-1 baseline.
+- Does NOT change AdSlicer production cuts.
+- Reuses cached CV-1 JSONL evidence; no source-video re-decode is needed.
+- Adds temporal black/near-black/fade/chromatic-dark/scene-discontinuity events.
+- Independent reference rules pass 7/7 synthetic temporal controls.
+- Rust runtime validation still required on the development Mac before CV-2 acceptance.

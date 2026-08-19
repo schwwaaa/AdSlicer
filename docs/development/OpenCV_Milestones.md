@@ -1,35 +1,56 @@
-# AdSlicer OpenCV Milestones
+# AdSlicer OpenCV Development Milestones
 
 ## CV-0 — Stable Baseline
 Freeze representative current FFmpeg results and known misses/false positives.
 
-## CV-1 — OpenCV Evidence Probe
-Feature-gated OpenCV build, per-frame metrics, manifests, synthetic controls, and
-real VHS sample collection. **Current pass.**
+## CV-1 — OpenCV Frame Evidence Probe — ACCEPTED
+Feature-gated OpenCV build, per-frame luminance/color/black/near-black/frame-delta
+metrics, reproducible manifests, synthetic controls, and real VHS validation.
 
-## CV-2 — Production Frame Evidence Engine
-FFmpeg-authoritative decode/timestamps → OpenCV measurements → cached evidence in
-normal AdSlicer analysis runs. No planner changes yet.
+Accepted runtime results on the development Mac:
 
-## CV-3 — Frame-First Black / Near-Black Events
-Preserve one-frame/two-frame events; strict black vs near-black; noisy-black score;
-color/saturation safeguards; no duration-first gate.
+- OpenCV 4.14.0 discovered through the Rust bindings.
+- 15/15 synthetic evidence checks passed.
+- Real 99.2-second television/VHS-derived sample: 2,974/2,974 frames analyzed.
+- Existing AdSlicer detector/planner/render behavior unchanged.
 
-## CV-4 — Temporal Boundary Analysis
-Analyze neighborhoods of frames. Add fall/minimum/rise recognition, rapid fades,
-hysteresis, micro-bridging, and scene discontinuity context.
+## CV-2 — Temporal Evidence Engine — CURRENT PASS
+Interpret cached CV-1 frame metrics without re-decoding the video. Preserve temporal
+observations as explicit events:
 
-## CV-5 — FFmpeg vs OpenCV A/B Evaluation
-Run legacy and adaptive paths on the same corpus. Track recall, precision, false
-positives, frame error, and runtime.
+- strict-black intervals,
+- one/two-frame black events,
+- raised/near-black events,
+- fall → valley → rise fade shapes,
+- micro-bridged dark runs,
+- chromatic-dark diagnostics,
+- scene discontinuities,
+- entry/exit frame-delta evidence.
 
-## CV-6 — VHS Regression Corpus
-Expand real annotated clips across eras, stations, tape quality, interlace behavior,
-tracking errors, slates, dark scenes, and different commercial transition styles.
+CV-2 **does not create commercial intervals and does not change `build_plan()`**.
 
-## CV-7 — Planner Integration
-Introduce detector-neutral `BoundaryEvent` / `BoundaryEvidence` structures and let
-the existing planner consume validated OpenCV events without rewriting rendering.
+## CV-3 — Boundary Candidates + Evidence Strength
+Translate selected temporal events into detector-neutral boundary candidates. Add
+boundary timestamps, reason codes, evidence strength, ambiguity/review risk, and
+explicit separation between observation confidence and commercial-cut policy.
+
+## CV-4 — Shadow Edit Planner
+Run the validated OpenCV boundary path beside the current FFmpeg detector. Generate
+an OpenCV proposed segmentation plan for logs/A-B comparison while the legacy plan
+remains authoritative for rendering.
+
+## CV-5 — OpenCV Dry-Run Plan
+Allow OpenCV boundary candidates to drive an explicit dry-run plan. Compare proposed
+keep/remove ranges against annotated VHS material before enabling rendering.
+
+## CV-6 — OpenCV Plan Rendering
+Feed an approved OpenCV-derived plan into AdSlicer's existing FFmpeg rendering path.
+OpenCV determines evidence/boundaries; FFmpeg remains the media cutting/encoding layer.
+
+## CV-7 — VHS Regression Corpus Expansion
+Grow the real annotated corpus across eras, stations, tape quality, interlace behavior,
+tracking errors, slates, dark scenes, fades, and different commercial transition styles.
+Track precision, recall, false positives, frame error, and runtime.
 
 ## CV-8 — Source-Adaptive Calibration
 Estimate tape-specific black floor / near-black range and preserve the calibration in

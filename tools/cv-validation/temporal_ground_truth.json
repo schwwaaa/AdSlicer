@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "notes": "CV-2 validates temporal evidence classification only. These are not commercial-cut decisions.",
+  "cases": [
+    {
+      "case": "01_clean_black",
+      "required_event": {"kind": "black_interval", "start_frame": 90, "end_frame": 119}
+    },
+    {
+      "case": "02_single_black_frame",
+      "required_event": {"kind": "black_separator", "start_frame": 90, "end_frame": 90}
+    },
+    {
+      "case": "03_two_frame_near_black",
+      "required_event": {"kind": "near_black_separator", "start_frame": 90, "end_frame": 91}
+    },
+    {
+      "case": "04_temporal_luma_valley",
+      "required_event": {"kind": "fade_valley", "start_frame": 92, "end_frame": 95, "valley_frame": 94}
+    },
+    {
+      "case": "05_dark_textured_content",
+      "forbidden_kinds": ["black_interval", "black_separator", "near_black_interval", "near_black_separator", "fade_valley", "chromatic_dark"]
+    },
+    {
+      "case": "06_hard_cut_no_black",
+      "required_event": {"kind": "scene_discontinuity", "start_frame": 90, "end_frame": 90}
+    },
+    {
+      "case": "07_uniform_blue_slate",
+      "required_event": {"kind": "chromatic_dark", "start_frame": 90, "end_frame": 104}
+    }
+  ]
+}

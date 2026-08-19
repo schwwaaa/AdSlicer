@@ -93,3 +93,40 @@ On the included synthetic corpus, the expected structural weakness is visible:
 the duration-first baseline does not report the exact one-frame black control or
 the two-frame raised-black control. This is not a criticism of FFmpeg; it is the
 specific behavior the frame-first OpenCV track is intended to complement.
+
+---
+
+# CV-2 Temporal Evidence Validation
+
+After CV-1 evidence exists, run:
+
+```bash
+./run_temporal_suite.sh
+```
+
+This reuses `opencv_frame_metrics.jsonl`; it **does not decode the source media again**.
+The expected result is:
+
+```text
+CV-2 temporal checks: 7/7 passed
+```
+
+Each synthetic result gains:
+
+```text
+temporal/
+├── opencv_temporal_events.json
+├── opencv_temporal_events.csv
+└── opencv_temporal_summary.json
+```
+
+For independent troubleshooting, the development-only Python mirror can be run after
+CV-1 results exist:
+
+```bash
+python3 ./reference_temporal_analyzer.py
+python3 ./evaluate_temporal_reference.py
+```
+
+The Python mirror is not production code. It is an independent early-stage reference
+for checking that the Rust event rules have not drifted unexpectedly.
