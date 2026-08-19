@@ -1,0 +1,32 @@
+AdSlicer OpenCV Validation Report
+=================================
+Source: /Users/tgm/Documents/SPLASH/videos/adslicer-commercial-test-1.mp4
+OpenCV: 4.14.0
+Analysis config: black<=16 near-black<=32 stride=1 max-frames=all
+Frames analyzed: 2974
+Temporal events: 41
+  fade_valley: 1
+  near_black_interval: 7
+  scene_discontinuity: 33
+Boundary candidates: 12
+Evidence-only observations: 36
+  evidence_only: 36
+  review: 2
+  strong: 1
+  weak: 9
+
+Top boundary candidates:
+     33.533s | score 0.92 | strong  | fade_valley        | fade_valley
+     79.646s | score 0.74 | review  | interval_exit      | near_black_interval
+     23.590s | score 0.62 | review  | interval_exit      | near_black_interval
+     19.987s | score 0.58 | weak    | interval_entry     | near_black_interval
+     64.264s | score 0.58 | weak    | interval_exit      | near_black_interval
+     79.246s | score 0.58 | weak    | interval_entry     | near_black_interval
+     94.761s | score 0.54 | weak    | interval_entry     | near_black_interval
+     63.964s | score 0.52 | weak    | interval_entry     | near_black_interval
+     74.841s | score 0.52 | weak    | interval_entry     | near_black_interval
+     75.309s | score 0.52 | weak    | interval_exit      | near_black_interval
+     18.385s | score 0.50 | weak    | interval_exit      | near_black_interval
+     22.689s | score 0.50 | weak    | interval_entry     | near_black_interval
+
+Production cut plan modified: NO

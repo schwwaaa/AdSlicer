@@ -1,0 +1,19 @@
+{
+  "total_observations": 48,
+  "total_candidates": 12,
+  "evidence_only": 36,
+  "counts_by_tier": {
+    "evidence_only": 36,
+    "review": 2,
+    "strong": 1,
+    "weak": 9
+  },
+  "counts_by_role": {
+    "fade_valley": 1,
+    "interval_entry": 7,
+    "interval_exit": 7,
+    "scene_only": 33
+  },
+  "first_candidate_pts_s": 18.385033333333332,
+  "last_candidate_pts_s": 94.76133333333334
+}

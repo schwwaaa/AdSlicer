@@ -274,3 +274,95 @@ AdSlicer is built with [Tauri](https://tauri.app/), Rust, and [FFmpeg](https://f
   <strong>AdSlicer</strong><br>
   Preserve the broadcast. Inspect the boundary. Export with intent.
 </p>
+
+---
+
+## CV-3 — Shadow Boundary Candidates
+
+CV-3 consumes the temporal JSON created by CV-2 and ranks potential boundary
+points. It remains shadow-only and does not alter AdSlicer's production plan.
+
+### Synthetic validation
+
+From `tools/cv-validation`:
+
+```bash
+./run_probe_suite.sh
+./run_temporal_suite.sh
+./run_boundary_suite.sh
+```
+
+Expected final line:
+
+```text
+CV-3 boundary checks: 7/7 passed
+```
+
+### Real cached evidence
+
+If CV-2 produced:
+
+```text
+cv-real-temporal/opencv_temporal_events.json
+```
+
+run from the project root:
+
+```bash
+cargo run \
+  --manifest-path src-tauri/Cargo.toml \
+  --example adslicer_cv_boundary \
+  -- "cv-real-temporal/opencv_temporal_events.json" \
+     "cv-real-boundary"
+```
+
+Outputs:
+
+```text
+cv-real-boundary/opencv_boundary_candidates.json
+cv-real-boundary/opencv_boundary_summary.json
+cv-real-boundary/opencv_boundary_candidates.csv
+cv-real-boundary/opencv_boundary_evidence_only.csv
+```
+
+The `boundary_score` is a versioned development heuristic, not a calibrated probability.
+
+## OpenCV development validation
+
+For current OpenCV development passes, use the stable root-level test entry point:
+
+```bash
+./test-opencv.sh "/path/to/video.mp4"
+```
+
+Run the complete synthetic regression with:
+
+```bash
+./test-opencv.sh --synthetic
+```
+
+See `docs/development/CV3_UNIFIED_TESTING.md` for details.
+
+---
+
+## Unified OpenCV validation command
+
+For CV-1 through CV-3 testing, use the source video directly:
+
+```bash
+./test-opencv.sh --input "/path/to/video.mp4"
+```
+
+Optional custom output:
+
+```bash
+./test-opencv.sh --input "/path/to/video.mp4" --output "/path/to/output"
+```
+
+Synthetic regression:
+
+```bash
+./test-opencv.sh --synthetic
+```
+
+Do not manually chain JSONL/JSON files between CV stages. Intermediate files are diagnostics only. The primary result is `OPENCV_TEST_REPORT.txt` in the generated output folder.

@@ -1,0 +1,25 @@
+CV-3 development reference — previously validated 2,974-frame real TV/VHS-derived sample
+
+CV-2 temporal events: 41
+  near_black_interval: 7
+  fade_valley: 1
+  scene_discontinuity: 33
+
+CV-3 scored observations: 48
+  strong: 1
+  review: 2
+  weak: 9
+  evidence_only: 36
+
+CV-3 boundary candidates: 12
+
+Highest-ranked development references:
+  ~33.533 s  score 0.92  strong  fade_valley
+  ~79.646 s  score 0.74  review  near-black interval exit
+  ~23.590 s  score 0.62  review  near-black interval exit
+
+The remaining ordinary scene discontinuities are intentionally held below the
+candidate threshold unless corroborated by stronger dark/fade evidence.
+
+These scores are heuristic development scores, not calibrated probabilities and
+not active edit decisions.

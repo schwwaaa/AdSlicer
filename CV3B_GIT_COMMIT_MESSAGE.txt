@@ -1,0 +1,9 @@
+test(opencv): unify CV validation behind one media command
+
+- add end-to-end OpenCV validation pipeline for CV-1 through CV-3
+- decode real media once and pass evidence between stages in memory
+- remove JSONL/JSON file hunting from normal validation workflow
+- add stable ./test-opencv.sh entry point for real media and synthetic regression
+- generate one consolidated OpenCV test report plus detailed stage artifacts
+- preserve intermediate evidence files for troubleshooting and reproducibility
+- keep production AdSlicer detection, planning, rendering, and UI behavior unchanged

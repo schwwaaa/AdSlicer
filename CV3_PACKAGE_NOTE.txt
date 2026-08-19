@@ -1,0 +1,11 @@
+AdSlicer CV Pass 03 — Shadow Boundary Candidates
+
+Baseline: accepted CV-2 Temporal Evidence Engine, itself based on the user's current AdSlicer code.
+
+Production behavior remains unchanged. CV-3 adds a shadow candidate scoring layer only.
+
+Runtime validation status:
+- CV-1 Rust/OpenCV: accepted on user's macOS machine (15/15)
+- CV-2 Rust temporal engine: accepted on user's real 2,974-frame evidence file
+- CV-3 scoring logic: independently checked against the seven synthetic controls
+- CV-3 Rust example: requires runtime confirmation on user's Mac because this packaging environment has no Cargo toolchain

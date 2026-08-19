@@ -1,0 +1,14 @@
+CV-3C — Unified CLI robustness update
+
+This package replaces the fragile file-to-file validation workflow with a stable source-media CLI.
+
+Changes:
+- test-opencv.sh now supports explicit --input/--output flags plus backward-compatible positional form.
+- supports --black-luma, --near-black, --stride, and --max-frames overrides.
+- handles quoted paths and spaces correctly.
+- normalizes input paths to absolute paths before Cargo execution.
+- auto-discovers Homebrew OpenCV/pkg-config and LLVM paths when possible.
+- Rust adslicer_cv_pipeline now parses the same explicit flags directly.
+- final report records the exact analysis configuration.
+
+No production detector/planner/render behavior is changed.

@@ -1,0 +1,11 @@
+chore(opencv): unify validation CLI around source media
+
+- replace manual CV stage chaining with one source-media test command
+- add explicit --input and --output argument handling
+- preserve backward-compatible positional invocation
+- support black/near-black thresholds, stride, and max-frame overrides
+- normalize quoted/space-containing media paths safely
+- auto-discover Homebrew OpenCV and LLVM paths for fresh terminals
+- pass CV-1 -> CV-2 -> CV-3 data in memory from a single decode
+- record exact analysis config in the unified test report
+- keep production AdSlicer detector, planner, renderer, and frontend unchanged

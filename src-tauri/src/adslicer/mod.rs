@@ -6,3 +6,5 @@ pub mod models;
 pub mod cv_detect;
 
 pub mod cv_temporal;
+
+pub mod cv_boundary;

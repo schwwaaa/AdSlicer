@@ -1,0 +1,15 @@
+CV-3B — Unified OpenCV Test Harness
+
+This is a testing-workflow correction on top of CV-3. It does not advance the production cut planner.
+
+Normal testing is now one stable command from the project root:
+
+  ./test-opencv.sh "/path/to/video.mp4"
+
+The command automatically runs CV-1 frame evidence -> CV-2 temporal analysis -> CV-3 shadow boundary scoring in one process. Intermediate JSONL/JSON files are still generated for troubleshooting but are not manually supplied between stages.
+
+Synthetic regression:
+
+  ./test-opencv.sh --synthetic
+
+The stable test entry point should be retained for later OpenCV milestones so future stages can be appended behind it without changing the user's testing workflow.

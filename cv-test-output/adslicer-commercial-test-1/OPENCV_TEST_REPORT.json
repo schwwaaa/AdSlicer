@@ -1,0 +1,241 @@
+{
+  "analysis_config": {
+    "black_luma_max": 16,
+    "max_analyzed_frames": null,
+    "near_black_luma_max": 32,
+    "sample_stride": 1
+  },
+  "boundaries": {
+    "counts_by_role": {
+      "fade_valley": 1,
+      "interval_entry": 7,
+      "interval_exit": 7,
+      "scene_only": 33
+    },
+    "counts_by_tier": {
+      "evidence_only": 36,
+      "review": 2,
+      "strong": 1,
+      "weak": 9
+    },
+    "evidence_only": 36,
+    "first_candidate_pts_s": 18.385033333333332,
+    "last_candidate_pts_s": 94.76133333333334,
+    "total_candidates": 12,
+    "total_observations": 48
+  },
+  "engine": "adslicer-opencv-validation-pipeline",
+  "outputs": {
+    "boundaries": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/03-boundary-candidates/opencv_boundary_candidates.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/03-boundary-candidates/opencv_boundary_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/03-boundary-candidates/opencv_boundary_candidates.csv",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/03-boundary-candidates/opencv_boundary_evidence_only.csv"
+    ],
+    "frame_evidence": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/01-frame-evidence/opencv_analysis_manifest.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/01-frame-evidence/opencv_frame_metrics.jsonl",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/01-frame-evidence/opencv_frame_metrics.csv"
+    ],
+    "temporal": [
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/02-temporal-events/opencv_temporal_events.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/02-temporal-events/opencv_temporal_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-CV-Pass-03-unified-cli/cv-test-output/adslicer-commercial-test-1/02-temporal-events/opencv_temporal_events.csv"
+    ]
+  },
+  "production_cut_plan_modified": false,
+  "schema_version": 1,
+  "source": {
+    "file": "adslicer-commercial-test-1.mp4",
+    "fps": 29.97002997002997,
+    "frames_analyzed": 2974,
+    "height": 480,
+    "opencv_version": "4.14.0",
+    "path": "/Users/tgm/Documents/SPLASH/videos/adslicer-commercial-test-1.mp4",
+    "sha256": "d7e09974363edb61935a6c6d72a63d672b3f222be294d6818733d72ec25ee586",
+    "size_bytes": 192581402,
+    "width": 640
+  },
+  "stages": [
+    "cv1_frame_evidence",
+    "cv2_temporal_evidence",
+    "cv3_shadow_boundary_candidates"
+  ],
+  "temporal": {
+    "counts_by_kind": {
+      "fade_valley": 1,
+      "near_black_interval": 7,
+      "scene_discontinuity": 33
+    },
+    "first_event_pts_s": 5.038366666666667,
+    "last_event_pts_s": 95.095,
+    "total_events": 41
+  },
+  "top_candidates": [
+    {
+      "cautions": [],
+      "frame": 1005,
+      "reasons": [
+        "source temporal event fade_valley",
+        "visual edge delta 72.73",
+        "luma contrast 31.17",
+        "fade shape: 5 falling / 4 rising steps",
+        "two-sided luminance valley: fall 31.17, rise 102.64"
+      ],
+      "role": "fade_valley",
+      "score": 0.9199999999999999,
+      "source_event": "fade_valley",
+      "tier": "strong",
+      "time_s": 33.5335
+    },
+    {
+      "cautions": [],
+      "frame": 2387,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "near-black evidence 1.000",
+        "strong visual edge delta 201.95",
+        "strong luma contrast 207.59"
+      ],
+      "role": "interval_exit",
+      "score": 0.74,
+      "source_event": "near_black_interval",
+      "tier": "review",
+      "time_s": 79.64623333333334
+    },
+    {
+      "cautions": [],
+      "frame": 707,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "visual edge delta 54.32",
+        "strong luma contrast 47.74"
+      ],
+      "role": "interval_exit",
+      "score": 0.62,
+      "source_event": "near_black_interval",
+      "tier": "review",
+      "time_s": 23.590233333333334
+    },
+    {
+      "cautions": [],
+      "frame": 599,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "visual edge delta 43.82",
+        "luma contrast 38.80"
+      ],
+      "role": "interval_entry",
+      "score": 0.5800000000000001,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 19.986633333333334
+    },
+    {
+      "cautions": [],
+      "frame": 1926,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "near-black evidence 1.000",
+        "luma contrast 24.53"
+      ],
+      "role": "interval_exit",
+      "score": 0.5800000000000001,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 64.2642
+    },
+    {
+      "cautions": [],
+      "frame": 2375,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "near-black evidence 1.000",
+        "luma contrast 39.90"
+      ],
+      "role": "interval_entry",
+      "score": 0.5800000000000001,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 79.24583333333334
+    },
+    {
+      "cautions": [],
+      "frame": 2840,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "strong luma contrast 72.54"
+      ],
+      "role": "interval_entry",
+      "score": 0.54,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 94.76133333333334
+    },
+    {
+      "cautions": [],
+      "frame": 1917,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "near-black evidence 1.000"
+      ],
+      "role": "interval_entry",
+      "score": 0.52,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 63.9639
+    },
+    {
+      "cautions": [],
+      "frame": 2243,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "near-black evidence 0.998"
+      ],
+      "role": "interval_entry",
+      "score": 0.52,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 74.84143333333336
+    },
+    {
+      "cautions": [],
+      "frame": 2257,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "near-black evidence 0.998"
+      ],
+      "role": "interval_exit",
+      "score": 0.52,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 75.30856666666666
+    },
+    {
+      "cautions": [],
+      "frame": 551,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "luma contrast 23.02"
+      ],
+      "role": "interval_exit",
+      "score": 0.5,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 18.385033333333332
+    },
+    {
+      "cautions": [],
+      "frame": 680,
+      "reasons": [
+        "source temporal event near_black_interval",
+        "luma contrast 26.75"
+      ],
+      "role": "interval_entry",
+      "score": 0.5,
+      "source_event": "near_black_interval",
+      "tier": "weak",
+      "time_s": 22.689333333333334
+    }
+  ]
+}

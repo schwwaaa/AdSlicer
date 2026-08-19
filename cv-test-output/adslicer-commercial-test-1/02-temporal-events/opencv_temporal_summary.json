@@ -1,0 +1,10 @@
+{
+  "total_events": 41,
+  "counts_by_kind": {
+    "fade_valley": 1,
+    "near_black_interval": 7,
+    "scene_discontinuity": 33
+  },
+  "first_event_pts_s": 5.038366666666667,
+  "last_event_pts_s": 95.095
+}

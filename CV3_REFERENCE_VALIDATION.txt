@@ -1,0 +1,29 @@
+CV-3 independent scoring mirror — synthetic corpus
+
+[PASS] 01_clean_black
+       interval_entry score 0.90
+       interval_exit  score 0.90
+
+[PASS] 02_single_black_frame
+       separator_anchor frame 90 score 1.00
+
+[PASS] 03_two_frame_near_black
+       separator_anchor frame 90 score 1.00
+
+[PASS] 04_temporal_luma_valley
+       fade_valley frame 94 score 1.00
+
+[PASS] 05_dark_textured_content
+       no boundary candidates
+
+[PASS] 06_hard_cut_no_black
+       scene_discontinuity preserved as evidence-only; no boundary candidate
+
+[PASS] 07_uniform_blue_slate
+       chromatic_dark preserved as evidence-only; no boundary candidate
+
+CV-3 reference boundary checks: 7/7 passed
+
+NOTE: This is an independent Python/OpenCV mirror of the scoring rules used to
+validate the design in the packaging environment. The Rust example still needs
+runtime confirmation on the user's Mac because Cargo is unavailable here.
