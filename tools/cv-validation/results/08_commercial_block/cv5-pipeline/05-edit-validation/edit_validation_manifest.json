@@ -36,9 +36,9 @@
       "after_context_end_s": 18.259999999999998,
       "source_has_audio": false,
       "status": "rendered",
-      "removed_content_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4",
+      "removed_content_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4",
       "removed_content_duration_s": 12.266667,
-      "result_preview_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4",
+      "result_preview_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4",
       "result_preview_duration_s": 2.0,
       "error": null
     }

@@ -39,7 +39,7 @@
         "error": null,
         "mode": "complete_segments",
         "output_duration_s": 3.0,
-        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
+        "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
         "planned_duration_s": 3.0,
         "segment_index": 0,
         "start_s": 0.0,
@@ -50,7 +50,7 @@
         "error": null,
         "mode": "complete_segments",
         "output_duration_s": 15.5,
-        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
+        "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
         "planned_duration_s": 15.5,
         "segment_index": 1,
         "start_s": 3.0,
@@ -61,7 +61,7 @@
         "error": null,
         "mode": "complete_segments",
         "output_duration_s": 3.2,
-        "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
+        "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
         "planned_duration_s": 3.1999999999999993,
         "segment_index": 2,
         "start_s": 18.5,
@@ -84,37 +84,37 @@
   "legacy_default_intervals": null,
   "outputs": {
     "boundaries": [
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_candidates.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_summary.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_candidates.csv",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_evidence_only.csv"
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_candidates.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_candidates.csv",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/03-boundary-candidates/opencv_boundary_evidence_only.csv"
     ],
     "comparison": [],
-    "edit_validation_dir": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/05-edit-validation",
+    "edit_validation_dir": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/05-edit-validation",
     "frame_evidence": [
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/01-frame-evidence/opencv_analysis_manifest.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/01-frame-evidence/opencv_frame_metrics.jsonl",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/01-frame-evidence/opencv_frame_metrics.csv"
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/01-frame-evidence/opencv_analysis_manifest.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/01-frame-evidence/opencv_frame_metrics.jsonl",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/01-frame-evidence/opencv_frame_metrics.csv"
     ],
     "legacy_plan": [],
     "shadow_plan": [
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_plan.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_plan_summary.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_plan.csv",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_rejected.csv"
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_plan.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_plan_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_plan.csv",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/04-shadow-edit-plan/opencv_shadow_rejected.csv"
     ],
-    "structural_dir": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation",
+    "structural_dir": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation",
     "structural_segmentation": [
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/opencv_structural_segmentation.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/opencv_structural_summary.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/opencv_structural_events.csv",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/complete_segments_plan.csv",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/every_separator_plan.csv"
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/opencv_structural_segmentation.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/opencv_structural_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/opencv_structural_events.csv",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/complete_segments_plan.csv",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/every_separator_plan.csv"
     ],
     "temporal": [
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/02-temporal-events/opencv_temporal_events.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/02-temporal-events/opencv_temporal_summary.json",
-      "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/02-temporal-events/opencv_temporal_events.csv"
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/02-temporal-events/opencv_temporal_events.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/02-temporal-events/opencv_temporal_summary.json",
+      "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/02-temporal-events/opencv_temporal_events.csv"
     ]
   },
   "plan_comparison": null,
@@ -185,7 +185,7 @@
     "frames_analyzed": 651,
     "height": 240,
     "opencv_version": "4.14.0",
-    "path": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/10_raised_uniform_separator.mkv",
+    "path": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/corpus/10_raised_uniform_separator.mkv",
     "sha256": "b5284914f3c2676ceeaf09a561c0deaab72cad8badcbe0959a0283bf3751c1d3",
     "size_bytes": 2778281,
     "width": 320

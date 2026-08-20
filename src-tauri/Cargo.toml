@@ -21,7 +21,7 @@ sha2 = "0.10"
 opencv = { version = "0.100.1", optional = true, default-features = false, features = ["clang-runtime", "imgproc", "videoio"] }
 
 [features]
-default = []
+default = ["opencv-analysis"]
 opencv-analysis = ["dep:opencv"]
 
 # Keep this Tauri package isolated from unrelated Cargo workspaces in parent directories.

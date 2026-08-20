@@ -6,6 +6,7 @@
 #  Usage:
 #    ./build.sh                    # Build for current OS (auto-detect)
 #    ./build.sh setup-bins         # Download static ffmpeg/ffprobe sidecars
+#    ./build.sh dev                # Run Tauri dev with OpenCV discovery configured
 #    ./build.sh mac-universal      # macOS arm64 + x86_64 → universal .app + .dmg
 #    ./build.sh mac-arm            # macOS arm64 only
 #    ./build.sh mac-x86            # macOS x86_64 only
@@ -45,6 +46,38 @@ detect_os() {
     MINGW*|MSYS*|CYGWIN*) echo "windows" ;;
     *)       echo "unknown" ;;
   esac
+}
+
+
+# CV-7: configure the same Homebrew OpenCV/libclang discovery used by the
+# unified validation launcher. Existing user environment values always win.
+configure_opencv_env() {
+  if [[ "$(detect_os)" != "mac" ]] || ! command -v brew >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if command -v pkg-config >/dev/null 2>&1 && ! pkg-config --exists opencv4 2>/dev/null; then
+    local opencv_prefix=""
+    if opencv_prefix="$(brew --prefix opencv@4 2>/dev/null)"; then
+      export PKG_CONFIG_PATH="${opencv_prefix}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
+    elif opencv_prefix="$(brew --prefix opencv 2>/dev/null)"; then
+      export PKG_CONFIG_PATH="${opencv_prefix}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
+    fi
+  fi
+
+  if [[ -z "${LIBCLANG_PATH:-}" ]]; then
+    local llvm_prefix=""
+    if llvm_prefix="$(brew --prefix llvm 2>/dev/null)"; then
+      export LIBCLANG_PATH="${llvm_prefix}/lib"
+    fi
+  fi
+}
+
+run_dev() {
+  configure_opencv_env
+  log "Running AdSlicer dev build with OpenCV Adaptive enabled…"
+  cd "${TAURI_DIR}"
+  cargo tauri dev
 }
 
 # ── setup-bins: download static ffmpeg/ffprobe sidecars ──────
@@ -236,6 +269,7 @@ setup_bins_linux_x86_64() {
 # ── Build functions ───────────────────────────────────────────
 
 build_mac_arm() {
+  configure_opencv_env
   log "Building macOS arm64 (Apple Silicon)…"
   require_rust_target "aarch64-apple-darwin"
   cd "${TAURI_DIR}"
@@ -244,6 +278,7 @@ build_mac_arm() {
 }
 
 build_mac_x86() {
+  configure_opencv_env
   log "Building macOS x86_64 (Intel)…"
   require_rust_target "x86_64-apple-darwin"
   cd "${TAURI_DIR}"
@@ -373,13 +408,14 @@ TARGET="${1:-auto}"
 case "${TARGET}" in
   auto)           build_current_os ;;
   setup-bins)     setup_bins ;;
+  dev)            run_dev ;;
   mac-universal)  build_mac_universal ;;
   mac-arm)        build_mac_arm ;;
   mac-x86)        build_mac_x86 ;;
   windows)        build_windows ;;
   all)            build_all ;;
   *)
-    echo "Usage: $0 [auto|setup-bins|mac-universal|mac-arm|mac-x86|windows|all]"
+    echo "Usage: $0 [auto|setup-bins|dev|mac-universal|mac-arm|mac-x86|windows|all]"
     exit 1
     ;;
 esac

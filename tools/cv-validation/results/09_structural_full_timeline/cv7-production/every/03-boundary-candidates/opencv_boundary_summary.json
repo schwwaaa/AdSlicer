@@ -1,0 +1,14 @@
+{
+  "total_observations": 8,
+  "total_candidates": 8,
+  "evidence_only": 0,
+  "counts_by_tier": {
+    "strong": 8
+  },
+  "counts_by_role": {
+    "interval_entry": 4,
+    "interval_exit": 4
+  },
+  "first_candidate_pts_s": 3.0,
+  "last_candidate_pts_s": 48.667
+}

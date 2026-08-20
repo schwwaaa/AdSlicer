@@ -54,5 +54,7 @@
     "loudnorm": false,
     "deinterlace": false,
     "scaleWidth": 0
-  }
+  },
+  "detectionEngine": "legacy",
+  "segmentationPolicy": "complete_segments"
 }

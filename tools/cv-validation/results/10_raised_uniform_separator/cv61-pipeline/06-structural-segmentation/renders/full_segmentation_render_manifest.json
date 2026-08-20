@@ -25,7 +25,7 @@
       "start_s": 0.0,
       "end_s": 3.0,
       "planned_duration_s": 3.0,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
       "output_duration_s": 3.0,
       "status": "rendered",
       "error": null
@@ -36,7 +36,7 @@
       "start_s": 3.0,
       "end_s": 18.5,
       "planned_duration_s": 15.5,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
       "output_duration_s": 15.5,
       "status": "rendered",
       "error": null
@@ -47,7 +47,7 @@
       "start_s": 18.5,
       "end_s": 21.7,
       "planned_duration_s": 3.1999999999999993,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/10_raised_uniform_separator/cv61-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
       "output_duration_s": 3.2,
       "status": "rendered",
       "error": null

@@ -812,3 +812,75 @@ pub fn export_chapters_only(
     emit(&format!("Chaptered file → {}", out_path.display()));
     Ok(out_path)
 }
+
+// ─── OpenCV structural-segment production export (CV-7) ──────────────────────
+//
+// OpenCV Adaptive produces a full-coverage structural timeline. It does not yet
+// assign semantic "show" / "commercial" labels, so production export writes
+// each selected segment independently instead of inventing classifications.
+
+pub fn write_segment_ffmeta(outdir: &Path, segments: &[CutInterval]) -> Result<PathBuf> {
+    let logs_dir = outdir.join("logs");
+    fs::create_dir_all(&logs_dir)?;
+    let path = logs_dir.join("chapters.ffmeta");
+    let mut f = fs::File::create(&path)?;
+    writeln!(f, ";FFMETADATA1")?;
+    for (i, segment) in segments.iter().enumerate() {
+        let start_ms = (segment.start * 1000.0).round() as i64;
+        let end_ms = (segment.end * 1000.0).round() as i64;
+        writeln!(f, "\n[CHAPTER]")?;
+        writeln!(f, "TIMEBASE=1/1000")?;
+        writeln!(f, "START={start_ms}")?;
+        writeln!(f, "END={end_ms}")?;
+        writeln!(f, "title=Segment {}", i + 1)?;
+    }
+    f.flush()?;
+    Ok(path)
+}
+
+pub fn export_timeline_segments(
+    ffmpeg:      &Path,
+    input:       &str,
+    outdir:      &Path,
+    base:        &str,
+    segments:    &[CutInterval],
+    enc:         &EncodeSettings,
+    preview_dur: f64,
+    emit:        &dyn Fn(&str),
+) -> Result<Vec<PathBuf>> {
+    let segment_dir = outdir.join("segments");
+    fs::create_dir_all(&segment_dir)?;
+    let mut paths = Vec::with_capacity(segments.len());
+
+    for (idx, segment) in segments.iter().enumerate() {
+        let dst = safe_out(&segment_dir.join(format!("{}_segment_{:04}.mp4", base, idx + 1)));
+        let preview_label = if preview_dur > 0.0 {
+            format!(" [preview ≤{:.0}s]", preview_dur)
+        } else {
+            String::new()
+        };
+        emit(&format!(
+            "Cut SEGMENT {:02}: {} -> {} ({}){} [{}] -> {}",
+            idx + 1,
+            format_ts(segment.start),
+            format_ts(segment.end),
+            format_ts(segment.duration()),
+            preview_label,
+            segment.signals.join(", "),
+            dst.display(),
+        ));
+        ffmpeg_cut(
+            ffmpeg,
+            input,
+            segment.start,
+            segment.end,
+            &dst,
+            enc,
+            false,
+            preview_dur,
+        )?;
+        paths.push(dst);
+    }
+
+    Ok(paths)
+}

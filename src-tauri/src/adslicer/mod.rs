@@ -16,3 +16,5 @@ pub mod cv_edit_validation;
 pub mod cv_structural;
 #[cfg(feature = "opencv-analysis")]
 pub mod cv_segment_validation;
+
+pub mod cv_production;

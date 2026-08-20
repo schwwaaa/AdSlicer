@@ -1,0 +1,16 @@
+feat(opencv): integrate adaptive structural segmentation into production
+
+- add OpenCV Adaptive and Legacy engine selection to the normal AdSlicer job
+- make OpenCV Adaptive the default engine with Complete Segments as the default policy
+- expose Complete Segments and Every Separator in the application UI
+- promote the validated CV-1/CV-2/CV-3/CV-6.1a analysis path into production
+- preserve the original Legacy processor unchanged as a rollout fallback
+- enforce zero-loss timeline coverage before any OpenCV production render
+- export OpenCV structural results as independent full-timeline segments without inventing show/commercial labels
+- reuse the existing FFmpeg cut/encode path for structural segment exports
+- preserve Dry Run and Chapters behavior for OpenCV Adaptive
+- write OpenCV evidence, temporal, boundary, structural, and production manifests automatically under logs/opencv
+- disable Legacy-only tuning controls while OpenCV Adaptive is selected
+- keep existing Legacy presets explicitly attached to the Legacy engine
+- extend the unified synthetic regression command with CV-7 production integration checks
+- add Homebrew OpenCV/libclang discovery to the build helper and document the new production workflow

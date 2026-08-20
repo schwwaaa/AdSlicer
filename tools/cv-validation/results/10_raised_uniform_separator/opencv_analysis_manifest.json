@@ -3,7 +3,7 @@
   "engine": "opencv-evidence-probe",
   "app_version": "0.1.0",
   "source_file": "10_raised_uniform_separator.mkv",
-  "source_path": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/10_raised_uniform_separator.mkv",
+  "source_path": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/corpus/10_raised_uniform_separator.mkv",
   "source_size_bytes": 2778281,
   "source_sha256": "b5284914f3c2676ceeaf09a561c0deaab72cad8badcbe0959a0283bf3751c1d3",
   "opencv_version": "4.14.0",

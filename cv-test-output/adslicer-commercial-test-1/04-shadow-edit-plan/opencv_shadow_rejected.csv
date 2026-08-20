@@ -1,6 +1,0 @@
-start_anchor_s,end_anchor_s,duration_s,start_observation_index,end_observation_index,reason
-18.385033,19.986633,1.861600,5,6,"duration 1.862s below min_commercial 5.000s"
-18.385033,22.689333,4.564300,5,9,"duration 4.564s below min_commercial 5.000s"
-75.341933,79.245833,4.163900,37,38,"duration 4.164s below min_commercial 5.000s"
-33.533500,64.164100,30.890600,18,35,"would leave -0.260s preserved fragment below min_show_segment 30.000s"
-79.679600,94.661233,15.241633,39,46,"would leave 4.578s preserved fragment below min_show_segment 30.000s"

@@ -112,6 +112,30 @@
                     </div>
                 </div>
 
+                <!-- Detection Engine panel (CV-7) -->
+                <div class="panel-wrap">
+                    <span class="panel-label">Detection / Segmentation Engine</span>
+                    <div class="panel-outer">
+                        <div class="row">
+                            <label data-tip="Choose the analysis engine. OpenCV Adaptive is the new frame-first VHS/broadcast segmentation engine. Legacy preserves the original FFmpeg detector and show/commercial planner.">Engine</label>
+                            <select id="detectionEngine">
+                                <option value="opencv_adaptive" selected>OpenCV Adaptive</option>
+                                <option value="legacy">Legacy</option>
+                            </select>
+                        </div>
+                        <div class="row" id="segmentationPolicyRow">
+                            <label data-tip="Complete Segments preserves complete commercials/promos/program pieces across internal fades. Every Separator splits at every sufficiently strong separator-like event.">OpenCV Policy</label>
+                            <select id="segmentationPolicy">
+                                <option value="complete_segments" selected>Complete Segments</option>
+                                <option value="every_separator">Every Separator</option>
+                            </select>
+                        </div>
+                        <div class="engine-note" id="engineNote">
+                            OpenCV Adaptive uses the validated CV-6.1a structural model and guarantees full timeline coverage. Legacy tuning controls remain available as a fallback.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Black Frame Detection panel -->
                 <div class="panel-wrap">
                     <span class="panel-label">Black Frame Detection</span>
@@ -219,9 +243,9 @@
                     <div class="panel-outer">
 
                         <div class="row">
-                            <label data-tip="Output mode. Cut: remove commercials, export clean show + isolated ad clips. Chapters: embed chapter markers into a copy of the source without removing anything — full broadcast preserved with navigation.">Output Mode</label>
+                            <label data-tip="Output mode. OpenCV Adaptive: Segments exports the selected full-coverage structural clips. Legacy: Cut removes commercials and exports a clean show + isolated ad clips. Chapters preserves the full source and embeds navigation markers.">Output Mode</label>
                             <select id="outputMode">
-              <option value="cut" selected>Cut  (remove commercials)</option>
+              <option id="cutModeOption" value="cut" selected>Segments  (full timeline)</option>
               <option value="chapters">Chapters only  (preserve full broadcast)</option>
             </select>
                         </div>

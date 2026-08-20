@@ -11,7 +11,7 @@ use walkdir::WalkDir;
 
 use crate::adslicer::cut::{
     build_plan, export_chapters_only, export_commercials, export_show,
-    format_ts, write_dataset, write_logs,
+    export_timeline_segments, format_ts, write_dataset, write_logs, write_segment_ffmeta,
 };
 use crate::adslicer::models::EncodeSettings;
 use crate::adslicer::detect::{
@@ -19,6 +19,7 @@ use crate::adslicer::detect::{
     run_blackdetect, run_scenechange, run_silencedetect, run_uniformdetect,
 };
 use crate::adslicer::models::RunMeta;
+use crate::adslicer::cv_production::{build_opencv_production_plan, CvProductionPolicy};
 
 const APP_VERSION: &str = "0.1.0";
 
@@ -38,6 +39,12 @@ pub struct JobParams {
     pub outdir:            String,
     #[allow(dead_code)]
     pub media_type:        String,
+    /// Detection engine: "legacy" or "opencv_adaptive".
+    #[serde(default = "default_detection_engine")]
+    pub detection_engine:  String,
+    /// OpenCV structural policy: "complete_segments" or "every_separator".
+    #[serde(default = "default_segmentation_policy")]
+    pub segmentation_policy: String,
     pub black_min_dur:     f64,
     pub pix_th:            f64,
     pub pic_th:            f64,
@@ -122,6 +129,8 @@ pub struct JobParams {
 
 }
 
+fn default_detection_engine() -> String { "opencv_adaptive".to_string() }
+fn default_segmentation_policy() -> String { "complete_segments".to_string() }
 fn default_silence_noise_db()  -> f64 { -40.0 }
 fn default_output_mode()       -> String { "cut".to_string() }
 fn default_silence_min_dur()   -> f64 {   0.5 }
@@ -208,7 +217,7 @@ fn collect_inputs(folder: &str, glob_pattern: &str) -> Vec<PathBuf> {
 
 // ─── Single-file processor ────────────────────────────────────────────────────
 
-fn process_one(
+fn process_one_legacy(
     window: &Window, ffmpeg: &PathBuf, ffprobe: &PathBuf,
     input: &str, params: &JobParams, ffmpeg_version: &str,
 ) -> Result<()> {
@@ -484,6 +493,120 @@ fn process_one(
     }
 
     Ok(())
+}
+
+
+// ─── OpenCV Adaptive production path (CV-7) ──────────────────────────────────
+
+fn process_one_opencv(
+    window: &Window, ffmpeg: &PathBuf, _ffprobe: &PathBuf,
+    input: &str, params: &JobParams,
+) -> Result<()> {
+    let input_path = std::path::Path::new(input);
+    let base = input_path.file_stem().unwrap_or_default().to_string_lossy().to_string();
+    let outdir = std::path::Path::new(&params.outdir).join(&base);
+    std::fs::create_dir_all(&outdir)?;
+    let emit = |msg: &str| emit_log(window, msg);
+
+    let policy = CvProductionPolicy::from_param(&params.segmentation_policy)?;
+    emit(&format!("Analyzing with OpenCV Adaptive: {}", input));
+    emit(&format!("Segmentation policy: {}", policy.display_name()));
+    emit("OpenCV Adaptive uses validated CV-6.1a thresholds; Legacy detector tuning fields are ignored.");
+
+    let diagnostics_root = outdir.join("logs").join("opencv");
+    let cv_plan = build_opencv_production_plan(input_path, &diagnostics_root, policy)?;
+
+    emit(&format!("OpenCV: {}", cv_plan.opencv_version));
+    emit(&format!("Frames decoded/analyzed: {}/{}", cv_plan.frames_decoded, cv_plan.frames_analyzed));
+    emit(&format!("Structural events: {}", cv_plan.structural_events));
+    emit(&format!("Selected boundaries: {}", cv_plan.structural_boundaries));
+    emit(&format!("Plan: {} full-coverage segments", cv_plan.segments.len()));
+    emit(&format!(
+        "Coverage: {} | source {:.3}s | covered {:.3}s | uncovered {:.6}s | overlap {:.6}s",
+        if cv_plan.coverage.coverage_pass { "PASS" } else { "FAIL" },
+        cv_plan.coverage.source_duration_s,
+        cv_plan.coverage.covered_duration_s,
+        cv_plan.coverage.uncovered_duration_s,
+        cv_plan.coverage.overlap_duration_s,
+    ));
+
+    for (i, segment) in cv_plan.segments.iter().enumerate() {
+        emit(&format!(
+            "  {:>3} | {} -> {} | {} | [{}]",
+            i + 1,
+            format_ts(segment.start),
+            format_ts(segment.end),
+            format_ts(segment.duration()),
+            segment.signals.join(", "),
+        ));
+    }
+
+    // Chapter metadata is useful both for chapters-only exports and as a
+    // human-readable timeline artifact for dry runs.
+    let ffmeta_path = write_segment_ffmeta(&outdir, &cv_plan.segments)?;
+
+    if params.trim_head > 0.0 || params.trim_tail > 0.0 {
+        emit("[warn] Trim Head/Tail ignored in OpenCV Adaptive mode to preserve the full-coverage invariant.");
+    }
+
+    if params.dry_run {
+        emit(&format!("[dry-run] OpenCV diagnostics only → {}", diagnostics_root.display()));
+        return Ok(());
+    }
+
+    let mut enc = params.encode.clone();
+    if params.reencode && enc.mode == "copy" {
+        enc.mode = "h264".to_string();
+    }
+
+    match params.output_mode.as_str() {
+        "chapters" => {
+            let chaptered = export_chapters_only(
+                ffmpeg, input, &outdir, &base, &ffmeta_path,
+                &|msg| emit_log(window, msg),
+            )?;
+            emit(&format!("DONE Done: {}", input));
+            emit(&format!("Chaptered full timeline → {}", chaptered.display()));
+        }
+        _ => {
+            if params.preview_dur > 0.0 {
+                emit(&format!(
+                    "Preview mode: each structural segment capped at {:.0}s — full export disabled",
+                    params.preview_dur,
+                ));
+            }
+            let paths = export_timeline_segments(
+                ffmpeg, input, &outdir, &base, &cv_plan.segments, &enc,
+                params.preview_dur, &|msg| emit_log(window, msg),
+            )?;
+            emit(&format!("DONE Done: {}", input));
+            emit(&format!("Structural segment files: {} → {}", paths.len(), outdir.join("segments").display()));
+            emit(&format!("Diagnostics: {}", diagnostics_root.display()));
+            emit(&format!("Encode: mode={}  gpu={}  crf={}  audio={}{}{}",
+                enc.mode, enc.gpu_accel, enc.video_crf,
+                enc.audio_codec,
+                if enc.loudnorm { "  loudnorm=ignored-for-independent-segments" } else { "" },
+                if enc.deinterlace { "  deinterlace=on" } else { "" },
+            ));
+        }
+    }
+
+    if !params.post_command.is_empty() {
+        emit("[warn] Post-processing command skipped in OpenCV Adaptive mode for CV-7 because there is no semantic assembled show file yet.");
+    }
+
+    Ok(())
+}
+
+fn process_one(
+    window: &Window, ffmpeg: &PathBuf, ffprobe: &PathBuf,
+    input: &str, params: &JobParams, ffmpeg_version: &str,
+) -> Result<()> {
+    match params.detection_engine.as_str() {
+        "legacy" => process_one_legacy(window, ffmpeg, ffprobe, input, params, ffmpeg_version),
+        "opencv_adaptive" | "opencv" | "" => process_one_opencv(window, ffmpeg, ffprobe, input, params),
+        other => Err(anyhow!("Unknown detection engine: {other}")),
+    }
 }
 
 // ─── Public entry point ───────────────────────────────────────────────────────

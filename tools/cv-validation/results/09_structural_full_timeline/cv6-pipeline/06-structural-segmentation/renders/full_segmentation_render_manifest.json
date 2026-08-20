@@ -25,7 +25,7 @@
       "start_s": 0.0,
       "end_s": 3.0,
       "planned_duration_s": 3.0,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-001.mp4",
       "output_duration_s": 3.0,
       "status": "rendered",
       "error": null
@@ -36,7 +36,7 @@
       "start_s": 3.0,
       "end_s": 18.2,
       "planned_duration_s": 15.2,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-002.mp4",
       "output_duration_s": 15.2,
       "status": "rendered",
       "error": null
@@ -47,7 +47,7 @@
       "start_s": 18.2,
       "end_s": 48.5,
       "planned_duration_s": 30.3,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-003.mp4",
       "output_duration_s": 30.3,
       "status": "rendered",
       "error": null
@@ -58,7 +58,7 @@
       "start_s": 48.5,
       "end_s": 51.7,
       "planned_duration_s": 3.200000000000003,
-      "output_file": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-004.mp4",
+      "output_file": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/09_structural_full_timeline/cv6-pipeline/06-structural-segmentation/renders/complete-segments/segment-004.mp4",
       "output_duration_s": 3.2,
       "status": "rendered",
       "error": null

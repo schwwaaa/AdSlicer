@@ -25,7 +25,7 @@
 
 > **Naming note:** The public application name is **AdSlicer**. The repository retains its original `AdSlicer` URL so existing links, clones, and project history continue to work.
 
-AdSlicer turns a full-length recording into a structured, reproducible segmentation plan. It detects likely commercial boundaries, scores each candidate using multiple independent signals, and exports the program material and commercial material as separate archival assets.
+AdSlicer turns a full-length recording into a structured, reproducible segmentation plan. **OpenCV Adaptive** now provides the frame-first structural segmentation path for VHS/broadcast material, while the original FFmpeg-based **Legacy** detector remains available as a fallback. Legacy mode continues to export program material and commercial material separately; OpenCV mode exports the selected full-coverage structural segments without inventing show/commercial labels.
 
 It is designed for difficult analog sources—not only clean digital broadcasts. VHS noise, unstable black levels, short separators, imperfect timing, and inconsistent audio floors are treated as expected input conditions rather than edge cases.
 
@@ -61,11 +61,12 @@ AdSlicer is intentionally review-oriented. Automation creates the first plan; th
 
 | Capability | What it provides |
 |---|---|
-| Multi-signal detection | Black-frame, audio-silence, uniform-frame, and scene-change analysis |
+| OpenCV Adaptive | Frame-first luminance/color/variance/delta evidence, temporal transition analysis, and structural segmentation |
+| Legacy detection | Original black-frame, audio-silence, uniform-frame, and scene-change analysis retained as fallback |
 | Confidence scoring | Per-candidate confidence and a complete list of contributing signals |
 | Dry-run analysis | Generates the plan and diagnostics without cutting media |
 | Preview exports | Caps exported segments for fast quality-control passes |
-| Cut mode | Produces an ad-free show master plus isolated commercial clips |
+| Segment/Cut mode | OpenCV: full-coverage structural clips. Legacy: ad-free show master plus isolated commercial clips |
 | Chapter mode | Preserves the full recording and adds navigable content/ad chapters |
 | Batch processing | Processes a directory of compatible recordings using one configuration |
 | Presets | Built-in profiles for default VHS, noisy VHS, and strict broadcast sources |
@@ -75,25 +76,19 @@ AdSlicer is intentionally review-oriented. Automation creates the first plan; th
 
 ## How it works
 
-AdSlicer builds each commercial candidate from boundaries detected in the source timeline, then adds corroborating evidence and applies safety guards.
+AdSlicer now has two production analysis engines.
 
-| Pass | Signal | Purpose |
-|---:|---|---|
-| 1 | Black-frame detection | Finds near-black separators and merges fragmented analog slugs |
-| 2 | Audio-silence analysis | Raises confidence when a candidate overlaps a quiet transition |
-| 3 | Uniform-frame analysis | Detects black cards, color cards, and low-variation slates |
-| 4 | Scene-change scoring | Identifies blocks whose edit rate is unusually high for the recording |
+**OpenCV Adaptive** runs the validated frame-first chain: per-frame evidence → temporal events → boundary diagnostics → structural roles → full-timeline segmentation. It includes raised-VHS-black recovery for uniform gray analog black floors and enforces a zero-loss coverage invariant before rendering.
 
-After detection, AdSlicer applies minimum-show guards, first/last-content protection, optional 30-second snapping, asymmetric boundary trimming, and confidence adjustments.
+**Legacy** preserves the original commercial-removal pipeline: black-frame candidates are corroborated with silence, uniform-frame, and scene-change evidence, then filtered through show guards, edge protection, optional 30-second snapping, asymmetric trim, and confidence adjustments.
 
 ### Output modes
 
-**Cut** removes planned commercial blocks and exports:
+**Segments / Cut** depends on the selected engine:
 
-- An assembled show master
-- Individual commercial clips
-- Intermediate show parts
-- Complete diagnostic and metadata output
+- **OpenCV Adaptive:** exports every structural segment from the selected Complete Segments or Every Separator policy into `segments/`. Every source frame belongs to exactly one planned segment.
+- **Legacy:** removes planned commercial blocks and exports an assembled show master, individual commercial clips, and intermediate show parts.
+- Both modes retain diagnostic and metadata output.
 
 **Chapters** preserves the source recording and embeds `Content N` / `Advertisement N` chapter markers without removing footage.
 
@@ -103,10 +98,10 @@ After detection, AdSlicer applies minimum-show guards, first/last-content protec
 2. Choose an output directory.
 3. Start with the preset closest to the source material.
 4. Enable **Dry Run** and analyze the recording.
-5. Review the activity log, `detect.json`, and low-confidence entries in `dataset.jsonl`.
+5. In OpenCV mode, review `logs/opencv/` structural diagnostics and the coverage result. In Legacy mode, review `detect.json` and low-confidence entries in `dataset.jsonl`.
 6. Use **Preview Duration** for a fast render-quality check when needed.
-7. Adjust thresholds or guards, then run the analysis again.
-8. Disable Dry Run and export. Enable **Re-encode** for frame-accurate archival cuts.
+7. For Legacy, adjust thresholds or guards and analyze again. OpenCV Adaptive currently uses the validated CV-6.1a defaults.
+8. Disable Dry Run and export. Use a re-encoding codec for frame-accurate archival cuts.
 
 ### Recommended first pass
 
@@ -125,10 +120,13 @@ The first objective is to validate the plan, not to render immediately.
 ```text
 <output>/
 └── <recording>/
-    ├── commercials/
+    ├── segments/                 # OpenCV Adaptive
+    │   ├── <recording>_segment_0001.mp4
+    │   └── ...
+    ├── commercials/              # Legacy
     │   ├── <recording>_ad_0001.mp4
     │   └── ...
-    ├── show/
+    ├── show/                      # Legacy / chaptered source
     │   ├── _parts/
     │   └── <recording>_show.mp4
     └── logs/
@@ -137,7 +135,8 @@ The first objective is to validate the plan, not to render immediately.
         ├── detect.edl
         ├── chapters.ffmeta
         ├── run_manifest.json
-        ├── dataset.jsonl
+        ├── dataset.jsonl          # Legacy
+        ├── opencv/                # OpenCV Adaptive evidence + structural reports
         └── ffmpeg_*.log
 ```
 
@@ -175,7 +174,10 @@ Open it directly in a browser or publish the `docs/` directory through GitHub Pa
 
 - Rust toolchain
 - Tauri 2 platform prerequisites for the target operating system
+- OpenCV 4 + libclang for the OpenCV Adaptive engine
 - A supported macOS, Windows, or Linux build environment
+
+The validated CV-7 development environment is macOS Apple Silicon with Homebrew OpenCV 4.14. `./build.sh dev` configures Homebrew OpenCV/LLVM discovery automatically. Cross-platform OpenCV runtime packaging still requires platform validation.
 
 FFmpeg and FFprobe do not need to be installed globally. The build helper downloads the sidecars used by the application.
 
@@ -188,9 +190,10 @@ FFmpeg and FFprobe do not need to be installed globally. The build helper downlo
 ### Development
 
 ```bash
-cd src-tauri
-cargo tauri dev
+./build.sh dev
 ```
+
+The helper configures the same Homebrew OpenCV/libclang discovery used by `test-opencv.sh`.
 
 ### Release builds
 
@@ -247,9 +250,11 @@ The Boundary Review experience is the primary interface direction for AdSlicer. 
 - Fast manual correction of start and end points
 - Explicit approval before rendering
 
-### Frame-first adaptive boundary analysis
+### OpenCV Adaptive production integration
 
-A planned detector improvement will replace duration-first black detection with frame-first adaptive boundary analysis. The goal is to recognize one-frame black separators, rapid fades, near-black VHS transitions, and imperfect commercial boundaries while preserving the stable planner and export pipeline.
+CV-7 promotes the validated frame-first OpenCV pipeline into the normal application path. The default **Complete Segments** policy preserves complete broadcast pieces across internal fades; **Every Separator** is available for archival splitting at every strong separator-like event. Legacy remains available during rollout.
+
+The next product direction is Boundary Review: visually inspect and correct only suspect endpoints before rendering, without turning AdSlicer into a general-purpose NLE.
 
 ## Reporting problems
 

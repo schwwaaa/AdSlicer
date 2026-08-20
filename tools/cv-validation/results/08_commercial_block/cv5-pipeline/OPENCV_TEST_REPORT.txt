@@ -1,6 +1,6 @@
 AdSlicer OpenCV Validation Report — CV-6
 ========================================
-Source: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/08_commercial_block.mkv
+Source: /Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/corpus/08_commercial_block.mkv
 OpenCV: 4.14.0
 Frames analyzed: 672
 Temporal events: 2
@@ -21,8 +21,8 @@ CV-5 watchable edit validation:
   Validation previews failed: 0
   Skipped by preview limit: 0
   Edit 001: 5.000s -> 17.260s | rendered
-    removed content: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4
-    resulting edit:  /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4
+    removed content: /Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4
+    resulting edit:  /Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4
 
 Production cut plan modified: NO
 Production render performed: NO

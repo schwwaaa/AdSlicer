@@ -93,6 +93,8 @@ function collectParams() {
     glob:          $("globPattern").value.trim() || "*.mp4,*.mov,*.mkv,*.avi,*.m4v,*.wmv,*.flv,*.webm,*.mpg,*.mpeg,*.mts,*.m2ts,*.ts,*.vob,*.3gp,*.dv",
     outdir:        $("outputDir").value.trim(),
     mediaType:     "mp4",
+    detectionEngine: $("detectionEngine").value,
+    segmentationPolicy: $("segmentationPolicy").value,
     blackMinDur:   parseFloat($("blackMinDur").value),
     pixTh:         parseFloat($("pixTh").value),
     picTh:         parseFloat($("picTh").value),
@@ -607,6 +609,41 @@ function setStatus(state, text) {
   }
 }
 
+/* ─── Detection engine UI (CV-7) ─── */
+const LEGACY_ONLY_PARAM_IDS = [
+  "blackMinDur","pixTh","picTh","mergeGap",
+  "edgePadPre","edgePadPost","minCommercial","maxCommercial","includeBlack",
+  "silenceNoiseDb","silenceMinDur","minShowSegment","alwaysKeepFirst","alwaysKeepLast",
+  "uniformMaxStddev","sceneThreshold","removeBefore","removeAfter","requireDiv5",
+  "trimHead","trimTail",
+  "loudnorm",
+  "postCommand",
+];
+
+function syncDetectionEngineUi() {
+  const engine = $("detectionEngine");
+  if (!engine) return;
+  const isOpenCv = engine.value === "opencv_adaptive";
+  const policyRow = $("segmentationPolicyRow");
+  if (policyRow) policyRow.style.display = isOpenCv ? "flex" : "none";
+  for (const id of LEGACY_ONLY_PARAM_IDS) {
+    const el = $(id);
+    if (el) el.disabled = isOpenCv;
+  }
+  const note = $("engineNote");
+  if (note) {
+    note.textContent = isOpenCv
+      ? "OpenCV Adaptive uses the validated CV-6.1a frame-first structural model. Legacy threshold controls below are disabled because they do not affect this engine."
+      : "Legacy preserves the original FFmpeg black/silence/uniform/scene detector and the existing commercial + show export behavior.";
+  }
+  const cutOption = $("cutModeOption");
+  if (cutOption) {
+    cutOption.textContent = isOpenCv
+      ? "Segments  (full timeline)"
+      : "Cut  (remove commercials)";
+  }
+}
+
 /* ─── Job control ─── */
 async function startJob() {
   if (jobRunning) { logLine("warn", `[${timestamp()}]  ⚠  A job is already running.`); return; }
@@ -623,6 +660,7 @@ async function startJob() {
   logLine("header", `[${timestamp()}]  ►  JOB START`);
   logLine("info",   `[${timestamp()}]  ●  Input  : ${p.inputPath}`);
   logLine("info",   `[${timestamp()}]  ●  Output : ${p.outdir}`);
+  logLine("info",   `[${timestamp()}]  ●  Engine : ${p.detectionEngine === "opencv_adaptive" ? "OpenCV Adaptive" : "Legacy"}${p.detectionEngine === "opencv_adaptive" ? ` / ${p.segmentationPolicy === "every_separator" ? "Every Separator" : "Complete Segments"}` : ""}`);
   logSeparator();
 
   try {
@@ -829,6 +867,8 @@ function handleMenuAction(action) {
 }
 
 function resetParameters() {
+  $("detectionEngine").value = "opencv_adaptive";
+  $("segmentationPolicy").value = "complete_segments";
   $("blackMinDur").value   = "0.10";
   $("pixTh").value         = "0.08";
   $("picTh").value         = "0.98";
@@ -866,6 +906,7 @@ function resetParameters() {
   $("trimHead").value         = "0";
   $("trimTail").value         = "0";
   $("postCommand").value      = "";
+  syncDetectionEngineUi();
 }
 
 function syncVerbosityCheck(active) {
@@ -880,9 +921,9 @@ function showAbout() {
   logLine("header", "  AdSlicer  v0.1.0");
   logLine("system", "  Broadcast Archival Commercial Slicer");
   logLine("system", "  ─────────────────────────────────────");
-  logLine("system", "  Cuts commercials from VHS + broadcast");
-  logLine("system", "  captures using black-frame detection.");
-  logLine("system", "  Built with Tauri · Rust · ffmpeg");
+  logLine("system", "  Structural segmentation for VHS + broadcast");
+  logLine("system", "  OpenCV Adaptive + Legacy detection modes.");
+  logLine("system", "  Built with Tauri · Rust · OpenCV · ffmpeg");
   logBlank();
 }
 
@@ -898,6 +939,7 @@ function showAbout() {
 
 // All param keys expected in a preset JSON (camelCase, matches collectParams)
 const PRESET_PARAM_KEYS = [
+  "detectionEngine","segmentationPolicy",
   "blackMinDur","pixTh","picTh","mergeGap",
   "edgePadPre","edgePadPost","minCommercial","maxCommercial",
   "includeBlack","dryRun","verbosity","outputMode",
@@ -910,6 +952,8 @@ const PRESET_PARAM_KEYS = [
 // Apply a parsed preset object to the UI inputs
 function applyPreset(preset) {
   const map = {
+    detectionEngine:["detectionEngine","value"],
+    segmentationPolicy:["segmentationPolicy","value"],
     blackMinDur:    ["blackMinDur","value"],
     pixTh:          ["pixTh","value"],
     picTh:          ["picTh","value"],
@@ -958,6 +1002,7 @@ function applyPreset(preset) {
     }
     applied++;
   }
+  syncDetectionEngineUi();
   return applied;
 }
 
@@ -1138,6 +1183,8 @@ window.addEventListener("DOMContentLoaded", () => {
   $("pickOutput").onclick = pickOutput;
   $("startBtn").onclick   = startJob;
   $("stopBtn").onclick    = stopJob;
+  $("detectionEngine").addEventListener("change", syncDetectionEngineUi);
+  syncDetectionEngineUi();
 
   $("clearConsole").onclick = () => {
     $("console").innerHTML = "";

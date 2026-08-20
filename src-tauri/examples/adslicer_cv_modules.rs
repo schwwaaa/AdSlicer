@@ -25,3 +25,6 @@ pub mod cv_edit_validation;
 pub mod cv_structural;
 #[path = "../src/adslicer/cv_segment_validation.rs"]
 pub mod cv_segment_validation;
+
+#[path = "../src/adslicer/cv_production.rs"]
+pub mod cv_production;

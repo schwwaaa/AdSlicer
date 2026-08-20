@@ -3,7 +3,7 @@
   "engine": "opencv-evidence-probe",
   "app_version": "0.1.0",
   "source_file": "06_hard_cut_no_black.mkv",
-  "source_path": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/06_hard_cut_no_black.mkv",
+  "source_path": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/corpus/06_hard_cut_no_black.mkv",
   "source_size_bytes": 1844228,
   "source_sha256": "dc9105f89c4c7df8c502f4aca112d3781b251c4b249c6a9b94cf82b211df0eb2",
   "opencv_version": "4.14.0",

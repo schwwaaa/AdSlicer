@@ -1,6 +1,6 @@
 AdSlicer OpenCV Validation Report — CV-6
 ========================================
-Source: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/08_commercial_block.mkv
+Source: /Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/corpus/08_commercial_block.mkv
 OpenCV: 4.14.0
 Frames analyzed: 672
 Temporal events: 2

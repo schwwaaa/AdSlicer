@@ -635,3 +635,14 @@ select {
   background: #fff;
   min-height: 0;
 }
+
+/* CV-7 engine selector */
+.engine-note {
+  margin-top: 7px;
+  padding: 5px 7px;
+  border: 1px solid var(--border-dark);
+  background: var(--bg-field, #fff);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  line-height: 1.35;
+}

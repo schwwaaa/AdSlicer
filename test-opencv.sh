@@ -53,7 +53,7 @@ CV-5 WATCHABLE EDIT VALIDATION:
 CV-6 STRUCTURAL SEGMENTATION:
   --segment-render-mode MODE  both|complete|every|none (default: both)
 
-SYNTHETIC REGRESSION SUITE:
+SYNTHETIC REGRESSION SUITE (CV-1 through CV-7 integration):
   ./test-opencv.sh --synthetic
 
 HELP:
@@ -206,6 +206,7 @@ if [[ $SYNTHETIC -eq 1 ]]; then
   ./run_edit_validation_suite.sh
   ./run_structural_suite.sh
   ./run_raised_uniform_suite.sh
+  ./run_production_integration_suite.sh
   echo
   echo "Synthetic regression complete."
   exit 0

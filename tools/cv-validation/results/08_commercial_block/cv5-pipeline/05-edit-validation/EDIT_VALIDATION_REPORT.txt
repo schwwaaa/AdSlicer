@@ -10,5 +10,5 @@ Skipped by preview limit: 0
 Source audio detected: no
 
 Edit 001: 5.000s -> 17.260s | 12.260s | score 0.90 | strong | rendered
-  removed content: /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4
-  resulting edit:  /Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4
+  removed content: /Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_content.mp4
+  resulting edit:  /Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/results/08_commercial_block/cv5-pipeline/05-edit-validation/remove-001_result-preview.mp4

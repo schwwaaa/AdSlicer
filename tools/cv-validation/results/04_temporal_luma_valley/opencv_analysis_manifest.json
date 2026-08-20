@@ -3,7 +3,7 @@
   "engine": "opencv-evidence-probe",
   "app_version": "0.1.0",
   "source_file": "04_temporal_luma_valley.mkv",
-  "source_path": "/Users/tgm/Downloads/AdSlicer-CV-Pass-06.1a-raised-black-regression-fix/tools/cv-validation/corpus/04_temporal_luma_valley.mkv",
+  "source_path": "/Users/tgm/Downloads/AdSlicer-produciton7/tools/cv-validation/corpus/04_temporal_luma_valley.mkv",
   "source_size_bytes": 1847846,
   "source_sha256": "9ae996d9c26dc34844fe723c5e0d425c33d4d1614e49ee07ce71ab8b2a57680c",
   "opencv_version": "4.14.0",

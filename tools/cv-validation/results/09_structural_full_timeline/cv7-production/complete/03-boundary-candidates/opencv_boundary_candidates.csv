@@ -1,0 +1,9 @@
+observation_index,source_event_index,source_event_kind,role,anchor_frame,anchor_pts_s,evidence_start_frame,evidence_end_frame,evidence_start_pts_s,evidence_end_pts_s,boundary_score,tier,edge_delta,luma_contrast,max_black_pixel_ratio,max_near_black_pixel_ratio,chromatic_dark
+0,0,black_interval,interval_entry,90,3.000000,90,95,3.000000,3.167000,0.900000,strong,124.680742,124.570753,1.00000000,1.00000000,false
+1,0,black_interval,interval_exit,95,3.167000,90,95,3.000000,3.167000,0.900000,strong,93.818216,93.818216,1.00000000,1.00000000,false
+2,1,black_interval,interval_entry,546,18.200000,546,551,18.200000,18.367000,0.900000,strong,93.818216,93.818216,1.00000000,1.00000000,false
+3,1,black_interval,interval_exit,551,18.367000,546,551,18.200000,18.367000,0.900000,strong,128.089648,128.114562,1.00000000,1.00000000,false
+4,2,black_interval,interval_entry,1002,33.400000,1002,1004,33.400000,33.467000,0.900000,strong,124.163568,124.202341,1.00000000,1.00000000,false
+5,2,black_interval,interval_exit,1004,33.467000,1002,1004,33.400000,33.467000,0.900000,strong,128.089648,128.114562,1.00000000,1.00000000,false
+6,3,black_interval,interval_entry,1455,48.500000,1455,1460,48.500000,48.667000,0.900000,strong,124.163568,124.202341,1.00000000,1.00000000,false
+7,3,black_interval,interval_exit,1460,48.667000,1455,1460,48.500000,48.667000,0.860000,strong,76.000000,76.000000,1.00000000,1.00000000,false
