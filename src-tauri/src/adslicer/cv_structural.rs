@@ -51,6 +51,25 @@ pub struct StructuralSegmentationConfig {
     /// 15-second clips simply because both durations are plausible.
     pub ambiguous_promotion_structural_min: f64,
     pub ambiguous_promotion_duration_gain_min: f64,
+
+    /// Recover strong separator-like events when neighboring candidate boundaries
+    /// form normal broadcast timing (5/10/15/20/30/45/60/90 second pieces).
+    /// This is especially useful around show heads/tails where promos, bumpers,
+    /// credits, and ads can have similar average visual statistics.
+    pub cadence_promotion_separator_min: f64,
+    /// Keep a small surrounding-content-change floor so exact 15/30-second
+    /// timing cannot promote a deliberate internal fade between the same scene.
+    pub cadence_promotion_structural_min: f64,
+    pub cadence_promotion_duration_fit_min: f64,
+
+    /// Dark program material such as credits or title cards can occupy a mostly
+    /// black frame while still being real content. Their hard entry/exit edges
+    /// are recoverable when the visual reset is meaningful and nearby timing
+    /// supports a broadcast boundary.
+    pub dark_content_edge_stddev_min: f64,
+    pub dark_content_edge_delta_min: f64,
+    pub dark_content_edge_strong_delta_min: f64,
+    pub dark_content_edge_duration_fit_min: f64,
     /// Allow a short source head/tail residual to promote an ambiguous separator
     /// when the adjacent interior segment lands cleanly on a broadcast duration.
     pub source_edge_max_residual_s: f64,
@@ -80,6 +99,13 @@ impl Default for StructuralSegmentationConfig {
             ambiguous_separator_score_min: 0.55,
             ambiguous_promotion_structural_min: 0.18,
             ambiguous_promotion_duration_gain_min: 0.35,
+            cadence_promotion_separator_min: 0.72,
+            cadence_promotion_structural_min: 0.08,
+            cadence_promotion_duration_fit_min: 0.35,
+            dark_content_edge_stddev_min: 8.0,
+            dark_content_edge_delta_min: 15.0,
+            dark_content_edge_strong_delta_min: 40.0,
+            dark_content_edge_duration_fit_min: 0.35,
             source_edge_max_residual_s: 7.0,
             source_edge_duration_fit_min: 0.70,
             preferred_durations_s: vec![15.0, 30.0, 60.0, 10.0, 20.0, 5.0, 45.0, 90.0],
@@ -154,6 +180,8 @@ pub struct StructuralEvent {
     pub max_near_black_pixel_ratio: f64,
     pub mean_stddev_luma: f64,
     pub mean_saturation: f64,
+    pub entry_delta_mean: f64,
+    pub exit_delta_mean: f64,
     pub peak_delta_mean: f64,
 
     /// "How separator-like is the event itself?" Independent from whether the
@@ -225,6 +253,12 @@ pub struct StructuralSegmentationSummary {
     pub every_separator_segments: u64,
     pub every_separator_boundaries: u64,
     pub ambiguous_promoted_for_complete: u64,
+    #[serde(default)]
+    pub cadence_promoted_for_complete: u64,
+    #[serde(default)]
+    pub dark_edges_promoted_for_complete: u64,
+    #[serde(default)]
+    pub total_promoted_for_complete: u64,
     pub complete_coverage_pass: bool,
     pub every_separator_coverage_pass: bool,
 }
@@ -445,6 +479,8 @@ fn build_structural_event(
         max_near_black_pixel_ratio: event.max_near_black_pixel_ratio,
         mean_stddev_luma: event.mean_stddev_luma,
         mean_saturation: event.mean_saturation,
+        entry_delta_mean: event.entry_delta_mean,
+        exit_delta_mean: event.exit_delta_mean,
         peak_delta_mean: event.peak_delta_mean,
         separator_score,
         context_change_score,
@@ -501,6 +537,118 @@ fn boundary_from_event(event: &StructuralEvent, promoted: bool) -> SegmentBounda
         role: event.role,
         promoted_from_ambiguous: promoted,
     }
+}
+
+fn boundary_from_event_at(event: &StructuralEvent, pts_s: f64) -> SegmentBoundary {
+    SegmentBoundary {
+        boundary_index: 0,
+        pts_s,
+        source_structural_event_index: event.structural_event_index,
+        source_temporal_event_index: event.source_temporal_event_index,
+        separator_score: event.separator_score,
+        structural_score: event.structural_score,
+        role: event.role,
+        promoted_from_ambiguous: true,
+    }
+}
+
+fn best_duration_fit_to_times(
+    t: f64,
+    times: &[f64],
+    source_duration_s: f64,
+    cfg: &StructuralSegmentationConfig,
+) -> f64 {
+    let mut best: f64 = 0.0;
+    for &other in times {
+        if (other - t).abs() <= cfg.boundary_dedupe_s { continue; }
+        let d = (other - t).abs();
+        if d <= 0.0 || d > source_duration_s { continue; }
+        best = best.max(duration_fit(d, cfg).0);
+    }
+    best
+}
+
+fn candidate_support_times(
+    events: &[StructuralEvent],
+    source_duration_s: f64,
+    cfg: &StructuralSegmentationConfig,
+) -> Vec<f64> {
+    let mut times = vec![0.0, source_duration_s];
+    for event in events {
+        if event.separator_score >= cfg.every_separator_score_min {
+            times.push(event.anchor_pts_s);
+        }
+        if event.mean_stddev_luma >= cfg.dark_content_edge_stddev_min {
+            if event.entry_delta_mean >= cfg.dark_content_edge_delta_min {
+                times.push(event.start_pts_s);
+            }
+            if event.exit_delta_mean >= cfg.dark_content_edge_delta_min {
+                times.push(event.end_pts_s);
+            }
+        }
+    }
+    times.sort_by(|a, b| a.total_cmp(b));
+    times.dedup_by(|a, b| (*a - *b).abs() <= cfg.boundary_dedupe_s);
+    times
+}
+
+fn promote_broadcast_cadence_boundaries(
+    events: &[StructuralEvent],
+    selected: &mut Vec<SegmentBoundary>,
+    source_duration_s: f64,
+    cfg: &StructuralSegmentationConfig,
+) -> u64 {
+    let support_times = candidate_support_times(events, source_duration_s, cfg);
+    let mut promoted = 0u64;
+
+    for event in events {
+        if event.role != StructuralRole::Ambiguous
+            || event.separator_score < cfg.cadence_promotion_separator_min
+            || event.structural_score < cfg.cadence_promotion_structural_min
+        {
+            continue;
+        }
+        let fit = best_duration_fit_to_times(event.anchor_pts_s, &support_times, source_duration_s, cfg);
+        if fit < cfg.cadence_promotion_duration_fit_min { continue; }
+
+        selected.push(boundary_from_event(event, true));
+        promoted += 1;
+    }
+    *selected = dedupe_boundaries(std::mem::take(selected), cfg);
+    promoted
+}
+
+fn recover_structured_dark_edges(
+    events: &[StructuralEvent],
+    selected: &mut Vec<SegmentBoundary>,
+    source_duration_s: f64,
+    cfg: &StructuralSegmentationConfig,
+) -> u64 {
+    let support_times = candidate_support_times(events, source_duration_s, cfg);
+    let mut promoted = 0u64;
+
+    for event in events {
+        // Low-variance blank separators already have a meaningful valley anchor.
+        // Edge recovery is for credits/title cards/dark graphics whose visible
+        // structure can otherwise hide the real boundary at their entrance/exit.
+        if event.mean_stddev_luma < cfg.dark_content_edge_stddev_min { continue; }
+
+        for (pts_s, delta) in [
+            (event.start_pts_s, event.entry_delta_mean),
+            (event.end_pts_s, event.exit_delta_mean),
+        ] {
+            if delta < cfg.dark_content_edge_delta_min { continue; }
+            let cadence_fit = best_duration_fit_to_times(pts_s, &support_times, source_duration_s, cfg);
+            let strong_reset = delta >= cfg.dark_content_edge_strong_delta_min;
+            let cadence_supported = cadence_fit >= cfg.dark_content_edge_duration_fit_min;
+            if !strong_reset && !cadence_supported { continue; }
+
+            selected.push(boundary_from_event_at(event, pts_s));
+            promoted += 1;
+        }
+    }
+    *selected = dedupe_boundaries(std::mem::take(selected), cfg);
+    promoted
 }
 
 fn nearest_selected_neighbors(
@@ -659,12 +807,26 @@ pub fn build_structural_segmentation(
         .map(|e| boundary_from_event(e, false))
         .collect();
     complete_boundaries = dedupe_boundaries(complete_boundaries, cfg);
-    let promoted = promote_ambiguous_boundaries(
+    let promoted_duration = promote_ambiguous_boundaries(
         &events,
         &mut complete_boundaries,
         source_duration_s,
         cfg,
     );
+    let promoted_cadence = promote_broadcast_cadence_boundaries(
+        &events,
+        &mut complete_boundaries,
+        source_duration_s,
+        cfg,
+    );
+    let promoted_dark_edges = recover_structured_dark_edges(
+        &events,
+        &mut complete_boundaries,
+        source_duration_s,
+        cfg,
+    );
+    let promoted_ambiguous = promoted_duration + promoted_cadence;
+    let promoted_total = promoted_ambiguous + promoted_dark_edges;
 
     let every_boundaries: Vec<SegmentBoundary> = events
         .iter()
@@ -697,7 +859,10 @@ pub fn build_structural_segmentation(
         complete_boundaries: complete_segments.boundaries.len() as u64,
         every_separator_segments: every_separator.segments.len() as u64,
         every_separator_boundaries: every_separator.boundaries.len() as u64,
-        ambiguous_promoted_for_complete: promoted,
+        ambiguous_promoted_for_complete: promoted_ambiguous,
+        cadence_promoted_for_complete: promoted_cadence,
+        dark_edges_promoted_for_complete: promoted_dark_edges,
+        total_promoted_for_complete: promoted_total,
         complete_coverage_pass: complete_segments.coverage.coverage_pass,
         every_separator_coverage_pass: every_separator.coverage.coverage_pass,
     };
@@ -705,7 +870,7 @@ pub fn build_structural_segmentation(
     StructuralSegmentationResult {
         schema_version: 1,
         engine: "opencv-structural-segmentation".to_string(),
-        structural_version: "cv6-structural-v1".to_string(),
+        structural_version: "cv6.2-broadcast-edge-recovery-v1".to_string(),
         production_cut_plan_modified: false,
         config: cfg.clone(),
         summary,
@@ -728,9 +893,9 @@ pub fn write_structural_segmentation(
 
     let events_path = outdir.join("opencv_structural_events.csv");
     let mut events_csv = BufWriter::new(fs::File::create(&events_path)?);
-    writeln!(events_csv, "event_index,temporal_event_index,temporal_kind,anchor_pts_s,start_pts_s,end_pts_s,duration_s,min_mean_luma,max_black_pixel_ratio,max_near_black_pixel_ratio,mean_stddev_luma,mean_saturation,peak_delta_mean,separator_score,context_change_score,structural_score,role")?;
+    writeln!(events_csv, "event_index,temporal_event_index,temporal_kind,anchor_pts_s,start_pts_s,end_pts_s,duration_s,min_mean_luma,max_black_pixel_ratio,max_near_black_pixel_ratio,mean_stddev_luma,mean_saturation,entry_delta_mean,exit_delta_mean,peak_delta_mean,separator_score,context_change_score,structural_score,role")?;
     for e in &result.events {
-        writeln!(events_csv, "{},{},{},{:.6},{:.6},{:.6},{:.6},{:.6},{:.8},{:.8},{:.6},{:.6},{:.6},{:.6},{:.6},{:.6},{}",
+        writeln!(events_csv, "{},{},{},{:.6},{:.6},{:.6},{:.6},{:.6},{:.8},{:.8},{:.6},{:.6},{:.6},{:.6},{:.6},{:.6},{:.6},{:.6},{}",
             e.structural_event_index,
             e.source_temporal_event_index,
             e.source_temporal_kind.as_str(),
@@ -743,6 +908,8 @@ pub fn write_structural_segmentation(
             e.max_near_black_pixel_ratio,
             e.mean_stddev_luma,
             e.mean_saturation,
+            e.entry_delta_mean,
+            e.exit_delta_mean,
             e.peak_delta_mean,
             e.separator_score,
             e.context_change_score,

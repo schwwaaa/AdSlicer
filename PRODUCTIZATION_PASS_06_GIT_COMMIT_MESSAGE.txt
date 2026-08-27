@@ -1,0 +1,11 @@
+fix(opencv): recover broadcast-edge separators around credits and ad cadence
+
+- preserve CV-6.1a black and raised-VHS-black detection thresholds
+- recover strong ambiguous separators using neighboring broadcast-duration cadence
+- keep a context-change floor so same-scene internal fades remain unsplit
+- recover hard entry/exit edges around structured dark credits and title cards
+- use existing temporal entry/exit deltas instead of globally increasing sensitivity
+- expose entry/exit reset evidence in structural diagnostics
+- add promotion counts for cadence and structured-dark edge recovery
+- add real WCPX/CBS problem-clip regression runner and expected boundary checks
+- preserve full timeline coverage, Every Separator behavior, Legacy mode, and product UI

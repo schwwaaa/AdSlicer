@@ -13,7 +13,10 @@ use std::fs;
 use std::path::Path;
 
 use super::cv_boundary::{score_boundary_candidates, write_boundary_candidates, BoundaryScoringConfig};
-use super::cv_detect::{analyze_video_with_opencv, sha256_file, write_cv_evidence, CvAnalysisConfig, CvAnalysisResult};
+use super::cv_detect::{
+    analyze_video_with_opencv_progress_cancel, sha256_file_with_cancel,
+    write_cv_evidence_with_cancel, CvAnalysisConfig, CvAnalysisResult, CvFrameProgress,
+};
 use super::cv_structural::{
     build_structural_segmentation, write_structural_segmentation, CoverageSummary,
     StructuralSegmentationConfig,
@@ -88,38 +91,76 @@ pub fn build_opencv_production_plan(
     diagnostics_root: &Path,
     policy: CvProductionPolicy,
 ) -> Result<CvProductionPlan> {
+    build_opencv_production_plan_progress(input, diagnostics_root, policy, &|_, _| {})
+}
+
+/// Production planner with UI-only progress telemetry. The callback is not used
+/// by any detection heuristic and therefore cannot change segmentation results.
+pub fn build_opencv_production_plan_progress(
+    input: &Path,
+    diagnostics_root: &Path,
+    policy: CvProductionPolicy,
+    progress: &dyn Fn(&str, Option<CvFrameProgress>),
+) -> Result<CvProductionPlan> {
+    build_opencv_production_plan_progress_cancel(input, diagnostics_root, policy, progress, &|| false)
+}
+
+pub fn build_opencv_production_plan_progress_cancel(
+    input: &Path,
+    diagnostics_root: &Path,
+    policy: CvProductionPolicy,
+    progress: &dyn Fn(&str, Option<CvFrameProgress>),
+    should_cancel: &dyn Fn() -> bool,
+) -> Result<CvProductionPlan> {
     let frames_dir = diagnostics_root.join("01-frame-evidence");
     let temporal_dir = diagnostics_root.join("02-temporal-events");
     let boundary_dir = diagnostics_root.join("03-boundary-candidates");
     let structural_dir = diagnostics_root.join("06-structural-segmentation");
     fs::create_dir_all(diagnostics_root)?;
+    let check_cancel = || -> Result<()> {
+        if should_cancel() { Err(anyhow!("Job cancelled by user.")) } else { Ok(()) }
+    };
+    check_cancel()?;
 
     // CV-1 — one source decode, full frame cadence.
     let cv_cfg = CvAnalysisConfig::default();
-    let cv = analyze_video_with_opencv(input, &cv_cfg)?;
+    progress("analyze_frames", None);
+    let cv = analyze_video_with_opencv_progress_cancel(input, &cv_cfg, &|frame_progress| {
+        progress("analyze_frames", Some(frame_progress));
+    }, should_cancel)?;
+    check_cancel()?;
+    progress("finalize_analysis", None);
     if cv.frames.is_empty() {
         return Err(anyhow!("OpenCV decoded no analyzable frames from {}", input.display()));
     }
-    write_cv_evidence(&frames_dir, &cv)?;
+    check_cancel()?;
+    progress("save_evidence", None);
+    write_cv_evidence_with_cancel(&frames_dir, &cv, should_cancel)?;
 
     // CV-2 — temporal evidence, including CV-6.1a raised VHS black recovery.
+    check_cancel()?;
+    progress("temporal", None);
     let temporal_cfg = TemporalAnalysisConfig::default();
     let mut temporal = analyze_temporal_events(&cv.frames, &temporal_cfg);
     temporal.source_evidence_file = Some("01-frame-evidence/opencv_frame_metrics.jsonl".to_string());
     let evidence_jsonl = frames_dir.join("opencv_frame_metrics.jsonl");
-    temporal.source_evidence_sha256 = Some(sha256_file(&evidence_jsonl)?);
+    temporal.source_evidence_sha256 = Some(sha256_file_with_cancel(&evidence_jsonl, should_cancel)?);
     write_temporal_events(&temporal_dir, &temporal)?;
+    check_cancel()?;
 
     // CV-3 — retained as a diagnostic report. Structural segmentation does not
     // depend on the old removal-pair planner.
+    progress("boundaries", None);
     let boundary_cfg = BoundaryScoringConfig::default();
     let mut boundary = score_boundary_candidates(&temporal, &boundary_cfg);
     boundary.source_temporal_file = Some("02-temporal-events/opencv_temporal_events.json".to_string());
     let temporal_json = temporal_dir.join("opencv_temporal_events.json");
-    boundary.source_temporal_sha256 = Some(sha256_file(&temporal_json)?);
+    boundary.source_temporal_sha256 = Some(sha256_file_with_cancel(&temporal_json, should_cancel)?);
     write_boundary_candidates(&boundary_dir, &boundary)?;
+    check_cancel()?;
 
     // CV-6/CV-6.1a — structural role classification + zero-loss segmentation.
+    progress("structural", None);
     let source_duration_s = source_duration_from_cv(&cv);
     if source_duration_s <= 0.0 {
         return Err(anyhow!("OpenCV could not determine a positive source duration"));
@@ -132,6 +173,7 @@ pub fn build_opencv_production_plan(
         &structural_cfg,
     );
     write_structural_segmentation(&structural_dir, &structural)?;
+    check_cancel()?;
 
     let selected = match policy {
         CvProductionPolicy::CompleteSegments => &structural.complete_segments,
@@ -174,6 +216,7 @@ pub fn build_opencv_production_plan(
         diagnostics_dir: diagnostics_root.display().to_string(),
     };
 
+    check_cancel()?;
     fs::write(
         diagnostics_root.join("opencv_production_manifest.json"),
         serde_json::to_string_pretty(&json!({
@@ -194,5 +237,7 @@ pub fn build_opencv_production_plan(
         }))?,
     )?;
 
+    check_cancel()?;
+    progress("plan_ready", None);
     Ok(plan)
 }

@@ -1,5 +1,0 @@
-event_index,temporal_event_index,temporal_kind,anchor_pts_s,start_pts_s,end_pts_s,duration_s,min_mean_luma,max_black_pixel_ratio,max_near_black_pixel_ratio,mean_stddev_luma,mean_saturation,peak_delta_mean,separator_score,context_change_score,structural_score,role
-0,0,black_interval,3.000000,3.000000,3.167000,0.167000,0.000000,1.00000000,1.00000000,0.000000,0.000000,124.680742,1.000000,0.247078,0.247078,structural_separator
-1,1,black_interval,18.200000,18.200000,18.367000,0.167000,0.000000,1.00000000,1.00000000,0.000000,0.000000,128.089648,1.000000,0.217401,0.217401,structural_separator
-2,2,black_interval,33.400000,33.400000,33.467000,0.067000,0.000000,1.00000000,1.00000000,0.000000,0.000000,128.089648,1.000000,0.021619,0.021619,ambiguous
-3,3,black_interval,48.500000,48.500000,48.667000,0.167000,0.000000,1.00000000,1.00000000,0.000000,0.000000,124.163568,1.000000,0.656710,0.656710,structural_separator

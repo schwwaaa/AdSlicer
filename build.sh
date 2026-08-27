@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # ============================================================
-#  AdSlicer — Universal Build Script
-#  Supports: macOS Universal (arm64 + x86_64), Windows (x86_64)
+#  AdSlicer — Native Release Build Script
+#  Default: build the native architecture of the current machine.
+#  Optional: explicit macOS arm64 / Intel / universal targets.
 #
 #  Usage:
-#    ./build.sh                    # Build for current OS (auto-detect)
-#    ./build.sh setup-bins         # Download static ffmpeg/ffprobe sidecars
-#    ./build.sh dev                # Run Tauri dev with OpenCV discovery configured
+#    ./build.sh                    # Build native release for current OS
+#    ./build.sh native             # Same as above
+#    ./build.sh mac-native         # Native macOS architecture
+##    ./build.sh dev                # Run Tauri dev with OpenCV discovery configured
 #    ./build.sh mac-universal      # macOS arm64 + x86_64 → universal .app + .dmg
 #    ./build.sh mac-arm            # macOS arm64 only
 #    ./build.sh mac-x86            # macOS x86_64 only
@@ -48,6 +50,14 @@ detect_os() {
   esac
 }
 
+detect_arch() {
+  case "$(uname -m)" in
+    arm64|aarch64) echo "arm64" ;;
+    x86_64|amd64)  echo "x86_64" ;;
+    *)             uname -m ;;
+  esac
+}
+
 
 # CV-7: configure the same Homebrew OpenCV/libclang discovery used by the
 # unified validation launcher. Existing user environment values always win.
@@ -73,11 +83,69 @@ configure_opencv_env() {
   fi
 }
 
+target_bin_paths() {
+  local triple="$1"
+  local ff="${BINS_DIR}/ffmpeg-${triple}"
+  local fp="${BINS_DIR}/ffprobe-${triple}"
+  if [[ "${triple}" == *windows* ]]; then
+    ff="${ff}.exe"
+    fp="${fp}.exe"
+  fi
+  printf '%s\n%s\n' "${ff}" "${fp}"
+}
+
+require_target_bins() {
+  local triple="$1"
+  local paths ff fp
+  paths="$(target_bin_paths "${triple}")"
+  ff="$(printf '%s\n' "${paths}" | sed -n '1p')"
+  fp="$(printf '%s\n' "${paths}" | sed -n '2p')"
+
+  if [[ -f "${ff}" && -f "${fp}" ]]; then
+    return 0
+  fi
+
+  fail "Release sidecars are missing for ${triple}.\n\nExpected local, gitignored files:\n  ${ff}\n  ${fp}\n\nDevelopment does NOT require bundled sidecars. Put your saved target binaries back in src-tauri/binaries/ before creating a release."
+}
+
+host_target_triple() {
+  local os arch
+  os="$(detect_os)"
+  arch="$(detect_arch)"
+  case "${os}:${arch}" in
+    mac:arm64)       echo "aarch64-apple-darwin" ;;
+    mac:x86_64)      echo "x86_64-apple-darwin" ;;
+    linux:arm64)     echo "aarch64-unknown-linux-gnu" ;;
+    linux:x86_64)    echo "x86_64-unknown-linux-gnu" ;;
+    windows:arm64)   echo "aarch64-pc-windows-msvc" ;;
+    windows:x86_64)  echo "x86_64-pc-windows-msvc" ;;
+    *) fail "No supported host target mapping for ${os}/${arch}" ;;
+  esac
+}
+
 run_dev() {
   configure_opencv_env
+
+  local triple paths ff fp
+  triple="$(host_target_triple)"
+  paths="$(target_bin_paths "${triple}")"
+  ff="$(printf '%s\n' "${paths}" | sed -n '1p')"
+  fp="$(printf '%s\n' "${paths}" | sed -n '2p')"
+
+  # Development deliberately disables Tauri externalBin validation. The Rust
+  # resolver will use matching local sidecars when present, otherwise ffmpeg
+  # and ffprobe from PATH. Release builds still require bundled sidecars.
+  if [[ -f "${ff}" && -f "${fp}" ]]; then
+    log "Development media tools: local ${triple} binaries"
+  else
+    require_cmd ffmpeg
+    require_cmd ffprobe
+    log "Development media tools: ffmpeg/ffprobe from PATH"
+  fi
+
   log "Running AdSlicer dev build with OpenCV Adaptive enabled…"
   cd "${TAURI_DIR}"
-  cargo tauri dev
+  cargo tauri dev --config tauri.dev.conf.json
 }
 
 # ── setup-bins: download static ffmpeg/ffprobe sidecars ──────
@@ -268,8 +336,27 @@ setup_bins_linux_x86_64() {
 
 # ── Build functions ───────────────────────────────────────────
 
+build_mac_native() {
+  local arch
+  arch="$(detect_arch)"
+  case "${arch}" in
+    arm64)
+      log "Detected Apple Silicon host; building native arm64 release."
+      build_mac_arm
+      ;;
+    x86_64)
+      log "Detected Intel Mac host; building native x86_64 release."
+      build_mac_x86
+      ;;
+    *)
+      fail "Unsupported macOS architecture: ${arch}"
+      ;;
+  esac
+}
+
 build_mac_arm() {
   configure_opencv_env
+  require_target_bins "aarch64-apple-darwin"
   log "Building macOS arm64 (Apple Silicon)…"
   require_rust_target "aarch64-apple-darwin"
   cd "${TAURI_DIR}"
@@ -279,7 +366,21 @@ build_mac_arm() {
 
 build_mac_x86() {
   configure_opencv_env
+  require_target_bins "x86_64-apple-darwin"
   log "Building macOS x86_64 (Intel)…"
+
+  # On Apple Silicon, Homebrew normally provides arm64-only OpenCV under
+  # /opt/homebrew. Rust can cross-compile its own code, but the final linker
+  # cannot use arm64 OpenCV dylibs in an x86_64 application. Fail before the
+  # very long Cargo link step with an actionable message.
+  if [[ "$(detect_arch)" == "arm64" ]]; then
+    local cv_prefix=""
+    cv_prefix="$(pkg-config --variable=libdir opencv4 2>/dev/null || true)"
+    if [[ "${cv_prefix}" == /opt/homebrew/* ]]; then
+      fail "Intel macOS release requested on Apple Silicon, but OpenCV is the native arm64 Homebrew build (${cv_prefix}). Build './build.sh mac-arm' (recommended), or install/configure a separate x86_64 OpenCV toolchain before requesting mac-x86/universal."
+    fi
+  fi
+
   require_rust_target "x86_64-apple-darwin"
   cd "${TAURI_DIR}"
   cargo tauri build --target x86_64-apple-darwin
@@ -340,6 +441,7 @@ build_mac_universal() {
 }
 
 build_windows() {
+  require_target_bins "x86_64-pc-windows-msvc"
   log "Building Windows x86_64…"
 
   if [[ "$(detect_os)" != "windows" ]]; then
@@ -388,7 +490,7 @@ build_current_os() {
   local os
   os="$(detect_os)"
   case "${os}" in
-    mac)     build_mac_universal ;;
+    mac)     build_mac_native ;;
     windows) build_windows ;;
     *)       fail "Unsupported OS: ${os}. Use an explicit target argument." ;;
   esac
@@ -403,19 +505,20 @@ if ! cargo tauri --version >/dev/null 2>&1; then
 fi
 
 # ── Dispatch ─────────────────────────────────────────────────
-TARGET="${1:-auto}"
+TARGET="${1:-native}"
 
 case "${TARGET}" in
-  auto)           build_current_os ;;
+  native|auto)    build_current_os ;;
   setup-bins)     setup_bins ;;
   dev)            run_dev ;;
+  mac-native)     build_mac_native ;;
   mac-universal)  build_mac_universal ;;
   mac-arm)        build_mac_arm ;;
   mac-x86)        build_mac_x86 ;;
   windows)        build_windows ;;
   all)            build_all ;;
   *)
-    echo "Usage: $0 [auto|setup-bins|dev|mac-universal|mac-arm|mac-x86|windows|all]"
+    echo "Usage: $0 [native|auto|dev|mac-native|mac-universal|mac-arm|mac-x86|windows|all]"
     exit 1
     ;;
 esac

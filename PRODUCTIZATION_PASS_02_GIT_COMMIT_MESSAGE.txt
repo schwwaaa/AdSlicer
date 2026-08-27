@@ -1,0 +1,13 @@
+feat(ui): add live job progress and refine automation-first workflow
+
+- add retro live progress panel for long-form processing
+- report exact OpenCV frame scan position, frame counts, percent, fps, elapsed time, and ETA
+- distinguish analysis finalization, boundary detection, segment planning, and export stages
+- report structural clip export progress as completed clips out of total
+- surface batch file position without exposing batch matching details in the normal workflow
+- change primary action label between Analyze & Export and Analyze Only
+- remove redundant documentation links beneath the logo while retaining Help navigation
+- keep Legacy and codec-level controls under Advanced / Compatibility
+- automatically reveal Advanced controls when Custom video output is selected
+- throttle progress telemetry to avoid WebView event flooding
+- preserve CV-7/CV-6.1a detection thresholds, structural policy, and zero-loss coverage behavior

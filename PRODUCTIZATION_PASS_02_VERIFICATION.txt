@@ -1,0 +1,38 @@
+AdSlicer Productization Pass 02 verification
+============================================
+
+Static checks completed in packaging environment:
+
+PASS  JavaScript syntax: node --check src/main.js
+PASS  package.json parse
+PASS  src-tauri/tauri.conf.json parse
+PASS  build.sh shell syntax
+PASS  test-opencv.sh shell syntax
+PASS  HTML progress control IDs present and unique
+PASS  Rust progress call/signature contracts checked textually
+PASS  OpenCV temporal detector file unchanged from Productization Pass 01
+PASS  OpenCV boundary scoring file unchanged from Productization Pass 01
+PASS  OpenCV structural segmentation file unchanged from Productization Pass 01
+PASS  Legacy detect.rs unchanged from Productization Pass 01
+PASS  models.rs unchanged from Productization Pass 01
+
+Runtime compilation limitation:
+
+Cargo/Rust is not installed in this packaging container, so the Tauri/OpenCV build
+cannot be compiled here. Validate on the accepted macOS Apple Silicon development
+environment with:
+
+    npm run test:opencv
+    npm run dev
+
+Recommended live test:
+
+1. Load a long SD/VHS-derived recording.
+2. Start with Adaptive / Complete Segments / Preserve Video.
+3. Confirm the panel shows Stage 1 and updates source position, frames, percent,
+   elapsed time, fps, and ETA approximately twice per second.
+4. Confirm the UI changes to Finalizing Analysis after the frame scan reaches 100%.
+5. Confirm Stage 2 and Stage 3 appear before export.
+6. Confirm Separate Clips reports X of Y clips completed.
+7. Confirm the panel remains at COMPLETE / 100% after the backend Job complete event.
+8. Run Analyze Only and confirm there is no Stage 4 export.

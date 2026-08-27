@@ -641,6 +641,62 @@ fn build_encode_args(enc: &EncodeSettings, apply_loudnorm: bool) -> Vec<String> 
     args
 }
 
+fn wait_command_cancellable(
+    cmd: &mut Command,
+    should_cancel: &dyn Fn() -> bool,
+    partial_output: Option<&Path>,
+    launch_context: &str,
+) -> Result<std::process::ExitStatus> {
+    let mut child = cmd.spawn().map_err(|e| anyhow!("Failed to launch {launch_context}: {e}"))?;
+    loop {
+        if should_cancel() {
+            let _ = child.kill();
+            let _ = child.wait();
+            if let Some(path) = partial_output {
+                let _ = fs::remove_file(path);
+            }
+            return Err(anyhow!("Job cancelled by user."));
+        }
+        if let Some(status) = child.try_wait().map_err(|e| anyhow!("Failed while waiting for {launch_context}: {e}"))? {
+            return Ok(status);
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+}
+
+fn ffmpeg_cut_cancellable(
+    ffmpeg:        &Path,
+    input:         &str,
+    start:         f64,
+    end:           f64,
+    out_path:      &Path,
+    enc:           &EncodeSettings,
+    apply_loudnorm: bool,
+    preview_dur:   f64,
+    should_cancel: &dyn Fn() -> bool,
+) -> Result<()> {
+    // Preview cap: truncate each segment to preview_dur seconds when enabled.
+    // 0.0 = disabled (export in full).
+    let raw_dur = (end - start).max(0.0);
+    let dur = if preview_dur > 0.0 { raw_dur.min(preview_dur) } else { raw_dur };
+    if dur <= 0.0 { return Ok(()); }
+    if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
+
+    let encode_args = build_encode_args(enc, apply_loudnorm);
+
+    let mut cmd = Command::new(ffmpeg);
+    cmd.args(["-y", "-hide_banner", "-nostats", "-nostdin",
+              "-ss", &format!("{:.3}", start), "-i", input, "-t", &format!("{:.3}", dur)]);
+    for arg in &encode_args { cmd.arg(arg); }
+    cmd.arg(out_path);
+
+    let status = wait_command_cancellable(&mut cmd, should_cancel, Some(out_path), "ffmpeg for cut")?;
+    if !status.success() {
+        return Err(anyhow!("ffmpeg cut failed (status {}) for {}", status, out_path.display()));
+    }
+    Ok(())
+}
+
 fn ffmpeg_cut(
     ffmpeg:        &Path,
     input:         &str,
@@ -651,25 +707,9 @@ fn ffmpeg_cut(
     apply_loudnorm: bool,
     preview_dur:   f64,
 ) -> Result<()> {
-    // Preview cap: truncate each segment to preview_dur seconds when enabled.
-    // 0.0 = disabled (export in full).
-    let raw_dur = (end - start).max(0.0);
-    let dur = if preview_dur > 0.0 { raw_dur.min(preview_dur) } else { raw_dur };
-    if dur <= 0.0 { return Ok(()); }
-
-    let encode_args = build_encode_args(enc, apply_loudnorm);
-
-    let mut cmd = Command::new(ffmpeg);
-    cmd.args(["-y", "-hide_banner", "-nostats", "-nostdin",
-              "-ss", &format!("{:.3}", start), "-i", input, "-t", &format!("{:.3}", dur)]);
-    for arg in &encode_args { cmd.arg(arg); }
-    cmd.arg(out_path);
-
-    let status = cmd.status().map_err(|e| anyhow!("Failed to launch ffmpeg for cut: {e}"))?;
-    if !status.success() {
-        return Err(anyhow!("ffmpeg cut failed (status {}) for {}", status, out_path.display()));
-    }
-    Ok(())
+    ffmpeg_cut_cancellable(
+        ffmpeg, input, start, end, out_path, enc, apply_loudnorm, preview_dur, &|| false,
+    )
 }
 
 // ─── Export functions ─────────────────────────────────────────────────────────
@@ -787,23 +827,35 @@ pub fn export_chapters_only(
     ffmeta:   &Path,
     emit:     &dyn Fn(&str),
 ) -> Result<PathBuf> {
+    export_chapters_only_cancellable(ffmpeg, input, outdir, base, ffmeta, emit, &|| false)
+}
+
+pub fn export_chapters_only_cancellable(
+    ffmpeg:   &Path,
+    input:    &str,
+    outdir:   &Path,
+    base:     &str,
+    ffmeta:   &Path,
+    emit:     &dyn Fn(&str),
+    should_cancel: &dyn Fn() -> bool,
+) -> Result<PathBuf> {
     let show_dir = outdir.join("show");
     fs::create_dir_all(&show_dir)?;
+    if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
 
     let out_path = safe_out(&show_dir.join(format!("{}_chaptered.mp4", base)));
 
     emit(&format!("Embedding chapters into source → {}", out_path.display()));
 
-    let status = Command::new(ffmpeg)
-        .args(["-y", "-hide_banner", "-nostats", "-nostdin",
-               "-i", input,
-               "-i", ffmeta.to_string_lossy().as_ref(),
-               "-map_metadata", "1",
-               "-map_chapters", "1",
-               "-c", "copy",
-               out_path.to_string_lossy().as_ref()])
-        .status()
-        .map_err(|e| anyhow!("Failed to launch ffmpeg for chapter embed: {e}"))?;
+    let mut cmd = Command::new(ffmpeg);
+    cmd.args(["-y", "-hide_banner", "-nostats", "-nostdin",
+              "-i", input,
+              "-i", ffmeta.to_string_lossy().as_ref(),
+              "-map_metadata", "1",
+              "-map_chapters", "1",
+              "-c", "copy",
+              out_path.to_string_lossy().as_ref()]);
+    let status = wait_command_cancellable(&mut cmd, should_cancel, Some(&out_path), "ffmpeg for chapter embed")?;
 
     if !status.success() {
         return Err(anyhow!("ffmpeg chapter embed failed for {}", out_path.display()));
@@ -847,12 +899,31 @@ pub fn export_timeline_segments(
     enc:         &EncodeSettings,
     preview_dur: f64,
     emit:        &dyn Fn(&str),
+    progress:    &dyn Fn(usize, usize),
+) -> Result<Vec<PathBuf>> {
+    export_timeline_segments_cancellable(
+        ffmpeg, input, outdir, base, segments, enc, preview_dur, emit, progress, &|| false,
+    )
+}
+
+pub fn export_timeline_segments_cancellable(
+    ffmpeg:      &Path,
+    input:       &str,
+    outdir:      &Path,
+    base:        &str,
+    segments:    &[CutInterval],
+    enc:         &EncodeSettings,
+    preview_dur: f64,
+    emit:        &dyn Fn(&str),
+    progress:    &dyn Fn(usize, usize),
+    should_cancel: &dyn Fn() -> bool,
 ) -> Result<Vec<PathBuf>> {
     let segment_dir = outdir.join("segments");
     fs::create_dir_all(&segment_dir)?;
     let mut paths = Vec::with_capacity(segments.len());
 
     for (idx, segment) in segments.iter().enumerate() {
+        if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
         let dst = safe_out(&segment_dir.join(format!("{}_segment_{:04}.mp4", base, idx + 1)));
         let preview_label = if preview_dur > 0.0 {
             format!(" [preview ≤{:.0}s]", preview_dur)
@@ -869,7 +940,7 @@ pub fn export_timeline_segments(
             segment.signals.join(", "),
             dst.display(),
         ));
-        ffmpeg_cut(
+        ffmpeg_cut_cancellable(
             ffmpeg,
             input,
             segment.start,
@@ -878,9 +949,12 @@ pub fn export_timeline_segments(
             enc,
             false,
             preview_dur,
+            should_cancel,
         )?;
         paths.push(dst);
+        progress(idx + 1, segments.len());
     }
 
+    if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
     Ok(paths)
 }

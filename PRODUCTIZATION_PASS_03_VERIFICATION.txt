@@ -1,0 +1,27 @@
+AdSlicer Productization Pass 03 verification
+
+STATIC CHECKS
+PASS  node --check src/main.js
+PASS  bash -n build.sh
+PASS  bash -n test-opencv.sh
+PASS  package.json parses
+PASS  src-tauri/tauri.conf.json parses
+PASS  src/index.html balanced/matched tag structure
+
+DETECTION / PRODUCTION ENGINE HASH COMPARISON VS PASS 02
+PASS  cv_detect.rs unchanged
+PASS  cv_temporal.rs unchanged
+PASS  cv_boundary.rs unchanged
+PASS  cv_structural.rs unchanged
+PASS  cv_production.rs unchanged
+PASS  detect.rs unchanged
+PASS  models.rs unchanged
+PASS  job.rs unchanged
+
+RUST NOTE
+src-tauri/src/main.rs adds only the metadata-only ffprobe preflight command and changes the final app error label from AdSlicerProXP to AdSlicer.
+Cargo/rustc are not installed in this packaging environment, so final Tauri compilation must be run on the validated development machine.
+
+RECOMMENDED RUNTIME CHECK
+npm run test:opencv
+npm run dev

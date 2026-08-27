@@ -1,0 +1,11 @@
+AdSlicer Productization Pass 06 — selected SHA-256 hashes
+
+5db34cfaba25de25adfee4f920b81b29920c332e9ecb773f4f696cb7ef1ec46d  src-tauri/src/adslicer/cv_structural.rs
+960bbb35e38fefa7b7477251e66b082b1a6867db26b4d5604945d13e1f2242b0  src-tauri/src/adslicer/cv_temporal.rs
+c988143db3a70fa98969d4f224555a76ce1c02a7982e65e9411531c08a449bfb  src-tauri/src/adslicer/cv_detect.rs
+1fd162f4078ae9b632b3f6fab3103ecf7e49bf74d4ccdeb7057bbec918da71ef  src-tauri/src/adslicer/cv_boundary.rs
+1d8dffa5fe91b067cb4ef68076a5c5cdfe861679e374696b2f3a5d127ea0031d  src-tauri/src/adslicer/cv_production.rs
+3c4e33808dc4d3d11c02a99c7d29e7a76e4b716e8f127e1d9861809e3738c8fa  src-tauri/src/adslicer/job.rs
+c589235513317e791cc87158543f8e352a6b9ded33ebbbdab08371db2d1238e0  src/main.js
+7918da65cdfade59f11ec2bce3e2fefe6946d38fec952b6dc7a647c1a7de3555  test-opencv.sh
+2db14410c28f452bd1e28db910b39a0dc3ad2bad5cb22ed9af1fe737ac266b08  test-problem-clips.sh

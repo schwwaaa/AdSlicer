@@ -1,0 +1,22 @@
+AdSlicer Productization Pass 04 — static verification
+
+PASS: src/main.js parses with `node --check`.
+PASS: build.sh parses with `bash -n`.
+PASS: test-opencv.sh parses with `bash -n`.
+PASS: bundled preset JSON files parse.
+PASS: Rust source delimiter counts are balanced in all modified Rust files.
+PASS: diff whitespace check produced no whitespace-error output.
+PASS: OpenCV frame loop polls cancellation before each decoded frame.
+PASS: SHA-256 source hashing polls cancellation per 1 MiB block.
+PASS: frame-evidence JSONL/CSV writing polls cancellation every 512 rows.
+PASS: structural production planner checks cancellation between stages.
+PASS: OpenCV segment export uses cancellable FFmpeg child polling.
+PASS: OpenCV chapter export uses cancellable FFmpeg child polling.
+PASS: killed FFmpeg export removes the incomplete current output file.
+PASS: frontend enters STOPPING and does not mark the job idle immediately.
+PASS: frontend ignores late progress/batch events while Stop is pending.
+PASS: backend emits a distinct cancelled terminal event after processing exits.
+PASS: frontend transitions to STOPPED only after backend confirmation.
+
+Runtime note:
+This packaging environment does not contain Cargo/OpenCV, so the final Rust compile/runtime gate remains `npm run test:opencv` and `npm run dev` on the validated macOS development machine.

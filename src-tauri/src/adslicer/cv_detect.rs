@@ -11,6 +11,7 @@ use sha2::{Digest, Sha256};
 use std::fs;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
+use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CvAnalysisConfig {
@@ -90,12 +91,35 @@ pub struct CvAnalysisResult {
     pub frames: Vec<FrameMetrics>,
 }
 
+/// Lightweight runtime telemetry for the product UI. This does not participate
+/// in detection decisions; it only reports how far the existing frame analysis
+/// has progressed.
+#[derive(Debug, Clone, Copy)]
+pub struct CvFrameProgress {
+    pub frames_decoded: u64,
+    pub frames_analyzed: u64,
+    pub total_frames: Option<u64>,
+    pub source_position_s: Option<f64>,
+    pub source_duration_s: Option<f64>,
+    pub elapsed_s: f64,
+    pub processing_fps: f64,
+    pub eta_s: Option<f64>,
+    pub scan_complete: bool,
+}
+
 
 pub fn sha256_file(path: &Path) -> Result<String> {
+    sha256_file_with_cancel(path, &|| false)
+}
+
+pub fn sha256_file_with_cancel(path: &Path, should_cancel: &dyn Fn() -> bool) -> Result<String> {
     let mut file = fs::File::open(path)?;
     let mut hasher = Sha256::new();
     let mut buffer = [0u8; 1024 * 1024];
     loop {
+        if should_cancel() {
+            return Err(anyhow!("Job cancelled by user."));
+        }
         let n = std::io::Read::read(&mut file, &mut buffer)?;
         if n == 0 { break; }
         hasher.update(&buffer[..n]);
@@ -105,6 +129,25 @@ pub fn sha256_file(path: &Path) -> Result<String> {
 
 #[cfg(feature = "opencv-analysis")]
 pub fn analyze_video_with_opencv(input: &Path, config: &CvAnalysisConfig) -> Result<CvAnalysisResult> {
+    analyze_video_with_opencv_progress(input, config, &|_| {})
+}
+
+#[cfg(feature = "opencv-analysis")]
+pub fn analyze_video_with_opencv_progress(
+    input: &Path,
+    config: &CvAnalysisConfig,
+    progress: &dyn Fn(CvFrameProgress),
+) -> Result<CvAnalysisResult> {
+    analyze_video_with_opencv_progress_cancel(input, config, progress, &|| false)
+}
+
+#[cfg(feature = "opencv-analysis")]
+pub fn analyze_video_with_opencv_progress_cancel(
+    input: &Path,
+    config: &CvAnalysisConfig,
+    progress: &dyn Fn(CvFrameProgress),
+    should_cancel: &dyn Fn() -> bool,
+) -> Result<CvAnalysisResult> {
     use opencv::{core, imgproc, prelude::*, videoio};
 
     if config.sample_stride == 0 {
@@ -138,8 +181,21 @@ pub fn analyze_video_with_opencv(input: &Path, config: &CvAnalysisConfig) -> Res
     let mut decoded_index = 0u64;
     let mut analyzed_count = 0u64;
     let mut previous_gray: Option<Vec<u8>> = None;
+    let analysis_started = Instant::now();
+    let mut last_progress_emit = Instant::now() - Duration::from_secs(1);
+    let total_frames = if frame_count_reported.is_finite() && frame_count_reported > 0.0 {
+        Some(frame_count_reported.round() as u64)
+    } else {
+        None
+    };
+    let source_duration_s = total_frames.and_then(|total| {
+        if fps_reported > 0.0 { Some(total as f64 / fps_reported) } else { None }
+    });
 
     loop {
+        if should_cancel() {
+            return Err(anyhow!("Job cancelled by user."));
+        }
         let mut frame = core::Mat::default();
         if !cap.read(&mut frame)? || frame.empty() {
             break;
@@ -242,13 +298,57 @@ pub fn analyze_video_with_opencv(input: &Path, config: &CvAnalysisConfig) -> Res
 
         previous_gray = Some(gray_bytes.to_vec());
         analyzed_count += 1;
+
+        // Keep UI traffic bounded while still feeling live on long recordings.
+        if analyzed_count == 1 || last_progress_emit.elapsed() >= Duration::from_millis(500) {
+            let elapsed_s = analysis_started.elapsed().as_secs_f64().max(0.001);
+            let processing_fps = analyzed_count as f64 / elapsed_s;
+            let eta_s = total_frames.and_then(|total| {
+                if processing_fps > 0.0 && decoded_index < total {
+                    Some((total - decoded_index) as f64 / processing_fps)
+                } else {
+                    None
+                }
+            });
+            progress(CvFrameProgress {
+                frames_decoded: decoded_index,
+                frames_analyzed: analyzed_count,
+                total_frames,
+                source_position_s: if fps_reported > 0.0 { Some(decoded_index as f64 / fps_reported) } else { None },
+                source_duration_s,
+                elapsed_s,
+                processing_fps,
+                eta_s,
+                scan_complete: false,
+            });
+            last_progress_emit = Instant::now();
+        }
     }
+
+    if should_cancel() {
+        return Err(anyhow!("Job cancelled by user."));
+    }
+
+    // Emit an exact terminal frame update before source hashing/finalization.
+    let elapsed_s = analysis_started.elapsed().as_secs_f64().max(0.001);
+    let processing_fps = analyzed_count as f64 / elapsed_s;
+    progress(CvFrameProgress {
+        frames_decoded: decoded_index,
+        frames_analyzed: analyzed_count,
+        total_frames,
+        source_position_s: if fps_reported > 0.0 { Some(decoded_index as f64 / fps_reported) } else { None },
+        source_duration_s,
+        elapsed_s,
+        processing_fps,
+        eta_s: None,
+        scan_complete: true,
+    });
 
     let source_file = input.file_name()
         .map(|s| s.to_string_lossy().to_string())
         .unwrap_or_else(|| input.display().to_string());
     let source_size_bytes = fs::metadata(input)?.len();
-    let source_sha256 = sha256_file(input)?;
+    let source_sha256 = sha256_file_with_cancel(input, should_cancel)?;
 
     let manifest = CvAnalysisManifest {
         schema_version: 1,
@@ -280,6 +380,29 @@ pub fn analyze_video_with_opencv(_input: &Path, _config: &CvAnalysisConfig) -> R
     ))
 }
 
+#[cfg(not(feature = "opencv-analysis"))]
+pub fn analyze_video_with_opencv_progress(
+    _input: &Path,
+    _config: &CvAnalysisConfig,
+    _progress: &dyn Fn(CvFrameProgress),
+) -> Result<CvAnalysisResult> {
+    Err(anyhow!(
+        "OpenCV analysis is not enabled. Build with --features opencv-analysis"
+    ))
+}
+
+#[cfg(not(feature = "opencv-analysis"))]
+pub fn analyze_video_with_opencv_progress_cancel(
+    _input: &Path,
+    _config: &CvAnalysisConfig,
+    _progress: &dyn Fn(CvFrameProgress),
+    _should_cancel: &dyn Fn() -> bool,
+) -> Result<CvAnalysisResult> {
+    Err(anyhow!(
+        "OpenCV analysis is not enabled. Build with --features opencv-analysis"
+    ))
+}
+
 pub fn read_frame_metrics_jsonl(path: &Path) -> Result<Vec<FrameMetrics>> {
     let file = fs::File::open(path)?;
     let reader = BufReader::new(file);
@@ -297,25 +420,41 @@ pub fn read_frame_metrics_jsonl(path: &Path) -> Result<Vec<FrameMetrics>> {
 }
 
 pub fn write_cv_evidence(outdir: &Path, result: &CvAnalysisResult) -> Result<Vec<PathBuf>> {
+    write_cv_evidence_with_cancel(outdir, result, &|| false)
+}
+
+pub fn write_cv_evidence_with_cancel(
+    outdir: &Path,
+    result: &CvAnalysisResult,
+    should_cancel: &dyn Fn() -> bool,
+) -> Result<Vec<PathBuf>> {
     fs::create_dir_all(outdir)?;
+    if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
 
     let manifest_path = outdir.join("opencv_analysis_manifest.json");
     fs::write(&manifest_path, serde_json::to_string_pretty(&result.manifest)?)?;
 
     let jsonl_path = outdir.join("opencv_frame_metrics.jsonl");
     let mut jsonl = BufWriter::new(fs::File::create(&jsonl_path)?);
-    for frame in &result.frames {
+    for (idx, frame) in result.frames.iter().enumerate() {
+        if idx % 512 == 0 && should_cancel() {
+            return Err(anyhow!("Job cancelled by user."));
+        }
         serde_json::to_writer(&mut jsonl, frame)?;
         writeln!(&mut jsonl)?;
     }
     jsonl.flush()?;
 
+    if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
     let csv_path = outdir.join("opencv_frame_metrics.csv");
     let mut csv = BufWriter::new(fs::File::create(&csv_path)?);
     writeln!(csv,
         "frame_index,pts_s,width,height,mean_luma,stddev_luma,min_luma,max_luma,black_pixel_ratio,near_black_pixel_ratio,mean_blue,mean_green,mean_red,mean_hue,mean_saturation,mean_value,frame_delta_mean"
     )?;
-    for f in &result.frames {
+    for (idx, f) in result.frames.iter().enumerate() {
+        if idx % 512 == 0 && should_cancel() {
+            return Err(anyhow!("Job cancelled by user."));
+        }
         writeln!(csv,
             "{},{:.6},{},{},{:.6},{:.6},{},{},{:.8},{:.8},{:.6},{:.6},{:.6},{:.6},{:.6},{:.6},{:.6}",
             f.frame_index, f.pts_s, f.width, f.height,
@@ -327,6 +466,7 @@ pub fn write_cv_evidence(outdir: &Path, result: &CvAnalysisResult) -> Result<Vec
     }
     csv.flush()?;
 
+    if should_cancel() { return Err(anyhow!("Job cancelled by user.")); }
     Ok(vec![manifest_path, jsonl_path, csv_path])
 }
 

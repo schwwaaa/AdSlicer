@@ -1,0 +1,16 @@
+{
+  "name": "adslicer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AdSlicer development and native release shortcuts. Production users launch packaged Tauri applications.",
+  "scripts": {
+    "dev": "bash ./build.sh dev",
+    "build": "bash ./build.sh native",
+    "test:opencv": "bash ./test-opencv.sh --synthetic",
+    "release": "bash ./build.sh native",
+    "release:mac": "bash ./build.sh mac-native",
+    "release:mac-arm": "bash ./build.sh mac-arm",
+    "release:mac-intel": "bash ./build.sh mac-x86",
+    "release:mac-universal": "bash ./build.sh mac-universal"
+  }
+}

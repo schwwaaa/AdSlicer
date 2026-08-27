@@ -1,2 +1,0 @@
-interval_index,start_s,end_s,duration_s,start_anchor_s,end_anchor_s,start_observation_index,end_observation_index,start_role,end_role,start_score,end_score,interval_score,tier
-0,5.000333,17.260000,12.259667,5.200333,17.200000,1,2,interval_exit,interval_entry,0.900000,0.900000,0.900000,strong

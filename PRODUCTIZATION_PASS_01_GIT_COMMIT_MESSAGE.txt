@@ -1,0 +1,14 @@
+feat(ui): reduce AdSlicer to automation-first product workflow
+
+- collapse the normal interface to Source, Analysis, and Output
+- make Adaptive the normal AdSlicer analysis path instead of a visible engine choice
+- move Legacy detector and manual tuning controls under Advanced / Compatibility
+- retain Batch Folder support while hiding file-pattern details from normal use
+- translate codec settings into Preserve Video and Frame Accurate output profiles
+- preserve expert codec, GPU, audio, deinterlace, and scaling controls under Advanced
+- keep the proven CV-7 detector, planner, renderer, and regression harness unchanged
+- default activity output to normal milestones instead of development-level debug chatter
+- preserve Complete Segments as the recommended split behavior
+- restore npm run dev/build convenience through the OpenCV-aware build.sh wrapper
+- correct the packaged product name from AdSlicerProXP to AdSlicer
+- update README direction around automation-first productization and no internal editor

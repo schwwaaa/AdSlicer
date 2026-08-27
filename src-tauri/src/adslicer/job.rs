@@ -10,8 +10,8 @@ use tauri::{Emitter, Window};
 use walkdir::WalkDir;
 
 use crate::adslicer::cut::{
-    build_plan, export_chapters_only, export_commercials, export_show,
-    export_timeline_segments, format_ts, write_dataset, write_logs, write_segment_ffmeta,
+    build_plan, export_chapters_only, export_chapters_only_cancellable, export_commercials, export_show,
+    export_timeline_segments_cancellable, format_ts, write_dataset, write_logs, write_segment_ffmeta,
 };
 use crate::adslicer::models::EncodeSettings;
 use crate::adslicer::detect::{
@@ -19,7 +19,7 @@ use crate::adslicer::detect::{
     run_blackdetect, run_scenechange, run_silencedetect, run_uniformdetect,
 };
 use crate::adslicer::models::RunMeta;
-use crate::adslicer::cv_production::{build_opencv_production_plan, CvProductionPolicy};
+use crate::adslicer::cv_production::{build_opencv_production_plan_progress_cancel, CvProductionPolicy};
 
 const APP_VERSION: &str = "0.1.0";
 
@@ -27,6 +27,11 @@ const APP_VERSION: &str = "0.1.0";
 
 static CANCEL_FLAG: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 pub fn cancel_current_job() { CANCEL_FLAG.store(true, Ordering::SeqCst); }
+pub fn is_cancel_requested() -> bool { CANCEL_FLAG.load(Ordering::SeqCst) }
+
+fn check_cancelled() -> Result<()> {
+    if is_cancel_requested() { Err(anyhow!("Job cancelled by user.")) } else { Ok(()) }
+}
 
 // ─── Params ───────────────────────────────────────────────────────────────────
 
@@ -150,12 +155,10 @@ fn resolve_binary(name: &str) -> PathBuf {
     }
     #[cfg(debug_assertions)] {
         let bins = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("binaries");
-        let triples = ["aarch64-apple-darwin","x86_64-apple-darwin",
-                        "x86_64-pc-windows-msvc","x86_64-pc-windows-gnu","x86_64-unknown-linux-gnu"];
-        for t in &triples {
-            #[cfg(windows)] let c = bins.join(format!("{}-{}.exe", name, t));
-            #[cfg(not(windows))] let c = bins.join(format!("{}-{}", name, t));
-            if c.exists() { return c; }
+        if let Some(triple) = option_env!("TAURI_ENV_TARGET_TRIPLE") {
+            #[cfg(windows)] let candidate = bins.join(format!("{}-{}.exe", name, triple));
+            #[cfg(not(windows))] let candidate = bins.join(format!("{}-{}", name, triple));
+            if candidate.exists() { return candidate; }
         }
     }
     PathBuf::from(name)
@@ -191,6 +194,39 @@ fn days_to_ymd(days: u64) -> (u64, u64, u64) {
 // ─── Logging ─────────────────────────────────────────────────────────────────
 
 fn emit_log(window: &Window, msg: &str) { let _ = window.emit("adslicer-log", msg.to_string()); }
+
+fn emit_progress(
+    window: &Window,
+    stage: &str,
+    label: &str,
+    current: Option<u64>,
+    total: Option<u64>,
+    source_position_s: Option<f64>,
+    source_duration_s: Option<f64>,
+    processing_fps: Option<f64>,
+    eta_s: Option<f64>,
+    detail: Option<&str>,
+) {
+    let _ = window.emit("adslicer-progress", serde_json::json!({
+        "stage": stage,
+        "label": label,
+        "current": current,
+        "total": total,
+        "sourcePositionS": source_position_s,
+        "sourceDurationS": source_duration_s,
+        "processingFps": processing_fps,
+        "etaS": eta_s,
+        "detail": detail,
+    }));
+}
+
+fn emit_batch_progress(window: &Window, current: usize, total: usize, file: &str) {
+    let _ = window.emit("adslicer-batch-progress", serde_json::json!({
+        "current": current,
+        "total": total,
+        "file": file,
+    }));
+}
 
 // ─── Batch input collection ───────────────────────────────────────────────────
 
@@ -514,8 +550,68 @@ fn process_one_opencv(
     emit("OpenCV Adaptive uses validated CV-6.1a thresholds; Legacy detector tuning fields are ignored.");
 
     let diagnostics_root = outdir.join("logs").join("opencv");
-    let cv_plan = build_opencv_production_plan(input_path, &diagnostics_root, policy)?;
+    let cv_plan = build_opencv_production_plan_progress_cancel(
+        input_path,
+        &diagnostics_root,
+        policy,
+        &|stage, frame_progress| {
+            match (stage, frame_progress) {
+                ("analyze_frames", Some(p)) => {
+                    if p.scan_complete {
+                        emit_progress(
+                            window, "analysis_finalize", "Finalizing Analysis", None, None,
+                            None, None, None, None, Some("Frame scan complete; verifying the source and finalizing evidence"),
+                        );
+                    } else {
+                        emit_progress(
+                            window,
+                            "analysis",
+                            "Analyzing Recording",
+                            Some(p.frames_decoded),
+                            p.total_frames,
+                            p.source_position_s,
+                            p.source_duration_s,
+                            Some(p.processing_fps),
+                            p.eta_s,
+                            Some("Inspecting video frames for structural evidence"),
+                        );
+                    }
+                },
+                ("analyze_frames", None) => emit_progress(
+                    window, "analysis", "Analyzing Recording", Some(0), None,
+                    None, None, None, None, Some("Opening recording and preparing frame analysis"),
+                ),
+                ("finalize_analysis", _) => emit_progress(
+                    window, "analysis_finalize", "Finalizing Analysis", None, None,
+                    None, None, None, None, Some("Finishing frame evidence and source verification"),
+                ),
+                ("save_evidence", _) => emit_progress(
+                    window, "analysis_finalize", "Saving Analysis Data", None, None,
+                    None, None, None, None, Some("Writing reproducible analysis diagnostics"),
+                ),
+                ("temporal", _) => emit_progress(
+                    window, "boundaries", "Detecting Boundaries", None, None,
+                    None, None, None, None, Some("Evaluating temporal transitions and separators"),
+                ),
+                ("boundaries", _) => emit_progress(
+                    window, "boundaries", "Detecting Boundaries", None, None,
+                    None, None, None, None, Some("Scoring candidate boundaries"),
+                ),
+                ("structural", _) => emit_progress(
+                    window, "segments", "Building Segments", None, None,
+                    None, None, None, None, Some("Building the full-coverage structural timeline"),
+                ),
+                ("plan_ready", _) => emit_progress(
+                    window, "segments", "Segments Ready", Some(1), Some(1),
+                    None, None, None, Some(0.0), Some("Structural timeline passed coverage validation"),
+                ),
+                _ => {}
+            }
+        },
+        &|| is_cancel_requested(),
+    )?;
 
+    check_cancelled()?;
     emit(&format!("OpenCV: {}", cv_plan.opencv_version));
     emit(&format!("Frames decoded/analyzed: {}/{}", cv_plan.frames_decoded, cv_plan.frames_analyzed));
     emit(&format!("Structural events: {}", cv_plan.structural_events));
@@ -541,6 +637,7 @@ fn process_one_opencv(
         ));
     }
 
+    check_cancelled()?;
     // Chapter metadata is useful both for chapters-only exports and as a
     // human-readable timeline artifact for dry runs.
     let ffmeta_path = write_segment_ffmeta(&outdir, &cv_plan.segments)?;
@@ -550,7 +647,9 @@ fn process_one_opencv(
     }
 
     if params.dry_run {
+        check_cancelled()?;
         emit(&format!("[dry-run] OpenCV diagnostics only → {}", diagnostics_root.display()));
+        emit_progress(window, "complete", "Analysis Complete", Some(1), Some(1), None, None, None, Some(0.0), Some("Analysis finished; no media was exported"));
         return Ok(());
     }
 
@@ -561,12 +660,16 @@ fn process_one_opencv(
 
     match params.output_mode.as_str() {
         "chapters" => {
-            let chaptered = export_chapters_only(
+            emit_progress(window, "export", "Writing Chaptered Recording", None, None, None, None, None, None, Some("Writing chapter markers and output media"));
+            let chaptered = export_chapters_only_cancellable(
                 ffmpeg, input, &outdir, &base, &ffmeta_path,
                 &|msg| emit_log(window, msg),
+                &|| is_cancel_requested(),
             )?;
+            check_cancelled()?;
             emit(&format!("DONE Done: {}", input));
             emit(&format!("Chaptered full timeline → {}", chaptered.display()));
+            emit_progress(window, "complete", "Complete", Some(1), Some(1), None, None, None, Some(0.0), Some("Chaptered recording finished"));
         }
         _ => {
             if params.preview_dur > 0.0 {
@@ -575,10 +678,24 @@ fn process_one_opencv(
                     params.preview_dur,
                 ));
             }
-            let paths = export_timeline_segments(
+            let segment_total = cv_plan.segments.len() as u64;
+            emit_progress(window, "export", "Exporting Clips", Some(0), Some(segment_total), None, None, None, None, Some("Writing structural clips"));
+            let paths = export_timeline_segments_cancellable(
                 ffmpeg, input, &outdir, &base, &cv_plan.segments, &enc,
-                params.preview_dur, &|msg| emit_log(window, msg),
+                params.preview_dur,
+                &|msg| emit_log(window, msg),
+                &|completed, total| emit_progress(
+                    window,
+                    "export",
+                    "Exporting Clips",
+                    Some(completed as u64),
+                    Some(total as u64),
+                    None, None, None, None,
+                    Some("Writing structural clips"),
+                ),
+                &|| is_cancel_requested(),
             )?;
+            check_cancelled()?;
             emit(&format!("DONE Done: {}", input));
             emit(&format!("Structural segment files: {} → {}", paths.len(), outdir.join("segments").display()));
             emit(&format!("Diagnostics: {}", diagnostics_root.display()));
@@ -588,6 +705,7 @@ fn process_one_opencv(
                 if enc.loudnorm { "  loudnorm=ignored-for-independent-segments" } else { "" },
                 if enc.deinterlace { "  deinterlace=on" } else { "" },
             ));
+            emit_progress(window, "complete", "Complete", Some(1), Some(1), None, None, None, Some(0.0), Some("All structural clips finished"));
         }
     }
 
@@ -630,16 +748,23 @@ pub fn run_job(window: &Window, params: JobParams) -> Result<()> {
         }
         emit_log(window, &format!("Batch mode: {} files found", inputs.len()));
         let mut processed = 0usize; let mut errors = 0usize;
-        for path in &inputs {
+        for (index, path) in inputs.iter().enumerate() {
             if CANCEL_FLAG.load(Ordering::SeqCst) { emit_log(window, "Job cancelled by user."); break; }
             let input_str = path.to_string_lossy().to_string();
+            emit_batch_progress(window, index + 1, inputs.len(), &input_str);
             emit_log(window, &format!("- Processing {}", input_str));
             match process_one(window, &ffmpeg, &ffprobe, &input_str, &params, &ffmpeg_version) {
                 Ok(()) => processed += 1,
+                Err(_) if is_cancel_requested() => {
+                    emit_log(window, "Cancellation acknowledged; stopping batch.");
+                    break;
+                }
                 Err(e) => { errors += 1; emit_log(window, &format!("[error] Failed on {}: {}", input_str, e)); }
             }
         }
-        emit_log(window, &format!("Done. Processed {} files, {} errors.", processed, errors));
+        if !is_cancel_requested() {
+            emit_log(window, &format!("Done. Processed {} files, {} errors.", processed, errors));
+        }
     } else {
         process_one(window, &ffmpeg, &ffprobe, &params.input_path, &params, &ffmpeg_version)?;
     }

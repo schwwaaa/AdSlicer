@@ -1,0 +1,12 @@
+fix(ui): acknowledge backend stop and collapse workflow to one column
+
+- emit terminal cancellation acknowledgement from the compiled Tauri entrypoint
+- transition STOPPING to STOPPED only after run_job actually exits
+- keep real OpenCV and FFmpeg cancellation checks from Pass 04
+- remove stale unused duplicate Rust entrypoint that obscured the cancellation bug
+- collapse Source, Analysis, Output, Advanced, Processing, and Activity into one workflow column
+- move live processing directly below Advanced / Compatibility
+- compact the AdSlicer identity header and Activity Log footprint
+- make CLR easier to identify and operate
+- preserve pre-run metadata estimates and live measured ETA behavior
+- preserve CV-7 detection, segmentation, and coverage policy
