@@ -1,0 +1,18 @@
+AdSlicer legacy FFmpeg blackdetect baseline
+Parameters: d=0.10 pix_th=0.08 pic_th=0.98
+ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers
+
+--- 01_clean_black.mkv
+[blackdetect @ 0x7fb528002780] black_start:3 black_end:4 black_duration:1
+--- 02_single_black_frame.mkv
+(no blackdetect event)
+--- 03_two_frame_near_black.mkv
+(no blackdetect event)
+--- 04_temporal_luma_valley.mkv
+[blackdetect @ 0x7f7764002780] black_start:3.1 black_end:3.2 black_duration:0.1
+--- 05_dark_textured_content.mkv
+(no blackdetect event)
+--- 06_hard_cut_no_black.mkv
+(no blackdetect event)
+--- 07_uniform_blue_slate.mkv
+(no blackdetect event)

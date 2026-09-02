@@ -26,6 +26,19 @@ function closeModal() {
 function $(id) { return document.getElementById(id); }
 
 let jobRunning = false;
+let cancelRequested = false;
+let jobStartedAt = null;
+let jobElapsedTimer = null;
+let currentProgressStage = null;
+let currentProgressStageStartedAt = null;
+let currentJobDryRun = false;
+let currentBatchInfo = null;
+let lastProgressAt = null;
+let lastLoggedProgressStage = null;
+let lastLoggedBatchIndex = null;
+let preflightDurationS = null;
+let preflightProbeTimer = null;
+let preflightProbeToken = 0;
 // ─── Crash-proofing: surface frontend errors instead of letting the WebView die ───
 window.addEventListener("error", (e) => {
   try {
@@ -58,7 +71,10 @@ function mode() {
 }
 
 function updateInputLabel() {
-  $("inputLabel").textContent = mode() === "batchDir" ? "Input Folder" : "Input Path";
+  const isBatch = mode() === "batchDir";
+  $("inputLabel").textContent = isBatch ? "Folder" : "Recording";
+  const batchOptions = $("batchOptions");
+  if (batchOptions) batchOptions.style.display = isBatch ? "block" : "none";
   const val = $("inputPath").value;
   $("sb-file").textContent = val ? truncatePath(val) : "No file selected";
 }
@@ -76,6 +92,10 @@ async function pickInput() {
   if (sel) {
     $("inputPath").value = sel;
     $("sb-file").textContent = truncatePath(sel);
+    if (!jobRunning) {
+      if (dir) showBatchPreflight();
+      else await probeSelectedRecording(sel);
+    }
   }
 }
 
@@ -93,6 +113,8 @@ function collectParams() {
     glob:          $("globPattern").value.trim() || "*.mp4,*.mov,*.mkv,*.avi,*.m4v,*.wmv,*.flv,*.webm,*.mpg,*.mpeg,*.mts,*.m2ts,*.ts,*.vob,*.3gp,*.dv",
     outdir:        $("outputDir").value.trim(),
     mediaType:     "mp4",
+    detectionEngine: $("detectionEngine").value,
+    segmentationPolicy: $("segmentationPolicy").value,
     blackMinDur:   parseFloat($("blackMinDur").value),
     pixTh:         parseFloat($("pixTh").value),
     picTh:         parseFloat($("picTh").value),
@@ -198,13 +220,106 @@ function timestamp() {
   return new Date().toTimeString().slice(0, 8);
 }
 
+function isVerboseActivity() {
+  return Number($("verbosity")?.value || 1) >= 2;
+}
+
+function clearActivityLog(announce = true) {
+  _logQueue = [];
+  _logLineCount = 0;
+  const el = _consoleEl();
+  if (el) el.textContent = "";
+  if (announce) logLine("system", `[${timestamp()}]  ◆  Activity log cleared.`);
+}
+
+function setActivityMode(verbose, announce = true) {
+  const value = verbose ? "2" : "1";
+  if ($("verbosity")) $("verbosity").value = value;
+  const btn = $("logModeBtn");
+  if (btn) {
+    btn.textContent = verbose ? "VERBOSE" : "SIMPLE";
+    btn.classList.toggle("verbose", verbose);
+  }
+  syncVerbosityCheck(verbose ? "view-log-debug" : "view-log-info");
+  if (announce) {
+    logLine("system", `[${timestamp()}]  ◆  Activity Log: ${verbose ? "Verbose troubleshooting detail" : "Simple milestones"}.`);
+  }
+}
+
 /* ─── Log parser ─── */
 function parseAndLog(raw) {
   if (!raw || !raw.trim()) return;
   for (const rawLine of raw.split(/\r?\n/)) {
     const line = rawLine.trim();
-    if (line) classifyAndLog(line);
+    if (!line) continue;
+    if (isVerboseActivity()) classifyAndLog(line);
+    else classifyAndLogSimple(line);
   }
+}
+
+function classifyAndLogSimple(line) {
+  const ts = `[${timestamp()}]`;
+  if (isFFmpegNoise(line)) return;
+
+  if (/^\[cancelled\]/i.test(line)) {
+    logLine("warn", `${ts}  ■  STOPPED — backend processing ended.`);
+    return;
+  }
+  if (/\[done\]/i.test(line) || /job complete/i.test(line)) {
+    logBlank();
+    logLine("success", `${ts}  ✔  COMPLETE — AdSlicer finished this job.`);
+    logSeparator();
+    return;
+  }
+  if (/\[warn\]|warning/i.test(line)) {
+    const clean = line.replace(/^\[warn\]\s*/i, "").trim();
+    logLine("warn", `${ts}  ⚠  ${clean}`);
+    return;
+  }
+  if (/\[error\]|\berror\b|exception|traceback|failed/i.test(line)) {
+    const clean = line.replace(/^\[error\]\s*/i, "").replace(/^[EW]\s+\S+\s*\|\s*/, "");
+    logLine("error", `${ts}  ✖  ${clean}`);
+    return;
+  }
+
+  let m = line.match(/Selected boundaries:\s*(\d+)/i);
+  if (m) { logLine("info", `${ts}  ✓  Boundaries found: ${m[1]}`); return; }
+
+  m = line.match(/Plan:\s*(\d+)\s+full-coverage segments/i);
+  if (m) { logLine("info", `${ts}  ✓  Segments planned: ${m[1]}`); return; }
+
+  m = line.match(/Coverage:\s*(PASS|FAIL)/i);
+  if (m) {
+    const ok = m[1].toUpperCase() === "PASS";
+    logLine(ok ? "success" : "error", `${ts}  ${ok ? "✓" : "✖"}  Coverage check: ${m[1].toUpperCase()}`);
+    return;
+  }
+
+  m = line.match(/Structural segment files:\s*(\d+)\s*[→\->]+\s*(.+)/i);
+  if (m) { logLine("success", `${ts}  ✓  Exported ${m[1]} clips.`); return; }
+
+  m = line.match(/Chaptered full timeline\s*[→\->]+\s*(.+)/i);
+  if (m) { logLine("success", `${ts}  ✓  Chaptered recording exported.`); return; }
+
+  m = line.match(/Done\.\s*Processed\s+(\d+)\s+files?,\s*(\d+)\s+errors?/i);
+  if (m) {
+    const errors = Number(m[2]);
+    logLine(errors ? "warn" : "success", `${ts}  ${errors ? "⚠" : "✓"}  Batch finished: ${m[1]} processed, ${m[2]} error(s).`);
+    return;
+  }
+
+  if (/\[dry-run\].*OpenCV diagnostics only/i.test(line)) {
+    logLine("success", `${ts}  ✓  Analysis complete — no media exported.`);
+    return;
+  }
+
+  // Legacy fallback gets a concise summary rather than its tuning chatter.
+  m = line.match(/Plan:\s*(\d+)\s+commercial.*?(\d+)\s+keep/i);
+  if (m) { logLine("info", `${ts}  ✓  Legacy plan: ${m[1]} commercial block(s), ${m[2]} keep segment(s).`); return; }
+  if (/No commercials detected/i.test(line)) { logLine("warn", `${ts}  ⚠  Legacy detector found no commercial breaks.`); return; }
+
+  // Everything else is intentionally hidden in Simple mode. Verbose mode
+  // retains the existing parser for troubleshooting and validation.
 }
 
 function classifyAndLog(line) {
@@ -214,6 +329,10 @@ function classifyAndLog(line) {
   if (isFFmpegNoise(line)) return;
 
   // ── Job terminal states ─────────────────────────────────────────────────────
+  if (/^\[cancelled\]/i.test(line)) {
+    logLine("warn", `${ts}  ■  STOPPED — backend processing ended.`);
+    return;
+  }
   if (/\[done\]/i.test(line) || /job complete/i.test(line)) {
     logBlank();
     logLine("success", `${ts}  ✔  JOB COMPLETE — All files processed successfully.`);
@@ -588,11 +707,417 @@ function isFFmpegNoise(line) {
   ].some(p => p.test(line));
 }
 
+function formatEstimateRange(durationS) {
+  const d = Number(durationS);
+  if (!Number.isFinite(d) || d <= 0) return "Estimate unavailable";
+  // Conservative first-run range for the current full-frame OpenCV path.
+  // This is intentionally broad; measured throughput replaces it after start.
+  const fastMin = Math.max(1, Math.round((d / 6) / 60));
+  const slowMin = Math.max(fastMin, Math.round((d / 3) / 60));
+  if (slowMin < 60) return `~${fastMin}–${slowMin} min`;
+  const fmt = (mins) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
+  };
+  return `~${fmt(fastMin)}–${fmt(slowMin)}`;
+}
+
+function preflightExportNote() {
+  if ($("dryRun")?.checked) return "Analyze Only: no export pass will run.";
+  const profile = $("outputProfile")?.value || "preserve";
+  if (profile === "accurate") return "Export time is additional; frame-accurate H.264 re-encoding can take substantial time.";
+  if (profile === "custom") return "Export time is additional and depends on the custom encoder settings.";
+  return "Export time is additional; Preserve Video normally adds a shorter copy pass.";
+}
+
+function showPreRunEstimate(durationS) {
+  if (jobRunning) return;
+  preflightDurationS = Number(durationS);
+  const range = formatEstimateRange(preflightDurationS);
+  $("progressPanel")?.classList.remove("running");
+  $("progressStage").textContent = "READY — ESTIMATE";
+  $("progressPercent").textContent = "READY";
+  $("progressDetail").textContent = `Recording loaded  •  ${formatDuration(preflightDurationS)}`;
+  $("progressLiveText").textContent = "READY TO RUN";
+  $("progressLastUpdate").textContent = "";
+  $("progressEstimate").classList.remove("hidden", "live");
+  $("progressEstimate").textContent = `Initial analysis estimate: ${range}. Duration-based only; live measured ETA replaces this after start. ${preflightExportNote()}`;
+  $("progressElapsed").textContent = "00:00:00";
+  $("progressEta").textContent = range;
+  $("progressRate").textContent = "ESTIMATE";
+  setProgressDeterminate(0);
+  $("progressPercent").textContent = "READY";
+}
+
+function showBatchPreflight() {
+  if (jobRunning) return;
+  preflightDurationS = null;
+  $("progressPanel")?.classList.remove("running");
+  $("progressStage").textContent = "BATCH READY";
+  $("progressPercent").textContent = "READY";
+  $("progressDetail").textContent = "Batch folder selected.";
+  $("progressLiveText").textContent = "READY TO RUN";
+  $("progressLastUpdate").textContent = "";
+  $("progressEstimate").classList.remove("hidden", "live");
+  $("progressEstimate").textContent = "Batch total time is not guessed up front. AdSlicer shows the current file and a live ETA for each recording as it is analyzed.";
+  $("progressElapsed").textContent = "00:00:00";
+  $("progressEta").textContent = "PER FILE";
+  $("progressRate").textContent = "—";
+  setProgressDeterminate(0);
+  $("progressPercent").textContent = "READY";
+}
+
+async function probeSelectedRecording(path) {
+  if (jobRunning || mode() !== "singleFile" || !path || !(core && core.invoke)) return;
+  const token = ++preflightProbeToken;
+  $("progressStage").textContent = "READING RECORDING";
+  $("progressDetail").textContent = "Checking duration for an initial time estimate…";
+  $("progressLiveText").textContent = "PREPARING ESTIMATE";
+  $("progressEstimate").classList.remove("hidden", "live");
+  $("progressEstimate").textContent = "This quick metadata check does not analyze video frames.";
+  $("progressEta").textContent = "CALCULATING";
+  try {
+    const info = await core.invoke("probe_recording", { inputPath: path });
+    if (token !== preflightProbeToken || jobRunning || mode() !== "singleFile") return;
+    showPreRunEstimate(info?.durationS);
+  } catch (e) {
+    if (token !== preflightProbeToken || jobRunning) return;
+    preflightDurationS = null;
+    $("progressStage").textContent = "READY";
+    $("progressDetail").textContent = "Recording selected.";
+    $("progressLiveText").textContent = "READY TO RUN";
+    $("progressEstimate").textContent = "Initial estimate unavailable. A measured ETA will appear shortly after analysis starts.";
+    $("progressEta").textContent = "—";
+    $("progressRate").textContent = "—";
+    if (isVerboseActivity()) logLine("warn", `[${timestamp()}]  ⚠  Pre-run estimate unavailable: ${e}`);
+  }
+}
+
+function scheduleSelectedRecordingProbe() {
+  if (preflightProbeTimer) clearTimeout(preflightProbeTimer);
+  preflightProbeTimer = setTimeout(() => {
+    const path = $("inputPath")?.value?.trim();
+    if (mode() === "singleFile" && path && !jobRunning) probeSelectedRecording(path);
+  }, 500);
+}
+
 function formatDuration(secs) {
+  secs = Number(secs);
+  if (!Number.isFinite(secs) || secs < 0) return "—";
   const h = Math.floor(secs / 3600);
   const m = Math.floor((secs % 3600) / 60);
   const s = Math.floor(secs % 60);
   return [h, m, s].map(v => String(v).padStart(2, "0")).join(":");
+}
+
+function formatRate(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n) || n <= 0) return "—";
+  return `${Math.round(n)} fps`;
+}
+
+function setProgressDeterminate(percent) {
+  const p = Math.max(0, Math.min(100, Number(percent) || 0));
+  $("progressFill").classList.remove("indeterminate", "failed");
+  $("progressFill").classList.toggle("active", jobRunning && currentProgressStage !== "complete");
+  $("progressFill").style.width = `${p}%`;
+  $("progressPercent").textContent = `${Math.round(p)}%`;
+  $("progressTrack").setAttribute("aria-valuenow", String(Math.round(p)));
+}
+
+function setProgressIndeterminate() {
+  $("progressFill").style.width = "34%";
+  $("progressFill").classList.remove("failed", "active");
+  $("progressFill").classList.add("indeterminate");
+  $("progressPercent").textContent = "WORKING";
+  $("progressTrack").removeAttribute("aria-valuenow");
+}
+
+function progressStagePrefix(stage) {
+  const total = currentJobDryRun ? 3 : 4;
+  if (stage === "analysis" || stage === "analysis_finalize") return `STAGE 1 OF ${total}`;
+  if (stage === "boundaries") return `STAGE 2 OF ${total}`;
+  if (stage === "segments") return `STAGE 3 OF ${total}`;
+  if (stage === "export") return `STAGE 4 OF ${total}`;
+  return "";
+}
+
+function refreshElapsedClock() {
+  if (!jobStartedAt) return;
+  $("progressElapsed").textContent = formatDuration((Date.now() - jobStartedAt) / 1000);
+  if (jobRunning) {
+    if (cancelRequested) {
+      $("progressLiveText").textContent = "STOP REQUESTED — WAITING FOR BACKEND";
+      $("progressLastUpdate").textContent = "ending active processing…";
+      return;
+    }
+    const ageS = lastProgressAt ? Math.max(0, Math.floor((Date.now() - lastProgressAt) / 1000)) : 0;
+    $("progressLiveText").textContent = ageS <= 3 ? "ACTIVE — RECEIVING UPDATES" : "ACTIVE — STILL WORKING";
+    $("progressLastUpdate").textContent = ageS <= 1 ? "updated now" : `updated ${ageS}s ago`;
+  }
+}
+
+function startElapsedClock() {
+  stopElapsedClock();
+  refreshElapsedClock();
+  jobElapsedTimer = setInterval(refreshElapsedClock, 1000);
+}
+
+function stopElapsedClock() {
+  if (jobElapsedTimer) clearInterval(jobElapsedTimer);
+  jobElapsedTimer = null;
+}
+
+function resetProgressUi() {
+  stopElapsedClock();
+  cancelRequested = false;
+  jobStartedAt = null;
+  currentProgressStage = null;
+  currentProgressStageStartedAt = null;
+  currentBatchInfo = null;
+  lastProgressAt = null;
+  lastLoggedProgressStage = null;
+  lastLoggedBatchIndex = null;
+  $("progressPanel")?.classList.remove("running");
+  $("progressFill")?.classList.remove("active");
+  $("progressStage").textContent = "READY";
+  $("progressDetail").textContent = "Choose a recording and press Analyze & Export.";
+  $("progressLiveText").textContent = "WAITING";
+  $("progressLastUpdate").textContent = "";
+  $("progressEstimate").classList.remove("hidden", "live");
+  $("progressEstimate").textContent = "Select a recording to calculate an initial time estimate.";
+  $("progressElapsed").textContent = "00:00:00";
+  $("progressEta").textContent = "—";
+  $("progressRate").textContent = "—";
+  $("progressBatch").style.display = "none";
+  setProgressDeterminate(0);
+  $("progressPercent").textContent = "—";
+}
+
+function beginProgressUi(params) {
+  cancelRequested = false;
+  currentJobDryRun = !!params.dryRun;
+  jobStartedAt = Date.now();
+  currentProgressStage = "starting";
+  currentProgressStageStartedAt = Date.now();
+  currentBatchInfo = null;
+  lastProgressAt = Date.now();
+  lastLoggedProgressStage = null;
+  lastLoggedBatchIndex = null;
+  $("progressPanel")?.classList.add("running");
+  $("progressBatch").style.display = "none";
+  $("progressBatch").textContent = "";
+  $("progressStage").textContent = params.detectionEngine === "legacy" ? "STARTING LEGACY COMPATIBILITY" : "STARTING ANALYSIS";
+  $("progressDetail").textContent = "Preparing the recording…";
+  $("progressLiveText").textContent = "ACTIVE — STARTING";
+  $("progressLastUpdate").textContent = "updated now";
+  $("progressEstimate").classList.remove("hidden", "live");
+  $("progressEstimate").textContent = preflightDurationS
+    ? `Initial estimate ${formatEstimateRange(preflightDurationS)} — calibrating measured ETA now.`
+    : "Calibrating a measured ETA from the first analyzed frames.";
+  $("progressEta").textContent = "CALCULATING";
+  $("progressRate").textContent = "—";
+  setProgressIndeterminate();
+  startElapsedClock();
+}
+
+function finishProgressUi(label = "Complete", detail = "Job finished successfully.") {
+  stopElapsedClock();
+  $("progressPanel")?.classList.remove("stopping");
+  currentProgressStage = "complete";
+  $("progressPanel")?.classList.remove("running");
+  $("progressFill")?.classList.remove("active");
+  refreshElapsedClock();
+  $("progressStage").textContent = label.toUpperCase();
+  $("progressDetail").textContent = detail;
+  $("progressLiveText").textContent = "FINISHED";
+  $("progressLastUpdate").textContent = "";
+  $("progressEstimate").classList.remove("live");
+  $("progressEstimate").textContent = "Processing finished. Output and diagnostics are ready.";
+  $("progressEta").textContent = "00:00:00";
+  $("progressRate").textContent = "—";
+  setProgressDeterminate(100);
+}
+
+function failProgressUi(label, detail) {
+  stopElapsedClock();
+  $("progressPanel")?.classList.remove("running", "stopping");
+  $("progressFill")?.classList.remove("active");
+  refreshElapsedClock();
+  $("progressStage").textContent = label.toUpperCase();
+  $("progressDetail").textContent = detail;
+  $("progressLiveText").textContent = "STOPPED";
+  $("progressLastUpdate").textContent = "";
+  $("progressEstimate").classList.remove("live");
+  $("progressEstimate").textContent = "Processing stopped before completion. Check the Activity Log for the reason.";
+  $("progressEta").textContent = "—";
+  $("progressRate").textContent = "—";
+  $("progressFill").classList.remove("indeterminate");
+  $("progressFill").classList.add("failed");
+}
+
+function showStoppingProgressUi() {
+  currentProgressStage = "stopping";
+  $("progressPanel")?.classList.add("running", "stopping");
+  $("progressStage").textContent = "STOPPING";
+  $("progressDetail").textContent = "Cancellation requested. Ending the active analysis or export operation…";
+  $("progressLiveText").textContent = "STOP REQUESTED — WAITING FOR BACKEND";
+  $("progressLastUpdate").textContent = "ending active processing…";
+  $("progressEstimate").classList.add("live");
+  $("progressEstimate").textContent = "AdSlicer is stopping safely. The current OpenCV frame or FFmpeg process will be terminated before the job is marked stopped.";
+  $("progressEta").textContent = "STOPPING";
+  $("progressRate").textContent = "—";
+  setProgressIndeterminate();
+  const stop = $("stopBtn");
+  if (stop) { stop.disabled = true; stop.textContent = "■  Stopping…"; }
+}
+
+function completeCancellationUi(detail = "Backend processing has stopped. Partial output may remain.") {
+  $("progressPanel")?.classList.remove("stopping");
+  cancelRequested = false;
+  jobRunning = false;
+  const stop = $("stopBtn");
+  if (stop) { stop.disabled = false; stop.textContent = "■  Stop"; }
+  setStatus("idle", "Stopped");
+  failProgressUi("Stopped", detail);
+}
+
+function handleBatchProgress(payload) {
+  if (cancelRequested) return;
+  const current = Number(payload?.current || 0);
+  const total = Number(payload?.total || 0);
+  const file = String(payload?.file || "");
+  if (!current || !total) return;
+  currentBatchInfo = { current, total, file };
+  if (jobRunning) {
+    $("progressPanel")?.classList.add("running");
+    lastProgressAt = Date.now();
+    currentProgressStage = "batch_prepare";
+    currentProgressStageStartedAt = Date.now();
+    lastLoggedProgressStage = null;
+    $("progressStage").textContent = `BATCH ${current} OF ${total} — PREPARING`;
+    $("progressDetail").textContent = truncatePath(file);
+    $("progressLiveText").textContent = "ACTIVE — PREPARING FILE";
+    $("progressLastUpdate").textContent = "updated now";
+    $("progressEstimate").classList.add("live");
+    $("progressEstimate").textContent = "This recording will get its own measured ETA once frame analysis begins.";
+    $("progressEta").textContent = "CALCULATING";
+    $("progressRate").textContent = "—";
+    setProgressIndeterminate();
+  }
+  if (current !== lastLoggedBatchIndex) {
+    lastLoggedBatchIndex = current;
+    logLine("header", `[${timestamp()}]  ▣  BATCH ${current}/${total} — ${truncatePath(file)}`);
+  }
+  const el = $("progressBatch");
+  el.style.display = "block";
+  el.textContent = `BATCH ${current} OF ${total}  •  ${truncatePath(file)}`;
+}
+
+function handleProgress(payload) {
+  if (!payload || typeof payload !== "object") return;
+  const stage = String(payload.stage || "");
+  const label = String(payload.label || "Working");
+
+  if (stage === "cancelled") {
+    completeCancellationUi(String(payload.detail || "Backend processing has stopped. Partial output may remain."));
+    return;
+  }
+  // Once Stop has been requested, ignore late telemetry from work that was
+  // already queued before the backend observed the cancellation flag.
+  if (cancelRequested) return;
+
+  lastProgressAt = Date.now();
+  if (stage === "complete") {
+    if (currentBatchInfo && currentBatchInfo.current < currentBatchInfo.total) {
+      setProgressDeterminate(100);
+      $("progressStage").textContent = `BATCH ${currentBatchInfo.current} OF ${currentBatchInfo.total} — FILE COMPLETE`;
+      $("progressDetail").textContent = String(payload.detail || "Current recording finished.");
+      $("progressLiveText").textContent = "ACTIVE — MOVING TO NEXT FILE";
+      $("progressLastUpdate").textContent = "updated now";
+      $("progressEstimate").classList.add("live");
+      $("progressEstimate").textContent = "Current file finished. AdSlicer is continuing the batch automatically.";
+      $("progressEta").textContent = "NEXT FILE";
+      $("progressRate").textContent = `${currentBatchInfo.current} / ${currentBatchInfo.total} files`;
+      lastProgressAt = Date.now();
+      return;
+    }
+    finishProgressUi(label, String(payload.detail || "Job finished successfully."));
+    return;
+  }
+
+  if (stage !== currentProgressStage) {
+    currentProgressStage = stage;
+    currentProgressStageStartedAt = Date.now();
+  }
+
+  if (stage !== lastLoggedProgressStage && stage !== "complete") {
+    lastLoggedProgressStage = stage;
+    const stageMessages = {
+      analysis: "Analyzing recording — inspecting video frames.",
+      analysis_finalize: "Finalizing analysis — verifying and saving evidence.",
+      boundaries: "Detecting structural boundaries.",
+      segments: "Building the full-coverage segment plan.",
+      export: "Exporting output media.",
+    };
+    if (stageMessages[stage]) logLine("info", `[${timestamp()}]  ▶  ${stageMessages[stage]}`);
+  }
+
+  const prefix = progressStagePrefix(stage);
+  $("progressStage").textContent = prefix ? `${prefix} — ${label.toUpperCase()}` : label.toUpperCase();
+
+  const current = Number(payload.current);
+  const total = Number(payload.total);
+  const hasCount = Number.isFinite(current) && Number.isFinite(total) && total > 0;
+  if (hasCount) {
+    setProgressDeterminate((current / total) * 100);
+  } else {
+    setProgressIndeterminate();
+  }
+
+  if (stage === "analysis" && hasCount) {
+    const pos = Number(payload.sourcePositionS);
+    const dur = Number(payload.sourceDurationS);
+    const posText = Number.isFinite(pos) && Number.isFinite(dur) && dur > 0
+      ? `${formatDuration(pos)} / ${formatDuration(dur)}`
+      : `${Math.round(current).toLocaleString()} / ${Math.round(total).toLocaleString()} frames`;
+    $("progressDetail").textContent = `${posText}  •  ${Math.round(current).toLocaleString()} / ${Math.round(total).toLocaleString()} frames`;
+    $("progressRate").textContent = formatRate(payload.processingFps);
+    const eta = Number(payload.etaS);
+    const liveElapsedS = jobStartedAt ? (Date.now() - jobStartedAt) / 1000 : 0;
+    const measuredReady = liveElapsedS >= 6 && current >= Math.min(total, 120);
+    $("progressEta").textContent = measuredReady && Number.isFinite(eta) && eta >= 0 ? formatDuration(eta) : "CALCULATING";
+    $("progressEstimate").classList.add("live");
+    $("progressEstimate").textContent = measuredReady && Number.isFinite(eta)
+      ? `LIVE ETA — measured from current processing speed (${formatRate(payload.processingFps)}).`
+      : `Initial estimate ${preflightDurationS ? formatEstimateRange(preflightDurationS) : "available above"} — measuring this computer now…`;
+    return;
+  }
+
+  if (stage === "export" && hasCount) {
+    $("progressDetail").textContent = `${Math.round(current)} of ${Math.round(total)} clips finished`;
+    $("progressRate").textContent = `${Math.round(current)} / ${Math.round(total)} clips`;
+    $("progressEstimate").classList.add("live");
+    $("progressEstimate").textContent = "LIVE EXPORT PROGRESS — ETA is calculated from completed clips and will refine as export continues.";
+    if (current > 0 && current < total && currentProgressStageStartedAt) {
+      const elapsed = Math.max(0.001, (Date.now() - currentProgressStageStartedAt) / 1000);
+      const rate = current / elapsed;
+      const eta = rate > 0 ? (total - current) / rate : NaN;
+      $("progressEta").textContent = Number.isFinite(eta) ? formatDuration(eta) : "CALCULATING";
+    } else if (current >= total) {
+      $("progressEta").textContent = "00:00:00";
+    } else {
+      $("progressEta").textContent = "CALCULATING";
+    }
+    return;
+  }
+
+  $("progressDetail").textContent = String(payload.detail || "Working…");
+  $("progressEstimate").classList.add("live");
+  $("progressEstimate").textContent = "ACTIVE — this stage has no reliable percentage estimate, so the running indicator stays live until the next measurable stage.";
+  $("progressEta").textContent = "CALCULATING";
+  $("progressRate").textContent = "—";
 }
 
 /* ─── Status ─── */
@@ -607,6 +1132,89 @@ function setStatus(state, text) {
   }
 }
 
+/* ─── Product output profiles ─── */
+let applyingOutputProfile = false;
+
+function syncOutputProfile() {
+  const profile = $("outputProfile");
+  if (!profile) return;
+  applyingOutputProfile = true;
+  if (profile.value === "preserve") {
+    $("encodeMode").value = "copy";
+    $("gpuAccel").value = "none";
+    $("videoCrf").value = "18";
+    $("videoPreset").value = "veryfast";
+    $("audioCodec").value = "aac";
+    $("audioBitrateKbps").value = "0";
+    $("deinterlace").checked = false;
+    $("scaleWidth").value = "0";
+    $("outputProfileNote").textContent = "Keeps the source video stream whenever possible and uses compatible audio output. Best default for fast archival slicing.";
+  } else if (profile.value === "accurate") {
+    $("encodeMode").value = "h264";
+    $("gpuAccel").value = "none";
+    $("videoCrf").value = "18";
+    $("videoPreset").value = "veryfast";
+    $("audioCodec").value = "aac";
+    $("audioBitrateKbps").value = "0";
+    $("deinterlace").checked = false;
+    $("scaleWidth").value = "0";
+    $("outputProfileNote").textContent = "Re-encodes to high-quality H.264 so rendered cut points are not constrained by source keyframes.";
+  } else {
+    $("outputProfileNote").textContent = "Uses the expert codec and processing controls under Advanced / Compatibility.";
+    if ($("advancedPanel")) $("advancedPanel").open = true;
+  }
+  applyingOutputProfile = false;
+}
+
+function markOutputProfileCustom() {
+  if (applyingOutputProfile) return;
+  const profile = $("outputProfile");
+  if (!profile) return;
+  profile.value = "custom";
+  syncOutputProfile();
+}
+
+/* ─── Detection engine UI (CV-7) ─── */
+const LEGACY_ONLY_PARAM_IDS = [
+  "blackMinDur","pixTh","picTh","mergeGap",
+  "edgePadPre","edgePadPost","minCommercial","maxCommercial","includeBlack",
+  "silenceNoiseDb","silenceMinDur","minShowSegment","alwaysKeepFirst","alwaysKeepLast",
+  "uniformMaxStddev","sceneThreshold","removeBefore","removeAfter","requireDiv5",
+  "trimHead","trimTail",
+  "loudnorm",
+  "postCommand",
+];
+
+function syncDetectionEngineUi() {
+  const engine = $("detectionEngine");
+  if (!engine) return;
+  const isOpenCv = engine.value === "opencv_adaptive";
+  const policyRow = $("segmentationPolicyRow");
+  if (policyRow) policyRow.style.display = isOpenCv ? "flex" : "none";
+  const legacySettings = $("legacySettings");
+  if (legacySettings) legacySettings.style.display = isOpenCv ? "none" : "block";
+  for (const id of LEGACY_ONLY_PARAM_IDS) {
+    const el = $(id);
+    if (el) el.disabled = isOpenCv;
+  }
+  const note = $("engineNote");
+  if (note) {
+    note.textContent = isOpenCv
+      ? "Adaptive is the normal AdSlicer analysis path. Legacy exists only as a compatibility fallback."
+      : "Legacy Compatibility is active. The original FFmpeg detector and its manual tuning controls are shown below.";
+  }
+  const cutOption = $("cutModeOption");
+  if (cutOption) {
+    cutOption.textContent = isOpenCv ? "Separate Clips" : "Legacy Commercial Cut";
+  }
+}
+
+function syncPrimaryAction() {
+  const btn = $("startBtn");
+  if (!btn) return;
+  btn.textContent = $("dryRun").checked ? "▶  Analyze Only" : "▶  Analyze & Export";
+}
+
 /* ─── Job control ─── */
 async function startJob() {
   if (jobRunning) { logLine("warn", `[${timestamp()}]  ⚠  A job is already running.`); return; }
@@ -617,34 +1225,48 @@ async function startJob() {
   if (!p.outdir)    { logLine("error", `[${timestamp()}]  ✖  No output directory specified.`); return; }
 
   jobRunning = true;
+  cancelRequested = false;
+  const stop = $("stopBtn");
+  if (stop) { stop.disabled = false; stop.textContent = "■  Stop"; }
   setStatus("running", "Running…");
+  beginProgressUi(p);
 
   logBlank();
-  logLine("header", `[${timestamp()}]  ►  JOB START`);
-  logLine("info",   `[${timestamp()}]  ●  Input  : ${p.inputPath}`);
-  logLine("info",   `[${timestamp()}]  ●  Output : ${p.outdir}`);
+  logLine("header", `[${timestamp()}]  ►  JOB START — ${truncatePath(p.inputPath)}`);
+  logLine("info", `[${timestamp()}]  ●  ${p.detectionEngine === "opencv_adaptive" ? (p.segmentationPolicy === "every_separator" ? "Every Separator" : "Complete Segments") : "Legacy Compatibility"}  •  ${p.dryRun ? "Analyze Only" : "Analyze + Export"}`);
+  if (isVerboseActivity()) {
+    logLine("system", `[${timestamp()}]  ◆  Output: ${p.outdir}`);
+  }
   logSeparator();
 
   try {
     await core.invoke("run_adslicer_job", { params: p });
   } catch (e) {
+    if (cancelRequested) return;
     logLine("error", `[${timestamp()}]  ✖  ${e}`);
     setStatus("error", "Error");
+    failProgressUi("Error", String(e));
     jobRunning = false;
   }
 }
 
 async function stopJob() {
-  if (!core) return;
+  if (!core || !jobRunning || cancelRequested) return;
+  cancelRequested = true;
+  setStatus("running", "Stopping…");
+  showStoppingProgressUi();
+  logBlank();
+  logLine("warn", `[${timestamp()}]  ⊘  STOP REQUESTED — ending active processing…`);
   try {
     await core.invoke("cancel_adslicer_job");
-    logBlank();
-    logLine("warn", `[${timestamp()}]  ⊘  Job cancelled by user.`);
-    logSeparator();
-    setStatus("idle", "Cancelled");
-    jobRunning = false;
   } catch (e) {
+    cancelRequested = false;
+    const stop = $("stopBtn");
+    if (stop) { stop.disabled = false; stop.textContent = "■  Stop"; }
     logLine("error", `[${timestamp()}]  ✖  Cancel error: ${e}`);
+    setStatus("error", "Cancel failed");
+    failProgressUi("Cancel failed", String(e));
+    jobRunning = false;
   }
 }
 
@@ -792,7 +1414,11 @@ function initMenuBar() {
 function handleMenuAction(action) {
   const ts = timestamp();
   switch (action) {
-    case "file-open":         pickInput(); break;
+    case "file-open":
+      document.querySelector('input[name="mode"][value="singleFile"]').checked = true;
+      updateInputLabel();
+      pickInput();
+      break;
     case "file-open-folder":
       document.querySelector('input[name="mode"][value="batchDir"]').checked = true;
       updateInputLabel();
@@ -806,22 +1432,18 @@ function handleMenuAction(action) {
       logLine("system", `[${ts}]  ◆  Parameters reset to defaults.`);
       break;
     case "edit-clear-log":
-      $("console").innerHTML = "";
-      logLine("system", `[${ts}]  ◆  Log cleared.`);
+      clearActivityLog(false);
       break;
 
-    case "view-log-quiet":  $("verbosity").value = "0"; syncVerbosityCheck("view-log-quiet");  logLine("system", `[${ts}]  ◆  Log: Quiet`);  break;
-    case "view-log-info":   $("verbosity").value = "1"; syncVerbosityCheck("view-log-info");   logLine("system", `[${ts}]  ◆  Log: Info`);   break;
-    case "view-log-debug":  $("verbosity").value = "2"; syncVerbosityCheck("view-log-debug");  logLine("system", `[${ts}]  ◆  Log: Debug`);  break;
-    case "view-open-output": logLine("system", `[${ts}]  ◆  Open Output Folder — coming soon.`); break;
-    case "view-open-log":    logLine("system", `[${ts}]  ◆  Open Session Log — coming soon.`);   break;
+    case "view-log-info":   setActivityMode(false, true); break;
+    case "view-log-debug":  setActivityMode(true, true);  break;
 
     case "preset-save":        openSavePresetModal(); break;
     case "preset-open-folder": openPresetsFolder(); break;
     case "preset-reload":      loadPresetsMenu(); break;
-    case "help-docs":    openModal("https://schwwaaa.github.io/AdSlicer-docs/", "Documentation"); break;
+    case "help-docs":    openModal("https://schwwaaa.github.io/AdSlicer", "Documentation"); break;
     case "help-faq":
-    case "help-tips":    openModal("https://schwwaaa.github.io/AdSlicer-docs/", "Tips & Tricks"); break;
+    case "help-tips":    openModal("https://schwwaaa.github.io/AdSlicer/", "Tips & Tricks"); break;
     case "help-usecases": openModal("https://schwwaaa.github.io/AdSlicer-docs/use-cases/", "Use Cases"); break;
     case "help-about":   showAbout(); break;
     default: break;
@@ -829,6 +1451,8 @@ function handleMenuAction(action) {
 }
 
 function resetParameters() {
+  $("detectionEngine").value = "opencv_adaptive";
+  $("segmentationPolicy").value = "complete_segments";
   $("blackMinDur").value   = "0.10";
   $("pixTh").value         = "0.08";
   $("picTh").value         = "0.98";
@@ -841,6 +1465,7 @@ function resetParameters() {
   $("dryRun").checked       = false;
   $("previewDur").value     = "0";
   $("outputMode").value     = "cut";
+  $("outputProfile").value  = "preserve";
   $("encodeMode").value     = "copy";
   $("gpuAccel").value       = "none";
   $("videoCrf").value       = "18";
@@ -850,7 +1475,8 @@ function resetParameters() {
   $("loudnorm").checked     = false;
   $("deinterlace").checked  = false;
   $("scaleWidth").value     = "0";
-  $("verbosity").value      = "2";
+  $("verbosity").value      = "1";
+  setActivityMode(false, false);
   $("globPattern").value    = "*.mp4,*.mov,*.mkv,*.avi,*.m4v,*.wmv,*.flv,*.webm,*.mpg,*.mpeg,*.mts,*.m2ts,*.ts,*.vob,*.3gp,*.dv";
   // ── Comskip-derived enhancements ───────────────────────────────
   $("silenceNoiseDb").value  = "-40";
@@ -866,10 +1492,16 @@ function resetParameters() {
   $("trimHead").value         = "0";
   $("trimTail").value         = "0";
   $("postCommand").value      = "";
+  syncVerbosityCheck("view-log-info");
+  syncOutputProfile();
+  syncDetectionEngineUi();
+  syncPrimaryAction();
+  updateInputLabel();
+  resetProgressUi();
 }
 
 function syncVerbosityCheck(active) {
-  ["view-log-quiet","view-log-info","view-log-debug"].forEach(a => {
+  ["view-log-info","view-log-debug"].forEach(a => {
     const el = document.querySelector(`[data-action="${a}"] .dd-check`);
     if (el) el.textContent = (a === active) ? "✓" : "";
   });
@@ -878,12 +1510,12 @@ function syncVerbosityCheck(active) {
 function showAbout() {
   logBlank();
   logLine("header", "  AdSlicer  v0.1.0");
-  logLine("system", "  AdSlicer");
-  logLine("system", "  Broadcast Archival Commercial Slicer");
+  logLine("system", "  Automatic Archival Video Segmenter");
   logLine("system", "  ─────────────────────────────────────");
-  logLine("system", "  Cuts commercials from VHS + broadcast");
-  logLine("system", "  captures using black-frame detection.");
-  logLine("system", "  Built with Tauri · Rust · ffmpeg");
+  logLine("system", "  Structural segmentation for VHS + broadcast");
+  logLine("system", "  Adaptive structural segmentation for archival video.");
+  logLine("system", "  Legacy compatibility tools are available under Advanced.");
+  logLine("system", "  Built with Tauri · Rust · OpenCV · ffmpeg");
   logBlank();
 }
 
@@ -899,6 +1531,7 @@ function showAbout() {
 
 // All param keys expected in a preset JSON (camelCase, matches collectParams)
 const PRESET_PARAM_KEYS = [
+  "detectionEngine","segmentationPolicy",
   "blackMinDur","pixTh","picTh","mergeGap",
   "edgePadPre","edgePadPost","minCommercial","maxCommercial",
   "includeBlack","dryRun","verbosity","outputMode",
@@ -911,6 +1544,8 @@ const PRESET_PARAM_KEYS = [
 // Apply a parsed preset object to the UI inputs
 function applyPreset(preset) {
   const map = {
+    detectionEngine:["detectionEngine","value"],
+    segmentationPolicy:["segmentationPolicy","value"],
     blackMinDur:    ["blackMinDur","value"],
     pixTh:          ["pixTh","value"],
     picTh:          ["picTh","value"],
@@ -959,6 +1594,8 @@ function applyPreset(preset) {
     }
     applied++;
   }
+  syncDetectionEngineUi();
+  updateInputLabel();
   return applied;
 }
 
@@ -1139,19 +1776,47 @@ window.addEventListener("DOMContentLoaded", () => {
   $("pickOutput").onclick = pickOutput;
   $("startBtn").onclick   = startJob;
   $("stopBtn").onclick    = stopJob;
+  $("detectionEngine").addEventListener("change", syncDetectionEngineUi);
+  $("outputProfile").addEventListener("change", syncOutputProfile);
+  $("dryRun").addEventListener("change", syncPrimaryAction);
+  ["encodeMode","gpuAccel","videoCrf","videoPreset","audioCodec","audioBitrateKbps","deinterlace","scaleWidth"].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener("change", markOutputProfileCustom);
+  });
+  syncOutputProfile();
+  syncDetectionEngineUi();
+  syncPrimaryAction();
+  updateInputLabel();
+  resetProgressUi();
 
-  $("clearConsole").onclick = () => {
-    $("console").innerHTML = "";
-    logLine("system", `[${timestamp()}]  ◆  Log cleared.`);
-  };
+  $("clearConsole").onclick = () => clearActivityLog(false);
+  $("logModeBtn").onclick = () => setActivityMode(!isVerboseActivity(), true);
+  setActivityMode(false, false);
 
   document.querySelectorAll('input[name="mode"]').forEach(r => {
-    r.addEventListener("change", updateInputLabel);
+    r.addEventListener("change", () => {
+      updateInputLabel();
+      if (jobRunning) return;
+      if (mode() === "batchDir") showBatchPreflight();
+      else scheduleSelectedRecordingProbe();
+    });
   });
 
   $("inputPath").addEventListener("input", () => {
     const v = $("inputPath").value;
     $("sb-file").textContent = v ? truncatePath(v) : "No file selected";
+    if (!jobRunning) {
+      if (!v) resetProgressUi();
+      else if (mode() === "batchDir") showBatchPreflight();
+      else scheduleSelectedRecordingProbe();
+    }
+  });
+
+  ["outputProfile", "dryRun"].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener("change", () => {
+      if (!jobRunning && preflightDurationS) showPreRunEstimate(preflightDurationS);
+    });
   });
 
 // Backend log stream (Tauri event plugin). On some systems the first run can race
@@ -1162,15 +1827,37 @@ async function setupBackendLogStream() {
     try {
       await event.listen("adslicer-log", (m) => {
         const payload = m.payload || "";
+        if (/^\[cancelled\]/i.test(payload)) {
+          parseAndLog(payload);
+          logSeparator();
+          completeCancellationUi("Backend processing has stopped. Partial output may remain.");
+          return;
+        }
         if (/\[done\]|job complete/i.test(payload)) {
+          if (cancelRequested) return;
           parseAndLog(payload);
           setStatus("done", "Complete");
+          if (jobRunning && currentProgressStage !== "complete") finishProgressUi("Complete", "Job finished successfully.");
           jobRunning = false;
           return;
         }
         if (/^\[error\]/i.test(payload)) {
+          if (cancelRequested) return;
           parseAndLog(payload);
+          if (currentBatchInfo) {
+            // Batch processing is designed to continue after a per-file failure.
+            // Keep the overall job alive and make the failed item obvious.
+            $("progressPanel")?.classList.add("running");
+            $("progressStage").textContent = `BATCH ${currentBatchInfo.current} OF ${currentBatchInfo.total} — FILE ERROR`;
+            $("progressDetail").textContent = "This file failed. AdSlicer will continue with the remaining batch.";
+            $("progressLiveText").textContent = "ACTIVE — CONTINUING BATCH";
+            $("progressEstimate").classList.add("live");
+            $("progressEstimate").textContent = "A per-file error does not stop Batch mode. See Verbose Activity for troubleshooting details.";
+            lastProgressAt = Date.now();
+            return;
+          }
           setStatus("error", "Error");
+          failProgressUi("Error", payload.replace(/^\[error\]\s*/i, ""));
           jobRunning = false;
           return;
         }
@@ -1186,13 +1873,16 @@ async function setupBackendLogStream() {
 }
 setupBackendLogStream();
 
-  // Logo nav links — open in modal
-  document.querySelector('.logo-links').addEventListener('click', (e) => {
-    const a = e.target.closest('a.link');
-    if (!a) return;
-    e.preventDefault();
-    openModal(a.href, a.textContent.trim());
-  });
+async function setupProgressStreams() {
+  if (!(event && event.listen)) return;
+  try {
+    await event.listen("adslicer-progress", (m) => handleProgress(m.payload || {}));
+    await event.listen("adslicer-batch-progress", (m) => handleBatchProgress(m.payload || {}));
+  } catch (err) {
+    logLine("warn", `[${timestamp()}]  ⚠  Progress stream unavailable; activity log will still update.`);
+  }
+}
+setupProgressStreams();
 
   // Modal close button
   document.getElementById("web-modal-close").addEventListener("click", closeModal);
@@ -1243,9 +1933,9 @@ setupBackendLogStream();
   // Startup banner
   logLine("system", "╔═══════════════════════════════════════════╗");
   logLine("system", "║   AdSlicer  v0.1.0                   ║");
-  logLine("system", "║   Broadcast Archival Commercial Slicer     ║");
+  logLine("system", "║   Automatic Archival Video Segmenter     ║");
   logLine("system", "╚═══════════════════════════════════════════╝");
   logBlank();
-  logLine("system", `[${timestamp()}]  ◆  Ready. Configure parameters and press Start.`);
+  logLine("system", `[${timestamp()}]  ◆  Ready. Choose a recording and press Start.`);
   logBlank();
 });

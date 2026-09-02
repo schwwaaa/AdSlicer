@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "notes": "CV-3 validates shadow boundary candidate scoring only. These are not active AdSlicer cuts.",
+  "cases": [
+    {
+      "case": "01_clean_black",
+      "required_candidates": [
+        {"role": "interval_entry", "min_score": 0.60},
+        {"role": "interval_exit", "min_score": 0.60}
+      ]
+    },
+    {
+      "case": "02_single_black_frame",
+      "required_candidates": [
+        {"role": "separator_anchor", "anchor_frame": 90, "min_score": 0.80}
+      ]
+    },
+    {
+      "case": "03_two_frame_near_black",
+      "required_candidates": [
+        {"role": "separator_anchor", "min_score": 0.60}
+      ]
+    },
+    {
+      "case": "04_temporal_luma_valley",
+      "required_candidates": [
+        {"role": "fade_valley", "anchor_frame": 94, "min_score": 0.60}
+      ]
+    },
+    {
+      "case": "05_dark_textured_content",
+      "max_candidates": 0
+    },
+    {
+      "case": "06_hard_cut_no_black",
+      "max_candidates": 0,
+      "required_evidence_only": [
+        {"role": "scene_only"}
+      ]
+    },
+    {
+      "case": "07_uniform_blue_slate",
+      "max_candidates": 0,
+      "required_evidence_only": [
+        {"role": "chromatic_dark"}
+      ]
+    }
+  ]
+}

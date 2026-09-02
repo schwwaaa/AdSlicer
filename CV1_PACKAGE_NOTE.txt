@@ -1,0 +1,13 @@
+AdSlicer CV Pass 01 — rebuilt from the user-supplied current AdSlicer.zip (2026-08-16).
+
+This source package intentionally omits the large bundled FFmpeg/FFprobe sidecar binaries and the .git object database to keep the handoff compact. The original uploaded baseline remains the source of those binaries/history.
+
+To restore sidecars in a standalone copy, use the existing project build helper:
+  ./build.sh setup-bins
+
+CV-1 itself changes only:
+  - src-tauri/Cargo.toml
+  - src-tauri/src/adslicer/mod.rs
+and adds the isolated OpenCV probe/validation files documented under docs/development/.
+
+The current user-supplied src/main.js working-tree changes are preserved in this package.

@@ -1,0 +1,14 @@
+AdSlicer Productization Pass 09 verification
+
+PASS: build.sh shell syntax
+PASS: package.json JSON syntax
+PASS: tauri.dev.conf.json JSON syntax
+PASS: tauri.conf.json JSON syntax
+PASS: current UI files byte-identical to Pass 08
+PASS: OpenCV detection/temporal/boundary/structural/production files byte-identical to Pass 08
+PASS: Legacy detector/models byte-identical to Pass 08
+PASS: npm run dev no longer requires release sidecars
+PASS: release builds still require target-specific local sidecars
+PASS: debug binary lookup now chooses only the active target triple before falling back to PATH
+
+Runtime Cargo/Tauri/OpenCV validation must be performed on the target development machine.

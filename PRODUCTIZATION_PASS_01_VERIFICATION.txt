@@ -1,0 +1,20 @@
+AdSlicer Productization Pass 01 — Static Verification
+
+PASS: Rust src-tauri/src tree is unchanged from CV-7 baseline.
+PASS: test-opencv.sh is unchanged from CV-7 baseline.
+PASS: build.sh is unchanged from CV-7 baseline.
+PASS: JavaScript syntax (node --check src/main.js).
+PASS: build.sh and test-opencv.sh shell syntax (bash -n).
+PASS: package.json, package-lock.json, and tauri.conf.json parse as JSON.
+PASS: HTML parser accepts src/index.html.
+PASS: 75 unique HTML IDs; 65 direct $(id) JavaScript references; 0 missing.
+PASS: Product UI contract contains Adaptive recommended path, Complete Segments default,
+      Advanced / Compatibility, hidden Legacy Compatibility, Preserve Video,
+      Frame Accurate, Single Recording, and Batch Folder controls.
+PASS: Tauri productName is AdSlicer.
+PASS: npm run dev/build wrappers resolve to the CV-7 build.sh workflow.
+
+Runtime limitation of packaging environment:
+- Cargo/Tauri/OpenCV runtime compilation was not available in this container.
+- Run `npm run dev` on the validated macOS development machine for the live UI/runtime gate.
+- Run `npm run test:opencv` to reconfirm the unchanged CV regression harness.

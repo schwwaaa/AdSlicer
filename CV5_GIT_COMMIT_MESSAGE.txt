@@ -1,0 +1,11 @@
+feat(opencv): add CV-5 watchable edit validation previews
+
+- render disposable QC media from CV-4 shadow removal intervals
+- export proposed removed-content clips for direct semantic validation
+- export before-to-after splice previews to judge the resulting edit
+- preserve source audio in validation previews when available
+- record preview configuration, durations, status, and paths in a reproducible manifest
+- add preview context, preview limit, and skip-preview controls to the unified CLI
+- extend the single test command through CV-5 without exposing intermediate files
+- add synthetic validation for removed-content duration and resulting-edit splice output
+- keep production AdSlicer detector, planner, renderer, and frontend unchanged

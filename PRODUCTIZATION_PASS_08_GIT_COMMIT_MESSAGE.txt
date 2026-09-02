@@ -1,0 +1,7 @@
+fix(build): bootstrap ignored ffmpeg sidecars automatically
+
+- detect the active OS/architecture for development builds
+- restore target-specific ffmpeg/ffprobe sidecars when binaries are absent
+- keep native binaries local and ignored by Git
+- bootstrap sidecars automatically for macOS ARM64 and Intel release builds
+- preserve existing OpenCV, UI, progress, cancellation, and segmentation behavior

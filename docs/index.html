@@ -177,10 +177,40 @@
     border-left: 1px solid #fff;
     border-right: 1px solid #808080;
     border-bottom: 1px solid #808080;
-    padding: 2px 8px;
+    height: 24px;
+    padding: 0 8px;
     font-size: 11px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
     cursor: default;
     white-space: nowrap;
+  }
+
+  button.tool-btn {
+    font-family: inherit;
+  }
+
+  .tool-btn:disabled {
+    color: #808080;
+    text-shadow: 1px 1px 0 #fff;
+    background: #c0c0c0;
+    cursor: default;
+  }
+
+  .tool-btn:disabled:hover {
+    background: #c0c0c0;
+    color: #808080;
+  }
+
+  .tool-btn:disabled:active {
+    border-top-color: #fff;
+    border-left-color: #fff;
+    border-right-color: #808080;
+    border-bottom-color: #808080;
+    transform: none;
   }
 
   .tool-sep { width: 1px; background: #808080; height: 18px; margin: 0 3px; }
@@ -585,8 +615,10 @@
       gap: 3px;
     }
     .tool-btn {
-      padding: 5px 12px;
+      height: 34px;
+      padding: 0 12px;
       font-size: 15px;
+      line-height: 1;
     }
     .tool-sep { height: 26px; margin: 0 5px; }
 
@@ -1576,7 +1608,9 @@
   </div>
 
   <div class="toolbar">
-    <div class="tool-btn" onclick="show('home')">🏠</div>
+    <button class="tool-btn" id="toolbar-back" type="button" onclick="goBack()" title="Back" aria-label="Back">◀</button>
+    <button class="tool-btn" id="toolbar-forward" type="button" onclick="goForward()" title="Forward" aria-label="Forward">▶</button>
+    <button class="tool-btn" type="button" onclick="show('home')" title="Home" aria-label="Home">🏠</button>
     <div class="tool-sep"></div>
     <div class="tool-btn" onclick="show('usecases')">💡 Use Cases</div>
     <div class="tool-btn" onclick="show('installation')">💿 Installation</div>
@@ -2371,10 +2405,21 @@ cargo tauri dev</pre>
   };
   const repositoryUrl = 'https://github.com/schwwaaa/AdSlicer';
 
-  let currentPage = 'home';
-  let topicHistory = ['home'];
+  const hashPage = window.location.hash.replace(/^#/, '');
+  const initialPage = pages.includes(hashPage) ? hashPage : 'home';
+  let currentPage = initialPage;
+  let topicHistory = [initialPage];
   let topicHistoryIndex = 0;
   let contentsVisible = true;
+
+  // Seed the browser history with an AdSlicer topic state. This lets the
+  // browser's own Back/Forward buttons stay inside the help site while the
+  // user moves between topics.
+  window.history.replaceState(
+    { adslicerPage: initialPage, adslicerIndex: 0 },
+    '',
+    '#' + initialPage
+  );
 
   function renderPage(id) {
     if (!pages.includes(id)) return;
@@ -2404,11 +2449,20 @@ cargo tauri dev</pre>
   function show(id, options = {}) {
     if (!pages.includes(id)) return;
     const record = options.record !== false;
+    const updateBrowser = options.browser !== false;
 
     if (record && id !== currentPage) {
       topicHistory = topicHistory.slice(0, topicHistoryIndex + 1);
       topicHistory.push(id);
       topicHistoryIndex = topicHistory.length - 1;
+
+      if (updateBrowser) {
+        window.history.pushState(
+          { adslicerPage: id, adslicerIndex: topicHistoryIndex },
+          '',
+          '#' + id
+        );
+      }
     }
 
     renderPage(id);
@@ -2418,17 +2472,27 @@ cargo tauri dev</pre>
 
   function goBack() {
     if (topicHistoryIndex <= 0) return;
-    topicHistoryIndex -= 1;
-    renderPage(topicHistory[topicHistoryIndex]);
+    window.history.back();
     closeAllMenus();
+    closeMobileMenu();
   }
 
   function goForward() {
     if (topicHistoryIndex >= topicHistory.length - 1) return;
-    topicHistoryIndex += 1;
-    renderPage(topicHistory[topicHistoryIndex]);
+    window.history.forward();
     closeAllMenus();
+    closeMobileMenu();
   }
+
+  window.addEventListener('popstate', event => {
+    const state = event.state;
+    if (!state || !pages.includes(state.adslicerPage)) return;
+
+    topicHistoryIndex = Math.max(0, Math.min(state.adslicerIndex ?? 0, topicHistory.length - 1));
+    renderPage(state.adslicerPage);
+    closeAllMenus();
+    closeMobileMenu();
+  });
 
   function goPreviousTopic() {
     const index = pages.indexOf(currentPage);
@@ -2446,8 +2510,12 @@ cargo tauri dev</pre>
   }
 
   function updateNavigationState() {
-    setDisabled('go-back-item', topicHistoryIndex <= 0);
-    setDisabled('go-forward-item', topicHistoryIndex >= topicHistory.length - 1);
+    const atHistoryStart = topicHistoryIndex <= 0;
+    const atHistoryEnd = topicHistoryIndex >= topicHistory.length - 1;
+    setDisabled('go-back-item', atHistoryStart);
+    setDisabled('go-forward-item', atHistoryEnd);
+    setDisabled('toolbar-back', atHistoryStart);
+    setDisabled('toolbar-forward', atHistoryEnd);
     const pageIndex = pages.indexOf(currentPage);
     setDisabled('go-previous-item', pageIndex <= 0);
     setDisabled('go-next-item', pageIndex >= pages.length - 1);
@@ -2702,7 +2770,7 @@ cargo tauri dev</pre>
     }
   });
 
-  updateNavigationState();
+  renderPage(initialPage);
 </script>
 <footer class="schwwaaa-footer" aria-label="schwwaaa footer logo">
     <a class="schwwaaa-footer-logo" href="https://linktr.ee/schwwaaa" target="_blank" rel="noopener noreferrer">

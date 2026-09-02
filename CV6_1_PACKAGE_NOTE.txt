@@ -1,0 +1,49 @@
+AdSlicer CV-6.1 — Raised-Black Recovery
+
+Purpose
+-------
+Recover a real VHS/TV structural boundary that CV-6 missed because its fade floor
+sat just above the nominal dark threshold while remaining spatially almost flat.
+
+Observed real regression
+------------------------
+The first CV-6 output segment was ~18.385 s and merged two intended top-level
+clips. Comparison against the 99.232 s source found the missing boundary around
+3.14 s.
+
+At the valley the source is approximately:
+- mean luma: 32.35
+- luma stddev: 3.4
+- max near-black ratio: ~0.45
+
+This is too bright for the old mean-luma <= 32 rule and not pixel-dark enough
+for near_black_ratio >= 0.90, but it is far more spatially uniform than normal
+program imagery. Visually it is the raised-gray floor of a VHS fade between two
+complete pieces.
+
+Change
+------
+CV-2 temporal dark evidence now also accepts a conservative raised-uniform rule:
+- mean luma <= 40
+- luma stddev <= 6
+
+This does NOT globally raise the black threshold. Structured dark title cards,
+faces, and graphics remain rejected by this extra criterion because their luma
+variance is much higher.
+
+CV-6 still decides structural vs internal role separately, so a uniform internal
+fade can remain inside Complete Segments while Every Separator can expose it.
+
+Regression
+----------
+Synthetic case 10 adds a gray-36 separator that has 0% pixels <= 32 and therefore
+reproduces the old miss. Complete Segments is expected to recover the separator,
+preserve full timeline coverage, and keep the neighboring 15-second block whole.
+
+Testing contract
+----------------
+Same command as before:
+  ./test-opencv.sh --synthetic
+  ./test-opencv.sh --input "/path/to/video.mp4"
+
+Production AdSlicer detector/planner/renderer/frontend remain untouched.

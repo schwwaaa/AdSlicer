@@ -60,5 +60,7 @@
   },
   "trimHead": 2.0,
   "trimTail": 3.0,
-  "postCommand": ""
+  "postCommand": "",
+  "detectionEngine": "legacy",
+  "segmentationPolicy": "complete_segments"
 }

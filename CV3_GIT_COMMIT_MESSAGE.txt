@@ -1,0 +1,10 @@
+feat(opencv): add shadow boundary candidate scoring
+
+- convert CV-2 temporal events into versioned heuristic boundary observations
+- score black, near-black, fade, interval-edge, and scene evidence separately
+- expose entry/exit candidates for longer dark intervals
+- keep scene-only and chromatic-dark observations below candidate threshold by default
+- preserve human-readable reasons, cautions, scores, tiers, and source event links
+- add JSON/CSV boundary candidate and evidence-only outputs
+- add synthetic CV-3 validation suite with positive and negative controls
+- keep production detector, planner, renderer, and frontend unchanged

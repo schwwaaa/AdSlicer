@@ -1,0 +1,17 @@
+AdSlicer Productization Pass 06 — static verification
+
+PASS: shell syntax — test-opencv.sh
+PASS: shell syntax — test-problem-clips.sh
+PASS: shell syntax — build.sh
+PASS: Python syntax — problem-clip evaluator
+PASS: frontend JavaScript syntax — src/main.js
+PASS: CV-1 detector file unchanged from Pass 05
+PASS: CV-2 temporal detector file unchanged from Pass 05
+PASS: CV-3 boundary scorer unchanged from Pass 05
+PASS: production integration module unchanged from Pass 05
+PASS: Legacy detector/models unchanged from Pass 05
+PASS: UI/job/progress/Stop behavior unchanged from Pass 05
+PASS: existing synthetic internal-fade context measured ~0.022, below new cadence recovery floor 0.08
+PASS: real 30s ad-pair sample segment_0010 context measured ~0.155, above cadence recovery floor and below old 0.20 structural threshold
+
+Runtime Rust/OpenCV compilation and the real six-clip regression must be run on the validated development Mac because this packaging environment does not include Cargo/rustc.

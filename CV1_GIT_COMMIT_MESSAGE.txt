@@ -1,0 +1,10 @@
+feat(opencv): add validated frame-evidence probe for AdSlicer
+
+- add optional OpenCV analysis feature without changing production cuts
+- add per-frame luminance, black/near-black, color, variance, and delta metrics
+- add reproducible CSV/JSONL manifests with source hashing
+- add synthetic validation corpus and evaluator
+- validate Rust/OpenCV 4.14 integration on macOS
+- confirm 15/15 synthetic evidence checks
+- validate 2,974/2,974 frames on real VHS television footage
+- preserve existing FFmpeg detector, planner, renderer, UI, and sidecars unchanged

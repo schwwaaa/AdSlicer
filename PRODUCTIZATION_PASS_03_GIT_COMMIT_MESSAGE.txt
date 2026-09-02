@@ -1,0 +1,16 @@
+feat(ui): clarify long-job status and add pre-run time estimates
+
+- simplify Activity Log to human-readable processing milestones by default
+- add Verbose troubleshooting and validation mode directly to the log panel
+- make CLR larger and more prominent while preserving saved diagnostics
+- add animated progress stripes, heartbeat pips, elapsed clock, and explicit active-state messaging
+- show ACTIVE receiving-updates / still-working states during long operations
+- add lightweight ffprobe duration preflight when a single recording is selected
+- show a conservative duration-based analysis estimate before starting a job
+- replace the initial estimate with measured OpenCV ETA after throughput calibrates
+- explain additional export cost for preserve, frame-accurate, and custom output modes
+- improve batch current-file indication and avoid per-file completion looking like whole-batch completion
+- allow batch processing to continue visibly after an individual file error
+- remove top-level Presets menu while retaining preset Save/Load under File
+- remove dead View menu entries and the redundant Advanced diagnostics verbosity control
+- preserve the retro interface and all CV-7/CV-6.1a detection and segmentation behavior

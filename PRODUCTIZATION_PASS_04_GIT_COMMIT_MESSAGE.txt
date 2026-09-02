@@ -1,0 +1,13 @@
+fix(cancel): make Stop terminate active AdSlicer processing
+
+- poll cancellation during the OpenCV frame-analysis loop
+- make source hashing and evidence writing cancellable
+- check cancellation between structural analysis stages
+- terminate active FFmpeg segment/chapter exports on Stop
+- remove incomplete current output when FFmpeg is cancelled
+- keep the frontend in STOPPING until backend confirmation
+- ignore late progress events after cancellation is requested
+- prevent a second job from starting while cancellation is pending
+- emit a distinct backend cancelled terminal state
+- stop Batch cleanly instead of continuing to later files
+- preserve all CV-6.1a/CV-7 detection and segmentation behavior

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "frame_rate": 30,
+  "notes": "Synthetic controls for AdSlicer OpenCV development. Frame indices are zero-based. These describe expected evidence, not yet commercial-cut policy.",
+  "cases": [
+    {
+      "file": "01_clean_black.mkv",
+      "purpose": "Baseline duration black slug",
+      "expected": {"black_frame_range": [90, 119], "near_black": true, "separator": true}
+    },
+    {
+      "file": "02_single_black_frame.mkv",
+      "purpose": "Critical one-frame separator regression case",
+      "expected": {"black_frame_range": [90, 90], "separator": true}
+    },
+    {
+      "file": "03_two_frame_near_black.mkv",
+      "purpose": "Raised-black analog-style separator",
+      "expected": {"near_black_frame_range": [90, 91], "strict_black": false, "separator": true}
+    },
+    {
+      "file": "04_temporal_luma_valley.mkv",
+      "purpose": "Temporal fall-minimum-rise pattern for future fade/valley recognition",
+      "expected": {"valley_frame_range": [90, 97], "local_minimum_near_frame": 94, "separator": true}
+    },
+    {
+      "file": "05_dark_textured_content.mkv",
+      "purpose": "False-positive control: dark content is not automatically a separator",
+      "expected": {"separator": false, "texture_variance": "nonzero"}
+    },
+    {
+      "file": "06_hard_cut_no_black.mkv",
+      "purpose": "Scene discontinuity without black",
+      "expected": {"hard_cut_near_frame": 90, "black_separator": false}
+    },
+    {
+      "file": "07_uniform_blue_slate.mkv",
+      "purpose": "Uniform-color evidence and RGB/BGR diagnostic validation",
+      "expected": {"uniform_frame_range": [90, 104], "black_separator": false, "dominant_channel": "blue"}
+    }
+  ]
+}

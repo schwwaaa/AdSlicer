@@ -1,0 +1,59 @@
+AdSlicer CV-7 — Production Integration
+
+Baseline:
+- User-provided AdSlicer-nextgen.zip
+- Git baseline commit: 5d8ae57 feat(opencv): add full structural segmentation with raised-VHS-black recovery
+- CV-6.1a handoff treated as the integration contract.
+
+What changed:
+- Added Detection / Segmentation Engine selection:
+    OpenCV Adaptive (default)
+    Legacy
+- Added OpenCV policy selection:
+    Complete Segments (default)
+    Every Separator
+- Promoted the validated CV-1 -> CV-2 -> CV-3 -> CV-6/CV-6.1a path into the normal AdSlicer job.
+- Preserved the original Legacy production processor as a fallback.
+- OpenCV production output now exports full-coverage structural clips to:
+    <output>/<recording>/segments/
+- OpenCV does NOT invent show/commercial labels. CV-6.1a validates structural boundaries, not semantic content classification.
+- Chapters mode remains available and writes Segment N chapter markers across the complete source.
+- Dry Run remains available and writes diagnostics without media export.
+- Full coverage is a hard render gate: uncovered or overlapping source time aborts the OpenCV production export.
+- OpenCV diagnostics are automatic under:
+    <output>/<recording>/logs/opencv/
+- Legacy-only tuning controls are disabled in the UI while OpenCV Adaptive is selected.
+- Existing Default / Noisy VHS / Broadcast Strict presets explicitly switch to Legacy because their thresholds belong to the old detector.
+- Cargo default features now include opencv-analysis so the normal app contains the OpenCV production engine.
+- ./build.sh dev configures Homebrew OpenCV/libclang discovery before launching Tauri dev.
+
+Regression harness:
+- ./test-opencv.sh --synthetic now also runs the CV-7 production integration probe.
+- On synthetic structural corpus 09, the CV-7 check expects:
+    Complete Segments = 4 segments, zero-loss coverage
+    Every Separator  = 5 segments, zero-loss coverage
+
+Static validation performed in packaging environment:
+- Legacy process_one body preserved byte-for-byte after rename to process_one_legacy.
+- src-tauri/src/adslicer/detect.rs unchanged.
+- src-tauri/src/adslicer/models.rs unchanged.
+- JavaScript syntax check PASS.
+- Preset JSON parse PASS.
+- test-opencv.sh shell syntax PASS.
+- build.sh shell syntax PASS.
+- CV-7 evaluator exercised against the accepted CV-6 structural report: PASS for both policies.
+- git diff --check PASS.
+
+Runtime gate:
+This packaging environment does not contain Cargo/Rust/OpenCV, so the Rust/Tauri build and actual CV-7 production decode must be validated on the accepted macOS Apple Silicon environment.
+
+Recommended first runtime validation:
+1. ./test-opencv.sh --synthetic
+2. ./build.sh dev
+3. Open adslicer-commercial-test-1.mp4
+4. Engine: OpenCV Adaptive
+5. Policy: Complete Segments
+6. Dry Run: ON
+7. Start
+8. Confirm coverage PASS and approximately 7 top-level segments / 6 structural boundaries.
+9. Then disable Dry Run and perform a short Preview Duration render before a full export.

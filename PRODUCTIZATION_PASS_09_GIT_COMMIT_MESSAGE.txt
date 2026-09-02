@@ -1,0 +1,8 @@
+fix(build): restore npm-first dev workflow
+
+- make npm run dev independent of bundled release sidecars
+- disable Tauri externalBin validation only for development
+- use matching local sidecars when present, otherwise system ffmpeg/ffprobe
+- keep release builds strict about target-specific bundled binaries
+- add explicit macOS Intel release npm command
+- preserve current UI, progress, cancellation, and segmentation behavior

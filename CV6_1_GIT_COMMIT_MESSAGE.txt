@@ -1,0 +1,9 @@
+fix(opencv): recover raised-uniform VHS fade boundaries
+
+- add raised-uniform dark evidence for VHS fades that settle above near-black thresholds
+- combine a conservative luma ceiling with very-low spatial variance instead of globally raising black sensitivity
+- preserve structural-vs-internal classification so uniform commercial fades do not automatically split Complete Segments
+- add explicit evidence logging for raised-uniform VHS dark events
+- add synthetic regression case for a gray separator with no near-black pixel majority
+- extend unified synthetic validation with CV-6.1 raised-black recovery checks
+- keep production detector, planner, renderer, and frontend unchanged
