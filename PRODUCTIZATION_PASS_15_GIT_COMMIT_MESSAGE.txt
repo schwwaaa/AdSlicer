@@ -1,0 +1,9 @@
+fix(ui): make Activity Log fill remaining window space
+
+- replace JavaScript console height calculations with native flex layout
+- make Activity Log continuously absorb all unused vertical space
+- expand the log immediately when workflow sections collapse
+- resize the log continuously with the application window
+- preserve a readable minimum log height
+- scroll the workflow only when content genuinely exceeds the viewport
+- leave processing and detection behavior unchanged

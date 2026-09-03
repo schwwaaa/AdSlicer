@@ -1578,3 +1578,51 @@ input[type="checkbox"], input[type="radio"] { width: 15px; height: 15px; }
 @media (max-width: 860px) {
   .console-panel { min-height: 210px; height: 210px; }
 }
+
+
+/* ─── Productization Pass 15: true flex Activity Log ────────────────
+   The Activity Log is the elastic remainder of the application window.
+   Workflow/processing sections keep their natural height; the console fills
+   every remaining pixel continuously during resize. No JS height calculation. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.column-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* All controls above the log keep their intrinsic height. */
+.column-main > .logo-panel-compact,
+.column-main > details,
+.column-main > .processing-shell {
+  flex: 0 0 auto;
+}
+
+/* The console owns all vertical space left over in the workflow column. */
+.console-panel {
+  flex: 1 1 210px;
+  height: auto !important;
+  min-height: 210px;
+  margin-bottom: 0;
+}
+
+.console-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+@media (max-width: 860px) {
+  .console-panel {
+    flex: 1 1 210px;
+    height: auto !important;
+    min-height: 210px;
+  }
+}

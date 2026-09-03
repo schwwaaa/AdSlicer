@@ -1740,77 +1740,9 @@ async function openPresetsFolder() {
   }
 }
 
-/* ─── Responsive Activity Log ─────────────────────────────────────────
-   The log expands into vertical space freed when workflow/advanced panels
-   collapse. It never shrinks below the readable baseline height. */
-const ACTIVITY_LOG_MIN_HEIGHT = 210;
-let activityLogResizeObserver = null;
-let activityLogResizeFrame = 0;
-
-function outerHeight(el) {
-  const cs = window.getComputedStyle(el);
-  const mt = Number.parseFloat(cs.marginTop) || 0;
-  const mb = Number.parseFloat(cs.marginBottom) || 0;
-  return el.offsetHeight + mt + mb;
-}
-
-function resizeActivityLog() {
-  const layout = document.querySelector(".layout");
-  const column = document.querySelector(".column-main");
-  const panel = document.querySelector(".console-panel");
-  if (!layout || !column || !panel) return;
-
-  // Reset before measuring so a previously-expanded log cannot influence
-  // the amount of space available to itself.
-  panel.style.height = `${ACTIVITY_LOG_MIN_HEIGHT}px`;
-
-  const layoutStyle = window.getComputedStyle(layout);
-  const usableHeight = layout.clientHeight
-    - (Number.parseFloat(layoutStyle.paddingTop) || 0)
-    - (Number.parseFloat(layoutStyle.paddingBottom) || 0);
-
-  let usedBeforeLog = 0;
-  for (const child of column.children) {
-    if (child === panel) break;
-    usedBeforeLog += outerHeight(child);
-  }
-
-  const panelStyle = window.getComputedStyle(panel);
-  const panelMargins = (Number.parseFloat(panelStyle.marginTop) || 0)
-    + (Number.parseFloat(panelStyle.marginBottom) || 0);
-  const available = Math.floor(usableHeight - usedBeforeLog - panelMargins);
-  panel.style.height = `${Math.max(ACTIVITY_LOG_MIN_HEIGHT, available)}px`;
-}
-
-function scheduleActivityLogResize() {
-  if (activityLogResizeFrame) cancelAnimationFrame(activityLogResizeFrame);
-  activityLogResizeFrame = requestAnimationFrame(() => {
-    activityLogResizeFrame = 0;
-    resizeActivityLog();
-  });
-}
-
-function initResponsiveActivityLog() {
-  const column = document.querySelector(".column-main");
-  const panel = document.querySelector(".console-panel");
-  if (!column || !panel) return;
-
-  // ResizeObserver also catches content changes inside Advanced (Legacy,
-  // Batch options, Custom output), not just disclosure toggle events.
-  if (typeof ResizeObserver !== "undefined") {
-    activityLogResizeObserver = new ResizeObserver(scheduleActivityLogResize);
-    for (const child of column.children) {
-      if (child !== panel) activityLogResizeObserver.observe(child);
-    }
-  } else {
-    ["sourcePanel", "analysisPanel", "outputPanel", "advancedPanel"].forEach((id) => {
-      $(id)?.addEventListener("toggle", scheduleActivityLogResize);
-    });
-  }
-
-  window.addEventListener("resize", scheduleActivityLogResize);
-  scheduleActivityLogResize();
-}
+/* ─── Activity Log sizing ───────────────────────────────────────────
+   Pass 15 uses native CSS flex sizing. The console is the elastic remainder
+   of the app window, so no JavaScript resize calculation is required. */
 
 /* ─── Init ─── */
 window.addEventListener("DOMContentLoaded", () => {
@@ -1830,7 +1762,6 @@ window.addEventListener("DOMContentLoaded", () => {
   syncPrimaryAction();
   updateInputLabel();
   resetProgressUi();
-  initResponsiveActivityLog();
 
   $("clearConsole").onclick = () => clearActivityLog(false);
   $("logModeBtn").onclick = () => setActivityMode(!isVerboseActivity(), true);
