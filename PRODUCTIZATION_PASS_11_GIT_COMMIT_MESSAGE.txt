@@ -1,0 +1,8 @@
+refactor(ui): consolidate processing metrics into transport bar
+
+- move live progress beside Analyze/Stop controls
+- integrate elapsed, ETA, and rate below the progress track
+- keep READY/ACTIVE state in the compact processing header
+- reduce vertical space in the processing section
+- preserve retro transport styling and responsive behavior
+- leave processing, detection, export, and telemetry logic unchanged

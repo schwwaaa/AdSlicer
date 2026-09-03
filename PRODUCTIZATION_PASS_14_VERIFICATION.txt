@@ -1,0 +1,10 @@
+AdSlicer Productization Pass 14 verification
+
+PASS: src/main.js parses with node --check.
+PASS: Source / Analysis / Output disclosure structure preserved from Pass 13.
+PASS: Advanced / Compatibility remains collapsed by default.
+PASS: Activity Log uses actual available layout height with a 210px minimum.
+PASS: ResizeObserver watches all pre-console layout siblings; toggle fallback included.
+PASS: Startup boxed banner removed and replaced by ASCII AdSlicer wordmark.
+PASS: src-tauri tree is byte-for-byte unchanged from Productization Pass 13.
+PASS: No detector, structural segmentation, render, progress telemetry, Stop, or packaging behavior changed.

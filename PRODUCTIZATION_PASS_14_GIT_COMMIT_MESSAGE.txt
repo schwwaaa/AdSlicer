@@ -1,0 +1,9 @@
+refactor(ui): add ASCII log identity and responsive console sizing
+
+- replace boxed startup banner with compact AdSlicer ASCII wordmark
+- simplify startup log state to Ready
+- expand Activity Log into vertical space freed by collapsed workflow tabs
+- measure real available viewport space instead of using fixed expansion steps
+- respond to Advanced, Batch, Legacy, and Custom Output layout changes
+- preserve a readable 210px minimum console height
+- keep application processing and detector behavior unchanged

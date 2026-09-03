@@ -1,0 +1,20 @@
+# Pass 12 UI files
+09b5230b4770f81c3d6eb12d274f69be862049551c255449541e78668b545afb  /mnt/data/AdSlicer-Latest-Updated-UI-Pass-12-ui-system/src/index.html
+73bcf11e7858c548233f76350e1110ffe2d9723a085bc87f29446f7c2847237d  /mnt/data/AdSlicer-Latest-Updated-UI-Pass-12-ui-system/src/style.css
+cef58953b389ae776d6faecd36174434683da1e6b6c8293ad98218389efef972  /mnt/data/AdSlicer-Latest-Updated-UI-Pass-12-ui-system/src/main.js
+
+# Rust source tree (unchanged from Pass 11)
+f1bbc391b177b023e36da0fe25d0fefa97a1c47863bcdedf888c6dec05c16613  src-tauri/src/adslicer/cut.rs
+1fd162f4078ae9b632b3f6fab3103ecf7e49bf74d4ccdeb7057bbec918da71ef  src-tauri/src/adslicer/cv_boundary.rs
+c988143db3a70fa98969d4f224555a76ce1c02a7982e65e9411531c08a449bfb  src-tauri/src/adslicer/cv_detect.rs
+94b9a782aef2210caeda3f0ca07b50e90c3eaf09a5e26b21892a1117add292e0  src-tauri/src/adslicer/cv_edit_validation.rs
+1d8dffa5fe91b067cb4ef68076a5c5cdfe861679e374696b2f3a5d127ea0031d  src-tauri/src/adslicer/cv_production.rs
+586e9716a3b9e81357853761e043038531871ecd5acb79330d3cb47bed970dae  src-tauri/src/adslicer/cv_segment_validation.rs
+75fd0fa0b6685b83751e8dced35a91205dc7d8dcd7ab6a71e69ab82925b1e279  src-tauri/src/adslicer/cv_shadow_plan.rs
+5db34cfaba25de25adfee4f920b81b29920c332e9ecb773f4f696cb7ef1ec46d  src-tauri/src/adslicer/cv_structural.rs
+960bbb35e38fefa7b7477251e66b082b1a6867db26b4d5604945d13e1f2242b0  src-tauri/src/adslicer/cv_temporal.rs
+382f335fa9480e85b7b15855d3585eb4c79a4a5cb189b02e7ce0ad5384ce5a1b  src-tauri/src/adslicer/detect.rs
+1e22a83f4a126578ed64f2a05c91a7d8f96523b3fb64690141cca75440e12bb3  src-tauri/src/adslicer/job.rs
+39a7ef681fc8db0c5edf9b130bb29dd6a016d180cd6b541680e02661ffdab288  src-tauri/src/adslicer/mod.rs
+5a70ac26a0afa376026c8eff6a9317b6a88dde855194c8f5d8d5b94f55d5dfa4  src-tauri/src/adslicer/models.rs
+bf54171658bf8eeedcbbde4dcac72bd2b73f1d8d8bf61c9bfa13d593c8a749e4  src-tauri/src/main.rs

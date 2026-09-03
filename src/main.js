@@ -723,31 +723,22 @@ function formatEstimateRange(durationS) {
   return `~${fmt(fastMin)}–${fmt(slowMin)}`;
 }
 
-function preflightExportNote() {
-  if ($("dryRun")?.checked) return "Analyze Only: no export pass will run.";
-  const profile = $("outputProfile")?.value || "preserve";
-  if (profile === "accurate") return "Export time is additional; frame-accurate H.264 re-encoding can take substantial time.";
-  if (profile === "custom") return "Export time is additional and depends on the custom encoder settings.";
-  return "Export time is additional; Preserve Video normally adds a shorter copy pass.";
-}
 
 function showPreRunEstimate(durationS) {
   if (jobRunning) return;
   preflightDurationS = Number(durationS);
   const range = formatEstimateRange(preflightDurationS);
   $("progressPanel")?.classList.remove("running");
-  $("progressStage").textContent = "READY — ESTIMATE";
-  $("progressPercent").textContent = "READY";
-  $("progressDetail").textContent = `Recording loaded  •  ${formatDuration(preflightDurationS)}`;
+  $("progressStage").textContent = "READY";
+  $("progressDetail").textContent = `Recording  •  ${formatDuration(preflightDurationS)}`;
   $("progressLiveText").textContent = "READY TO RUN";
   $("progressLastUpdate").textContent = "";
-  $("progressEstimate").classList.remove("hidden", "live");
-  $("progressEstimate").textContent = `Initial analysis estimate: ${range}. Duration-based only; live measured ETA replaces this after start. ${preflightExportNote()}`;
   $("progressElapsed").textContent = "00:00:00";
+  $("progressEtaLabel").textContent = "EST. ETA";
   $("progressEta").textContent = range;
-  $("progressRate").textContent = "ESTIMATE";
+  $("progressRate").textContent = "—";
   setProgressDeterminate(0);
-  $("progressPercent").textContent = "READY";
+  $("progressPercent").textContent = "";
 }
 
 function showBatchPreflight() {
@@ -755,27 +746,24 @@ function showBatchPreflight() {
   preflightDurationS = null;
   $("progressPanel")?.classList.remove("running");
   $("progressStage").textContent = "BATCH READY";
-  $("progressPercent").textContent = "READY";
   $("progressDetail").textContent = "Batch folder selected.";
   $("progressLiveText").textContent = "READY TO RUN";
   $("progressLastUpdate").textContent = "";
-  $("progressEstimate").classList.remove("hidden", "live");
-  $("progressEstimate").textContent = "Batch total time is not guessed up front. AdSlicer shows the current file and a live ETA for each recording as it is analyzed.";
   $("progressElapsed").textContent = "00:00:00";
+  $("progressEtaLabel").textContent = "ETA";
   $("progressEta").textContent = "PER FILE";
   $("progressRate").textContent = "—";
   setProgressDeterminate(0);
-  $("progressPercent").textContent = "READY";
+  $("progressPercent").textContent = "";
 }
 
 async function probeSelectedRecording(path) {
   if (jobRunning || mode() !== "singleFile" || !path || !(core && core.invoke)) return;
   const token = ++preflightProbeToken;
   $("progressStage").textContent = "READING RECORDING";
-  $("progressDetail").textContent = "Checking duration for an initial time estimate…";
-  $("progressLiveText").textContent = "PREPARING ESTIMATE";
-  $("progressEstimate").classList.remove("hidden", "live");
-  $("progressEstimate").textContent = "This quick metadata check does not analyze video frames.";
+  $("progressDetail").textContent = "";
+  $("progressLiveText").textContent = "CHECKING DURATION";
+  $("progressEtaLabel").textContent = "EST. ETA";
   $("progressEta").textContent = "CALCULATING";
   try {
     const info = await core.invoke("probe_recording", { inputPath: path });
@@ -787,7 +775,7 @@ async function probeSelectedRecording(path) {
     $("progressStage").textContent = "READY";
     $("progressDetail").textContent = "Recording selected.";
     $("progressLiveText").textContent = "READY TO RUN";
-    $("progressEstimate").textContent = "Initial estimate unavailable. A measured ETA will appear shortly after analysis starts.";
+    $("progressEtaLabel").textContent = "EST. ETA";
     $("progressEta").textContent = "—";
     $("progressRate").textContent = "—";
     if (isVerboseActivity()) logLine("warn", `[${timestamp()}]  ⚠  Pre-run estimate unavailable: ${e}`);
@@ -882,17 +870,16 @@ function resetProgressUi() {
   $("progressPanel")?.classList.remove("running");
   $("progressFill")?.classList.remove("active");
   $("progressStage").textContent = "READY";
-  $("progressDetail").textContent = "Choose a recording and press Analyze & Export.";
+  $("progressDetail").textContent = "";
   $("progressLiveText").textContent = "WAITING";
   $("progressLastUpdate").textContent = "";
-  $("progressEstimate").classList.remove("hidden", "live");
-  $("progressEstimate").textContent = "Select a recording to calculate an initial time estimate.";
   $("progressElapsed").textContent = "00:00:00";
+  $("progressEtaLabel").textContent = "EST. ETA";
   $("progressEta").textContent = "—";
   $("progressRate").textContent = "—";
   $("progressBatch").style.display = "none";
   setProgressDeterminate(0);
-  $("progressPercent").textContent = "—";
+  $("progressPercent").textContent = "";
 }
 
 function beginProgressUi(params) {
@@ -912,11 +899,8 @@ function beginProgressUi(params) {
   $("progressDetail").textContent = "Preparing the recording…";
   $("progressLiveText").textContent = "ACTIVE — STARTING";
   $("progressLastUpdate").textContent = "updated now";
-  $("progressEstimate").classList.remove("hidden", "live");
-  $("progressEstimate").textContent = preflightDurationS
-    ? `Initial estimate ${formatEstimateRange(preflightDurationS)} — calibrating measured ETA now.`
-    : "Calibrating a measured ETA from the first analyzed frames.";
-  $("progressEta").textContent = "CALCULATING";
+  $("progressEtaLabel").textContent = "ETA";
+  $("progressEta").textContent = preflightDurationS ? formatEstimateRange(preflightDurationS) : "CALCULATING";
   $("progressRate").textContent = "—";
   setProgressIndeterminate();
   startElapsedClock();
@@ -933,8 +917,7 @@ function finishProgressUi(label = "Complete", detail = "Job finished successfull
   $("progressDetail").textContent = detail;
   $("progressLiveText").textContent = "FINISHED";
   $("progressLastUpdate").textContent = "";
-  $("progressEstimate").classList.remove("live");
-  $("progressEstimate").textContent = "Processing finished. Output and diagnostics are ready.";
+  $("progressEtaLabel").textContent = "ETA";
   $("progressEta").textContent = "00:00:00";
   $("progressRate").textContent = "—";
   setProgressDeterminate(100);
@@ -949,8 +932,6 @@ function failProgressUi(label, detail) {
   $("progressDetail").textContent = detail;
   $("progressLiveText").textContent = "STOPPED";
   $("progressLastUpdate").textContent = "";
-  $("progressEstimate").classList.remove("live");
-  $("progressEstimate").textContent = "Processing stopped before completion. Check the Activity Log for the reason.";
   $("progressEta").textContent = "—";
   $("progressRate").textContent = "—";
   $("progressFill").classList.remove("indeterminate");
@@ -964,8 +945,7 @@ function showStoppingProgressUi() {
   $("progressDetail").textContent = "Cancellation requested. Ending the active analysis or export operation…";
   $("progressLiveText").textContent = "STOP REQUESTED — WAITING FOR BACKEND";
   $("progressLastUpdate").textContent = "ending active processing…";
-  $("progressEstimate").classList.add("live");
-  $("progressEstimate").textContent = "AdSlicer is stopping safely. The current OpenCV frame or FFmpeg process will be terminated before the job is marked stopped.";
+  $("progressEtaLabel").textContent = "ETA";
   $("progressEta").textContent = "STOPPING";
   $("progressRate").textContent = "—";
   setProgressIndeterminate();
@@ -1000,8 +980,7 @@ function handleBatchProgress(payload) {
     $("progressDetail").textContent = truncatePath(file);
     $("progressLiveText").textContent = "ACTIVE — PREPARING FILE";
     $("progressLastUpdate").textContent = "updated now";
-    $("progressEstimate").classList.add("live");
-    $("progressEstimate").textContent = "This recording will get its own measured ETA once frame analysis begins.";
+    $("progressEtaLabel").textContent = "ETA";
     $("progressEta").textContent = "CALCULATING";
     $("progressRate").textContent = "—";
     setProgressIndeterminate();
@@ -1036,8 +1015,7 @@ function handleProgress(payload) {
       $("progressDetail").textContent = String(payload.detail || "Current recording finished.");
       $("progressLiveText").textContent = "ACTIVE — MOVING TO NEXT FILE";
       $("progressLastUpdate").textContent = "updated now";
-      $("progressEstimate").classList.add("live");
-      $("progressEstimate").textContent = "Current file finished. AdSlicer is continuing the batch automatically.";
+      $("progressEtaLabel").textContent = "ETA";
       $("progressEta").textContent = "NEXT FILE";
       $("progressRate").textContent = `${currentBatchInfo.current} / ${currentBatchInfo.total} files`;
       lastProgressAt = Date.now();
@@ -1087,19 +1065,15 @@ function handleProgress(payload) {
     const eta = Number(payload.etaS);
     const liveElapsedS = jobStartedAt ? (Date.now() - jobStartedAt) / 1000 : 0;
     const measuredReady = liveElapsedS >= 6 && current >= Math.min(total, 120);
+    $("progressEtaLabel").textContent = "ETA";
     $("progressEta").textContent = measuredReady && Number.isFinite(eta) && eta >= 0 ? formatDuration(eta) : "CALCULATING";
-    $("progressEstimate").classList.add("live");
-    $("progressEstimate").textContent = measuredReady && Number.isFinite(eta)
-      ? `LIVE ETA — measured from current processing speed (${formatRate(payload.processingFps)}).`
-      : `Initial estimate ${preflightDurationS ? formatEstimateRange(preflightDurationS) : "available above"} — measuring this computer now…`;
     return;
   }
 
   if (stage === "export" && hasCount) {
     $("progressDetail").textContent = `${Math.round(current)} of ${Math.round(total)} clips finished`;
+    $("progressEtaLabel").textContent = "ETA";
     $("progressRate").textContent = `${Math.round(current)} / ${Math.round(total)} clips`;
-    $("progressEstimate").classList.add("live");
-    $("progressEstimate").textContent = "LIVE EXPORT PROGRESS — ETA is calculated from completed clips and will refine as export continues.";
     if (current > 0 && current < total && currentProgressStageStartedAt) {
       const elapsed = Math.max(0.001, (Date.now() - currentProgressStageStartedAt) / 1000);
       const rate = current / elapsed;
@@ -1114,8 +1088,7 @@ function handleProgress(payload) {
   }
 
   $("progressDetail").textContent = String(payload.detail || "Working…");
-  $("progressEstimate").classList.add("live");
-  $("progressEstimate").textContent = "ACTIVE — this stage has no reliable percentage estimate, so the running indicator stays live until the next measurable stage.";
+  $("progressEtaLabel").textContent = "ETA";
   $("progressEta").textContent = "CALCULATING";
   $("progressRate").textContent = "—";
 }
@@ -1148,7 +1121,6 @@ function syncOutputProfile() {
     $("audioBitrateKbps").value = "0";
     $("deinterlace").checked = false;
     $("scaleWidth").value = "0";
-    $("outputProfileNote").textContent = "Keeps the source video stream whenever possible and uses compatible audio output. Best default for fast archival slicing.";
   } else if (profile.value === "accurate") {
     $("encodeMode").value = "h264";
     $("gpuAccel").value = "none";
@@ -1158,9 +1130,7 @@ function syncOutputProfile() {
     $("audioBitrateKbps").value = "0";
     $("deinterlace").checked = false;
     $("scaleWidth").value = "0";
-    $("outputProfileNote").textContent = "Re-encodes to high-quality H.264 so rendered cut points are not constrained by source keyframes.";
   } else {
-    $("outputProfileNote").textContent = "Uses the expert codec and processing controls under Advanced / Compatibility.";
     if ($("advancedPanel")) $("advancedPanel").open = true;
   }
   applyingOutputProfile = false;
@@ -1770,6 +1740,78 @@ async function openPresetsFolder() {
   }
 }
 
+/* ─── Responsive Activity Log ─────────────────────────────────────────
+   The log expands into vertical space freed when workflow/advanced panels
+   collapse. It never shrinks below the readable baseline height. */
+const ACTIVITY_LOG_MIN_HEIGHT = 210;
+let activityLogResizeObserver = null;
+let activityLogResizeFrame = 0;
+
+function outerHeight(el) {
+  const cs = window.getComputedStyle(el);
+  const mt = Number.parseFloat(cs.marginTop) || 0;
+  const mb = Number.parseFloat(cs.marginBottom) || 0;
+  return el.offsetHeight + mt + mb;
+}
+
+function resizeActivityLog() {
+  const layout = document.querySelector(".layout");
+  const column = document.querySelector(".column-main");
+  const panel = document.querySelector(".console-panel");
+  if (!layout || !column || !panel) return;
+
+  // Reset before measuring so a previously-expanded log cannot influence
+  // the amount of space available to itself.
+  panel.style.height = `${ACTIVITY_LOG_MIN_HEIGHT}px`;
+
+  const layoutStyle = window.getComputedStyle(layout);
+  const usableHeight = layout.clientHeight
+    - (Number.parseFloat(layoutStyle.paddingTop) || 0)
+    - (Number.parseFloat(layoutStyle.paddingBottom) || 0);
+
+  let usedBeforeLog = 0;
+  for (const child of column.children) {
+    if (child === panel) break;
+    usedBeforeLog += outerHeight(child);
+  }
+
+  const panelStyle = window.getComputedStyle(panel);
+  const panelMargins = (Number.parseFloat(panelStyle.marginTop) || 0)
+    + (Number.parseFloat(panelStyle.marginBottom) || 0);
+  const available = Math.floor(usableHeight - usedBeforeLog - panelMargins);
+  panel.style.height = `${Math.max(ACTIVITY_LOG_MIN_HEIGHT, available)}px`;
+}
+
+function scheduleActivityLogResize() {
+  if (activityLogResizeFrame) cancelAnimationFrame(activityLogResizeFrame);
+  activityLogResizeFrame = requestAnimationFrame(() => {
+    activityLogResizeFrame = 0;
+    resizeActivityLog();
+  });
+}
+
+function initResponsiveActivityLog() {
+  const column = document.querySelector(".column-main");
+  const panel = document.querySelector(".console-panel");
+  if (!column || !panel) return;
+
+  // ResizeObserver also catches content changes inside Advanced (Legacy,
+  // Batch options, Custom output), not just disclosure toggle events.
+  if (typeof ResizeObserver !== "undefined") {
+    activityLogResizeObserver = new ResizeObserver(scheduleActivityLogResize);
+    for (const child of column.children) {
+      if (child !== panel) activityLogResizeObserver.observe(child);
+    }
+  } else {
+    ["sourcePanel", "analysisPanel", "outputPanel", "advancedPanel"].forEach((id) => {
+      $(id)?.addEventListener("toggle", scheduleActivityLogResize);
+    });
+  }
+
+  window.addEventListener("resize", scheduleActivityLogResize);
+  scheduleActivityLogResize();
+}
+
 /* ─── Init ─── */
 window.addEventListener("DOMContentLoaded", () => {
   $("pickInput").onclick  = pickInput;
@@ -1788,6 +1830,7 @@ window.addEventListener("DOMContentLoaded", () => {
   syncPrimaryAction();
   updateInputLabel();
   resetProgressUi();
+  initResponsiveActivityLog();
 
   $("clearConsole").onclick = () => clearActivityLog(false);
   $("logModeBtn").onclick = () => setActivityMode(!isVerboseActivity(), true);
@@ -1851,8 +1894,6 @@ async function setupBackendLogStream() {
             $("progressStage").textContent = `BATCH ${currentBatchInfo.current} OF ${currentBatchInfo.total} — FILE ERROR`;
             $("progressDetail").textContent = "This file failed. AdSlicer will continue with the remaining batch.";
             $("progressLiveText").textContent = "ACTIVE — CONTINUING BATCH";
-            $("progressEstimate").classList.add("live");
-            $("progressEstimate").textContent = "A per-file error does not stop Batch mode. See Verbose Activity for troubleshooting details.";
             lastProgressAt = Date.now();
             return;
           }
@@ -1930,12 +1971,14 @@ setupProgressStreams();
     if (e.target === spModal) closeSavePresetModal();
   });
 
-  // Startup banner
-  logLine("system", "╔═══════════════════════════════════════════╗");
-  logLine("system", "║   AdSlicer  v0.1.0                   ║");
-  logLine("system", "║   Automatic Archival Video Segmenter     ║");
-  logLine("system", "╚═══════════════════════════════════════════╝");
+  // Startup identity: compact ASCII wordmark instead of a decorative box.
+  logLine("header", "    _       _ ____  _ _");
+  logLine("header", "   / \\   __| / ___|| (_) ___ ___ _ __");
+  logLine("header", "  / _ \\ / _` \\___ \\| | |/ __/ _ \\ '__|");
+  logLine("header", " / ___ \\ (_| |___) | | | (_|  __/ |");
+  logLine("header", "/_/   \\_\\__,_|____/|_|_|\\___\\___|_|");
+  logLine("system", "  v0.1.0  //  AUTOMATIC ARCHIVAL VIDEO SEGMENTER");
   logBlank();
-  logLine("system", `[${timestamp()}]  ◆  Ready. Choose a recording and press Start.`);
+  logLine("system", `[${timestamp()}]  ◆  Ready.`);
   logBlank();
 });

@@ -1,0 +1,8 @@
+AdSlicer Productization Pass 10 verification
+
+PASS: src/main.js syntax (node --check)
+PASS: obsolete idle instructional strings removed
+PASS: progressEstimate UI and JS references removed
+PASS: progress DOM IDs unique and present
+PASS: src-tauri/src is byte-identical to Productization Pass 09
+SCOPE: UI layout/status consolidation only

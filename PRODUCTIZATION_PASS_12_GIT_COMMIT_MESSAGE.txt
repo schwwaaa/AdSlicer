@@ -1,0 +1,11 @@
+refactor(ui): establish readable retro UI system
+
+- standardize primary spacing around a 4/8/12/16px scale
+- increase functional text and control sizes for readability
+- remove redundant explanatory copy from the main workflow
+- remove the standalone Processing group label
+- reduce processing state to one authoritative stage plus live indicator
+- integrate progress, timing, and transport controls as one instrument
+- improve Activity Log legibility while preserving Simple/Verbose modes
+- retain retro Windows/broadcast styling and existing application behavior
+- keep backend detection, segmentation, export, cancellation, and telemetry unchanged

@@ -177,40 +177,10 @@
     border-left: 1px solid #fff;
     border-right: 1px solid #808080;
     border-bottom: 1px solid #808080;
-    height: 24px;
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 11px;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
     cursor: default;
     white-space: nowrap;
-  }
-
-  button.tool-btn {
-    font-family: inherit;
-  }
-
-  .tool-btn:disabled {
-    color: #808080;
-    text-shadow: 1px 1px 0 #fff;
-    background: #c0c0c0;
-    cursor: default;
-  }
-
-  .tool-btn:disabled:hover {
-    background: #c0c0c0;
-    color: #808080;
-  }
-
-  .tool-btn:disabled:active {
-    border-top-color: #fff;
-    border-left-color: #fff;
-    border-right-color: #808080;
-    border-bottom-color: #808080;
-    transform: none;
   }
 
   .tool-sep { width: 1px; background: #808080; height: 18px; margin: 0 3px; }
@@ -615,10 +585,8 @@
       gap: 3px;
     }
     .tool-btn {
-      height: 34px;
-      padding: 0 12px;
+      padding: 5px 12px;
       font-size: 15px;
-      line-height: 1;
     }
     .tool-sep { height: 26px; margin: 0 5px; }
 
@@ -1171,284 +1139,6 @@
             text-transform: uppercase;
         }
 
-
-
-  /* Final UX pass: classic menu scanning, product clarity, mobile navigation,
-     workflow visualization, and full-viewport framing. */
-  html, body { height: 100%; }
-
-  body {
-    height: 100vh;
-    height: 100dvh;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    overflow: hidden;
-  }
-
-  .window {
-    flex: 1 1 auto;
-    min-height: 0;
-    height: auto;
-  }
-
-  /* A classic Windows menu opens on click. Once menu mode is active, the user
-     can scan horizontally across top-level menus by hovering. */
-  .menu-dropdown:hover .classic-menu,
-  .menu-dropdown:focus-within .classic-menu {
-    display: none;
-  }
-
-  .menu-dropdown.open .classic-menu { display: block; }
-
-  .menu-dropdown.open > .menu-trigger {
-    background: #000080;
-    color: #fff;
-  }
-
-  .menu-bar.menu-scan .menu-trigger:hover {
-    background: #000080;
-    color: #fff;
-  }
-
-  .plain-language-box {
-    margin: 12px 0 18px;
-    padding: 11px 13px;
-    background: #ffffdf;
-    border-top: 2px solid #fff;
-    border-left: 2px solid #fff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    line-height: 1.55;
-  }
-
-  .usecase-preview-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin: 10px 0 18px;
-  }
-
-  .usecase-preview-card {
-    display: grid;
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 3px 9px;
-    align-items: start;
-    width: 100%;
-    padding: 11px 12px;
-    background: #f4f4f4;
-    border-top: 2px solid #fff;
-    border-left: 2px solid #fff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    font: inherit;
-    text-align: left;
-    color: #000;
-    cursor: default;
-  }
-
-  .usecase-preview-card:hover,
-  .usecase-preview-card:focus {
-    background: #000080;
-    color: #fff;
-    outline: none;
-  }
-
-  .usecase-preview-card:active {
-    border-top-color: #404040;
-    border-left-color: #404040;
-    border-right-color: #fff;
-    border-bottom-color: #fff;
-    transform: translate(1px, 1px);
-  }
-
-  .usecase-preview-icon {
-    grid-row: 1 / span 2;
-    font-size: 22px;
-    line-height: 1.2;
-  }
-
-  .usecase-preview-card strong { font-size: 1em; }
-  .usecase-preview-card span:last-child { line-height: 1.45; opacity: .88; }
-
-  .workflow-intro { margin-bottom: 10px !important; }
-
-  .workflow-diagram {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr);
-    align-items: stretch;
-    gap: 5px;
-    margin: 10px 0 9px;
-    padding: 10px;
-    background: #d7d7d7;
-    border-top: 2px solid #808080;
-    border-left: 2px solid #808080;
-    border-right: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-  }
-
-  .workflow-node {
-    min-width: 0;
-    padding: 10px 8px;
-    background: #fff;
-    border-top: 2px solid #fff;
-    border-left: 2px solid #fff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    line-height: 1.35;
-  }
-
-  .workflow-node strong { color: #000080; }
-  .workflow-node > span:last-child { font-size: .88em; }
-  .workflow-num {
-    width: 23px;
-    height: 23px;
-    display: grid;
-    place-items: center;
-    background: #000080;
-    color: #fff;
-    font-weight: bold;
-    font-size: 12px;
-  }
-
-  .workflow-arrow {
-    display: grid;
-    place-items: center;
-    font-weight: bold;
-    font-size: 20px;
-    color: #404040;
-  }
-
-  .workflow-output-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin: 0 0 8px;
-  }
-
-  .workflow-output-row > div {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 7px 9px;
-    background: #000080;
-    color: #fff;
-    text-align: center;
-  }
-
-  .workflow-output-row strong { font-size: .82em; letter-spacing: .05em; }
-  .workflow-output-row span { font-size: .86em; color: #e8e8ff; }
-  .workflow-more { text-align: right; margin-bottom: 17px !important; }
-
-  /* Ready for real application screenshots when supplied. */
-  .screenshot-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 12px 0 20px;
-  }
-  .screenshot-frame {
-    padding: 5px;
-    background: #c0c0c0;
-    border-top: 2px solid #fff;
-    border-left: 2px solid #fff;
-    border-right: 2px solid #404040;
-    border-bottom: 2px solid #404040;
-  }
-  .screenshot-frame img { display: block; width: 100%; height: auto; }
-
-  .mobile-nav { display: none; position: relative; z-index: 1500; flex-shrink: 0; }
-
-  .schwwaaa-footer {
-    flex: 0 0 auto;
-    width: 100%;
-    padding: 2px 0 0;
-    line-height: 1;
-  }
-  .schwwaaa-footer-image { width: min(96px, 28vw); }
-
-  @media (max-width: 1180px) {
-    .workflow-diagram { grid-template-columns: 1fr; }
-    .workflow-arrow { height: 19px; transform: rotate(90deg); }
-  }
-
-  @media (max-width: 760px) {
-    body { gap: 4px; }
-    .window { height: auto; flex: 1 1 auto; min-height: 0; }
-    .menu-bar, .toolbar { display: none; }
-    .mobile-nav { display: block; background: #c0c0c0; border-bottom: 1px solid #808080; padding: 4px; }
-    .mobile-menu-toggle {
-      width: 100%;
-      display: grid;
-      grid-template-columns: auto auto minmax(0, 1fr);
-      align-items: center;
-      gap: 7px;
-      padding: 7px 9px;
-      background: #c0c0c0;
-      border-top: 2px solid #fff;
-      border-left: 2px solid #fff;
-      border-right: 2px solid #808080;
-      border-bottom: 2px solid #808080;
-      color: #000;
-      font: bold 13px/1.2 "MS Sans Serif", Arial, sans-serif;
-      text-align: left;
-    }
-    .mobile-current-topic {
-      justify-self: end;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: #000080;
-      font-weight: normal;
-    }
-    .mobile-nav-panel {
-      position: absolute;
-      top: calc(100% - 2px);
-      left: 4px;
-      right: 4px;
-      z-index: 2500;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 2px;
-      padding: 5px;
-      background: #c0c0c0;
-      border-top: 2px solid #fff;
-      border-left: 2px solid #fff;
-      border-right: 2px solid #404040;
-      border-bottom: 2px solid #404040;
-      box-shadow: 2px 2px 0 #000;
-    }
-    .mobile-nav-panel:not([hidden]) { display: grid; }
-    .mobile-nav-panel button, .mobile-nav-panel a {
-      min-width: 0;
-      padding: 9px 8px;
-      border: 0;
-      background: transparent;
-      color: #000;
-      font: 12px/1.25 "MS Sans Serif", Arial, sans-serif;
-      text-align: left;
-      text-decoration: none;
-    }
-    .mobile-nav-panel button:hover, .mobile-nav-panel button:focus,
-    .mobile-nav-panel a:hover, .mobile-nav-panel a:focus {
-      background: #000080;
-      color: #fff;
-      outline: none;
-    }
-    .usecase-preview-grid, .workflow-output-row, .screenshot-grid { grid-template-columns: 1fr; }
-    .schwwaaa-footer { padding-top: 1px; }
-    .schwwaaa-footer-image { width: min(82px, 26vw); }
-  }
-
-  @media print {
-    body { height: auto; display: block; overflow: visible; }
-    .mobile-nav, .schwwaaa-footer { display: none !important; }
-  }
-
 </style>
 </head>
 <body>
@@ -1584,39 +1274,14 @@
     </div>
   </div>
 
-
-  <div class="mobile-nav" id="mobile-nav">
-    <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-panel">
-      <span aria-hidden="true">☰</span> Menu
-      <span class="mobile-current-topic" id="mobile-current-topic">Introduction</span>
-    </button>
-    <div class="mobile-nav-panel" id="mobile-nav-panel" hidden>
-      <button type="button" onclick="show('home')">🏠 Introduction</button>
-      <button type="button" onclick="show('usecases')">💡 Use Cases</button>
-      <button type="button" onclick="show('installation')">💿 Installation</button>
-      <button type="button" onclick="show('quickstart')">▶ Quick Start</button>
-      <button type="button" onclick="show('pipeline')">⚙ How It Works</button>
-      <button type="button" onclick="show('tips')">★ Tips &amp; Tricks</button>
-      <button type="button" onclick="show('output')">📁 Output Structure</button>
-      <button type="button" onclick="show('parameters')">🔧 Parameters</button>
-      <button type="button" onclick="show('presets')">💾 Presets</button>
-      <button type="button" onclick="show('tuning')">🎛 Tuning</button>
-      <button type="button" onclick="show('ml')">📊 Dataset</button>
-      <button type="button" onclick="show('building')">🔨 Build from Source</button>
-      <a href="https://github.com/schwwaaa/AdSlicer" target="_blank" rel="noopener noreferrer">▣ Repository</a>
-    </div>
-  </div>
-
   <div class="toolbar">
-    <button class="tool-btn" id="toolbar-back" type="button" onclick="goBack()" title="Back" aria-label="Back">◀</button>
-    <button class="tool-btn" id="toolbar-forward" type="button" onclick="goForward()" title="Forward" aria-label="Forward">▶</button>
-    <button class="tool-btn" type="button" onclick="show('home')" title="Home" aria-label="Home">🏠</button>
+    <div class="tool-btn" onclick="show('home')">🏠</div>
     <div class="tool-sep"></div>
-    <div class="tool-btn" onclick="show('usecases')">💡 Use Cases</div>
     <div class="tool-btn" onclick="show('installation')">💿 Installation</div>
     <div class="tool-btn" onclick="show('quickstart')">▶ Quick Start</div>
     <div class="tool-btn" onclick="show('pipeline')">⚙ How It Works</div>
     <div class="tool-btn" onclick="show('tips')">★ Tips &amp; Tricks</div>
+    <div class="tool-btn" onclick="show('usecases')">💡 Use Cases</div>
     <div class="tool-sep"></div>
     <div class="tool-btn" onclick="window.print()">🖨 Print</div>
   </div>
@@ -1627,7 +1292,6 @@
       <div class="tree-item selected" onclick="show('home')" id="nav-home">🏠 Introduction</div>
 
       <div class="tree-section">Getting Started</div>
-      <div class="tree-item" onclick="show('usecases')" id="nav-usecases">💡 Use Cases</div>
       <div class="tree-item" onclick="show('installation')" id="nav-installation">💿 Installation</div>
       <div class="tree-item" onclick="show('quickstart')" id="nav-quickstart">▶ Quick Start</div>
       <div class="tree-item" onclick="show('output')" id="nav-output">📁 Output Structure</div>
@@ -1641,6 +1305,7 @@
       <div class="tree-item" onclick="show('tips')" id="nav-tips">★ Tips &amp; Tricks</div>
       <div class="tree-item" onclick="show('tuning')" id="nav-tuning">🎛 Tuning Guide</div>
       <div class="tree-item" onclick="show('ml')" id="nav-ml">📊 ML Dataset</div>
+      <div class="tree-item" onclick="show('usecases')" id="nav-usecases">💡 Use Cases</div>
       <div class="tree-item" onclick="show('building')" id="nav-building">🔨 Building from Source</div>
     </div>
 
@@ -1656,62 +1321,8 @@
           </div>
         </div>
 
-        <p>AdSlicer is an archival boundary-detection and segment-slicing application built for long-form VHS captures, analog transfers, and TV recordings. It analyzes candidate boundaries, identifies likely commercial blocks, and turns hours-long recordings into practical, reviewable pieces without throwing away the broadcast material around them.</p>
+        <p>AdSlicer is an archival boundary-detection and segment-slicing application built for long-form VHS captures, analog transfers, and TV recordings. It analyzes candidate boundaries, identifies likely commercial blocks, and prepares a reviewable export plan that outputs:</p>
 
-        <div class="plain-language-box">
-          <strong>In plain English:</strong> give AdSlicer a long TV recording. It looks for likely boundaries between program material and commercial breaks, lets you verify the detection plan, and can export the show, commercials, and supporting metadata as separate useful outputs.
-        </div>
-
-        <h2>What is AdSlicer for?</h2>
-        <div class="usecase-preview-grid">
-          <button class="usecase-preview-card" type="button" onclick="show('usecases')">
-            <span class="usecase-preview-icon">📺</span>
-            <strong>Clean viewing copies</strong>
-            <span>Separate program material from ad breaks without manually editing an entire tape.</span>
-          </button>
-          <button class="usecase-preview-card" type="button" onclick="show('usecases')">
-            <span class="usecase-preview-icon">📼</span>
-            <strong>Preserve the commercials too</strong>
-            <span>Keep vintage ads, promos, and station material as their own archival assets.</span>
-          </button>
-          <button class="usecase-preview-card" type="button" onclick="show('usecases')">
-            <span class="usecase-preview-icon">🗃</span>
-            <strong>Process collections</strong>
-            <span>Use repeatable presets, batch processing, and consistent output structures across many recordings.</span>
-          </button>
-          <button class="usecase-preview-card" type="button" onclick="show('usecases')">
-            <span class="usecase-preview-icon">🔎</span>
-            <strong>Review difficult boundaries</strong>
-            <span>Use confidence, diagnostics, and dry runs to focus attention where analog recordings are ambiguous.</span>
-          </button>
-        </div>
-
-        <h2>Workflow at a Glance</h2>
-        <p class="workflow-intro">AdSlicer follows one repeatable path from a raw recording to organized archival outputs.</p>
-        <div class="workflow-diagram" aria-label="AdSlicer workflow diagram">
-          <div class="workflow-node"><span class="workflow-num">1</span><strong>Import</strong><span>Choose one recording or a batch folder.</span></div>
-          <div class="workflow-arrow" aria-hidden="true">→</div>
-          <div class="workflow-node"><span class="workflow-num">2</span><strong>Analyze</strong><span>Read black, silence, uniformity, and scene-change evidence.</span></div>
-          <div class="workflow-arrow" aria-hidden="true">→</div>
-          <div class="workflow-node"><span class="workflow-num">3</span><strong>Detect</strong><span>Build candidate commercial boundaries and intervals.</span></div>
-          <div class="workflow-arrow" aria-hidden="true">→</div>
-          <div class="workflow-node"><span class="workflow-num">4</span><strong>Score</strong><span>Apply confidence signals and safety guards.</span></div>
-          <div class="workflow-arrow" aria-hidden="true">→</div>
-          <div class="workflow-node"><span class="workflow-num">5</span><strong>Verify</strong><span>Dry run, inspect diagnostics, and tune only when needed.</span></div>
-          <div class="workflow-arrow" aria-hidden="true">→</div>
-          <div class="workflow-node"><span class="workflow-num">6</span><strong>Export</strong><span>Render organized media and metadata outputs.</span></div>
-        </div>
-        <div class="workflow-output-row" aria-label="AdSlicer output types">
-          <div><strong>SHOW</strong><span>Clean program master</span></div>
-          <div><strong>COMMERCIALS</strong><span>Preserved ad blocks</span></div>
-          <div><strong>LOGS + DATA</strong><span>JSON, CSV, EDL, chapters, dataset</span></div>
-        </div>
-        <p class="workflow-more"><span class="toc-link" onclick="show('pipeline')">See the full detection pipeline →</span></p>
-
-        <!-- Application screenshot hook: when real AdSlicer screenshots are supplied,
-             add them here using .screenshot-grid and .screenshot-frame. -->
-
-        <h2>What AdSlicer Produces</h2>
         <ul>
           <li>A <strong>clean show file</strong> (ads removed)</li>
           <li>A folder of <strong>isolated commercial clips</strong></li>
@@ -1726,7 +1337,6 @@
         <h2>Topics</h2>
         <div class="inset">
           <table style="border:none; width:100%;">
-            <tr><td style="border:none; padding:2px 6px;">💡</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('usecases')">Use Cases</span> — Archiving, batch processing, ML, compilations</td></tr>
             <tr><td style="border:none; padding:2px 6px; width:22px;">💿</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('installation')">Installation</span> — Download a compiled application or build AdSlicer yourself</td></tr>
             <tr><td style="border:none; padding:2px 6px;">★</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('tips')">Tips &amp; Tricks</span> — Practical advice for faster review and safer exports</td></tr>
             <tr><td style="border:none; padding:2px 6px; width:22px;">✂️</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('pipeline')">How It Works</span> — Detection pipeline, confidence scoring, export modes</td></tr>
@@ -1735,6 +1345,7 @@
             <tr><td style="border:none; padding:2px 6px;">💾</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('presets')">Preset System</span> — Built-in presets, saving, and file format</td></tr>
             <tr><td style="border:none; padding:2px 6px;">🎛</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('tuning')">Tuning Guide</span> — Fixing false positives, missed breaks, noisy tape</td></tr>
             <tr><td style="border:none; padding:2px 6px;">📊</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('ml')">ML Dataset Output</span> — The 74-column dataset.jsonl format</td></tr>
+            <tr><td style="border:none; padding:2px 6px;">💡</td><td style="border:none; padding:2px 6px;"><span class="toc-link" onclick="show('usecases')">Use Cases</span> — Archiving, batch processing, ML, compilations</td></tr>
           </table>
         </div>
       </div>
@@ -2397,7 +2008,7 @@ cargo tauri dev</pre>
   </section>
 </div>
 <script>
-  const pages = ['home','usecases','installation','quickstart','output','pipeline','parameters','presets','tips','tuning','ml','building'];
+  const pages = ['home','installation','quickstart','output','pipeline','parameters','presets','tips','tuning','ml','usecases','building'];
   const labels = {
     home:'Introduction', installation:'Installation', quickstart:'Quick Start', output:'Output Structure',
     pipeline:'How It Works', parameters:'All Parameters', presets:'Preset System',
@@ -2405,21 +2016,10 @@ cargo tauri dev</pre>
   };
   const repositoryUrl = 'https://github.com/schwwaaa/AdSlicer';
 
-  const hashPage = window.location.hash.replace(/^#/, '');
-  const initialPage = pages.includes(hashPage) ? hashPage : 'home';
-  let currentPage = initialPage;
-  let topicHistory = [initialPage];
+  let currentPage = 'home';
+  let topicHistory = ['home'];
   let topicHistoryIndex = 0;
   let contentsVisible = true;
-
-  // Seed the browser history with an AdSlicer topic state. This lets the
-  // browser's own Back/Forward buttons stay inside the help site while the
-  // user moves between topics.
-  window.history.replaceState(
-    { adslicerPage: initialPage, adslicerIndex: 0 },
-    '',
-    '#' + initialPage
-  );
 
   function renderPage(id) {
     if (!pages.includes(id)) return;
@@ -2440,8 +2040,6 @@ cargo tauri dev</pre>
 
     currentPage = id;
     document.getElementById('status-text').textContent = labels[id] || id;
-    const mobileTopic = document.getElementById('mobile-current-topic');
-    if (mobileTopic) mobileTopic.textContent = labels[id] || id;
     document.querySelector('.content-area').scrollTop = 0;
     updateNavigationState();
   }
@@ -2449,50 +2047,30 @@ cargo tauri dev</pre>
   function show(id, options = {}) {
     if (!pages.includes(id)) return;
     const record = options.record !== false;
-    const updateBrowser = options.browser !== false;
 
     if (record && id !== currentPage) {
       topicHistory = topicHistory.slice(0, topicHistoryIndex + 1);
       topicHistory.push(id);
       topicHistoryIndex = topicHistory.length - 1;
-
-      if (updateBrowser) {
-        window.history.pushState(
-          { adslicerPage: id, adslicerIndex: topicHistoryIndex },
-          '',
-          '#' + id
-        );
-      }
     }
 
     renderPage(id);
     closeAllMenus();
-    closeMobileMenu();
   }
 
   function goBack() {
     if (topicHistoryIndex <= 0) return;
-    window.history.back();
+    topicHistoryIndex -= 1;
+    renderPage(topicHistory[topicHistoryIndex]);
     closeAllMenus();
-    closeMobileMenu();
   }
 
   function goForward() {
     if (topicHistoryIndex >= topicHistory.length - 1) return;
-    window.history.forward();
+    topicHistoryIndex += 1;
+    renderPage(topicHistory[topicHistoryIndex]);
     closeAllMenus();
-    closeMobileMenu();
   }
-
-  window.addEventListener('popstate', event => {
-    const state = event.state;
-    if (!state || !pages.includes(state.adslicerPage)) return;
-
-    topicHistoryIndex = Math.max(0, Math.min(state.adslicerIndex ?? 0, topicHistory.length - 1));
-    renderPage(state.adslicerPage);
-    closeAllMenus();
-    closeMobileMenu();
-  });
 
   function goPreviousTopic() {
     const index = pages.indexOf(currentPage);
@@ -2510,12 +2088,8 @@ cargo tauri dev</pre>
   }
 
   function updateNavigationState() {
-    const atHistoryStart = topicHistoryIndex <= 0;
-    const atHistoryEnd = topicHistoryIndex >= topicHistory.length - 1;
-    setDisabled('go-back-item', atHistoryStart);
-    setDisabled('go-forward-item', atHistoryEnd);
-    setDisabled('toolbar-back', atHistoryStart);
-    setDisabled('toolbar-forward', atHistoryEnd);
+    setDisabled('go-back-item', topicHistoryIndex <= 0);
+    setDisabled('go-forward-item', topicHistoryIndex >= topicHistory.length - 1);
     const pageIndex = pages.indexOf(currentPage);
     setDisabled('go-previous-item', pageIndex <= 0);
     setDisabled('go-next-item', pageIndex >= pages.length - 1);
@@ -2530,8 +2104,6 @@ cargo tauri dev</pre>
   }
 
   const menuDropdowns = Array.from(document.querySelectorAll('[data-menu]'));
-  const menuBar = document.querySelector('.menu-bar[role="menubar"]');
-  let menuScanActive = false;
 
   function positionMenu(dropdown) {
     const panel = dropdown.querySelector('.classic-menu');
@@ -2550,43 +2122,31 @@ cargo tauri dev</pre>
     if (shift) panel.style.transform = `translateX(${Math.round(shift)}px)`;
   }
 
-  function openMenu(dropdown, focusFirst = false) {
+  function setMenu(dropdown, open) {
     menuDropdowns.forEach(menu => {
-      const trigger = menu.querySelector('.menu-trigger');
-      const panel = menu.querySelector('.classic-menu');
-      const isTarget = menu === dropdown;
-      menu.classList.toggle('open', isTarget);
-      if (trigger) trigger.setAttribute('aria-expanded', String(isTarget));
-      if (!isTarget && panel) panel.style.transform = '';
-    });
-
-    menuScanActive = true;
-    if (menuBar) menuBar.classList.add('menu-scan');
-    requestAnimationFrame(() => {
-      positionMenu(dropdown);
-      if (focusFirst) {
-        const first = dropdown.querySelector('.classic-menu-item:not([disabled])');
-        if (first) first.focus();
+      if (menu !== dropdown) {
+        menu.classList.remove('open');
+        const otherTrigger = menu.querySelector('.menu-trigger');
+        const otherPanel = menu.querySelector('.classic-menu');
+        if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+        if (otherPanel) otherPanel.style.transform = '';
       }
     });
+
+    dropdown.classList.toggle('open', open);
+    const trigger = dropdown.querySelector('.menu-trigger');
+    const panel = dropdown.querySelector('.classic-menu');
+    if (trigger) trigger.setAttribute('aria-expanded', String(open));
+
+    if (open) {
+      requestAnimationFrame(() => positionMenu(dropdown));
+    } else if (panel) {
+      panel.style.transform = '';
+    }
   }
 
   function closeAllMenus() {
-    menuDropdowns.forEach(menu => {
-      menu.classList.remove('open');
-      const trigger = menu.querySelector('.menu-trigger');
-      const panel = menu.querySelector('.classic-menu');
-      if (trigger) trigger.setAttribute('aria-expanded', 'false');
-      if (panel) panel.style.transform = '';
-    });
-    menuScanActive = false;
-    if (menuBar) menuBar.classList.remove('menu-scan');
-  }
-
-  function adjacentMenu(dropdown, direction) {
-    const index = menuDropdowns.indexOf(dropdown);
-    if (index < 0) return dropdown;
-    return menuDropdowns[(index + direction + menuDropdowns.length) % menuDropdowns.length];
+    menuDropdowns.forEach(menu => setMenu(menu, false));
   }
 
   menuDropdowns.forEach(dropdown => {
@@ -2595,31 +2155,19 @@ cargo tauri dev</pre>
 
     trigger.addEventListener('click', event => {
       event.stopPropagation();
-      if (dropdown.classList.contains('open')) closeAllMenus();
-      else openMenu(dropdown, false);
-    });
-
-    dropdown.addEventListener('mouseenter', () => {
-      if (menuScanActive && !dropdown.classList.contains('open')) {
-        openMenu(dropdown, false);
-      }
+      setMenu(dropdown, !dropdown.classList.contains('open'));
     });
 
     trigger.addEventListener('keydown', event => {
       if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        openMenu(dropdown, true);
-      } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-        event.preventDefault();
-        const next = adjacentMenu(dropdown, event.key === 'ArrowRight' ? 1 : -1);
-        next.querySelector('.menu-trigger').focus();
-        if (menuScanActive) openMenu(next, false);
-      } else if (event.key === 'Escape') {
-        closeAllMenus();
+        setMenu(dropdown, true);
+        const first = items.find(item => !item.disabled);
+        if (first) requestAnimationFrame(() => first.focus());
       }
     });
 
-    items.forEach(item => {
+    items.forEach((item, index) => {
       item.addEventListener('click', closeAllMenus);
       item.addEventListener('keydown', event => {
         const enabledItems = items.filter(candidate => !candidate.disabled);
@@ -2630,10 +2178,6 @@ cargo tauri dev</pre>
         } else if (event.key === 'ArrowUp') {
           event.preventDefault();
           enabledItems[(currentIndex - 1 + enabledItems.length) % enabledItems.length].focus();
-        } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-          event.preventDefault();
-          const next = adjacentMenu(dropdown, event.key === 'ArrowRight' ? 1 : -1);
-          openMenu(next, true);
         } else if (event.key === 'Escape') {
           event.preventDefault();
           closeAllMenus();
@@ -2648,41 +2192,8 @@ cargo tauri dev</pre>
   });
 
   window.addEventListener('resize', () => {
-    const open = menuDropdowns.find(menu => menu.classList.contains('open'));
-    if (open) positionMenu(open);
-  });
-
-  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-  const mobileNavPanel = document.getElementById('mobile-nav-panel');
-
-  function closeMobileMenu() {
-    if (!mobileNavPanel || !mobileMenuToggle) return;
-    mobileNavPanel.hidden = true;
-    mobileMenuToggle.setAttribute('aria-expanded', 'false');
-  }
-
-  function toggleMobileMenu() {
-    if (!mobileNavPanel || !mobileMenuToggle) return;
-    const opening = mobileNavPanel.hidden;
-    mobileNavPanel.hidden = !opening;
-    mobileMenuToggle.setAttribute('aria-expanded', String(opening));
-  }
-
-  if (mobileMenuToggle) {
-    mobileMenuToggle.addEventListener('click', event => {
-      event.stopPropagation();
-      toggleMobileMenu();
-    });
-  }
-
-  if (mobileNavPanel) {
-    mobileNavPanel.addEventListener('click', event => {
-      if (event.target.closest('button, a')) closeMobileMenu();
-    });
-  }
-
-  document.addEventListener('click', event => {
-    if (!event.target.closest('#mobile-nav')) closeMobileMenu();
+    const openMenu = menuDropdowns.find(menu => menu.classList.contains('open'));
+    if (openMenu) positionMenu(openMenu);
   });
 
   const aboutBackdrop = document.getElementById('about-backdrop');
@@ -2736,7 +2247,6 @@ cargo tauri dev</pre>
 
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
-      closeMobileMenu();
       if (!aboutBackdrop.hidden) {
         closeAboutDialog();
       } else {
@@ -2770,7 +2280,7 @@ cargo tauri dev</pre>
     }
   });
 
-  renderPage(initialPage);
+  updateNavigationState();
 </script>
 <footer class="schwwaaa-footer" aria-label="schwwaaa footer logo">
     <a class="schwwaaa-footer-logo" href="https://linktr.ee/schwwaaa" target="_blank" rel="noopener noreferrer">

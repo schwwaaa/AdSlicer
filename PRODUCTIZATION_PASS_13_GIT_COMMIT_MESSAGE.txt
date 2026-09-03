@@ -1,0 +1,7 @@
+refactor(ui): make primary workflow sections collapsible
+
+- convert Source, Analysis, and Output to disclosure tabs
+- keep all three primary workflow sections expanded on launch
+- preserve Advanced / Compatibility as collapsed by default
+- reuse the existing retro disclosure interaction and styling
+- preserve all workflow controls, defaults, and processing behavior

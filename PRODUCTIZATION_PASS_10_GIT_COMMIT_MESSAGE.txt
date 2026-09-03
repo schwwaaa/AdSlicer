@@ -1,0 +1,8 @@
+refactor(ui): consolidate ready state and progress status
+
+- merge WAITING/ACTIVE indicator into the READY progress header
+- remove redundant pre-run instructional copy
+- remove standalone estimate explanation panel
+- surface duration estimate through compact EST. ETA metric
+- preserve live percentage, progress animation, batch status, and telemetry
+- keep processing, detector, export, and cancellation behavior unchanged

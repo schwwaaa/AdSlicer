@@ -1,0 +1,12 @@
+AdSlicer Productization Pass 13 verification
+
+- Source uses native details/summary disclosure: PASS
+- Source open by default: PASS
+- Analysis uses native details/summary disclosure: PASS
+- Analysis open by default: PASS
+- Output uses native details/summary disclosure: PASS
+- Output open by default: PASS
+- Advanced remains closed by default: PASS
+- Existing workflow control IDs preserved: PASS
+- main.js syntax: PASS
+- Rust source unchanged from Pass 12: PASS

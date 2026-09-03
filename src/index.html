@@ -74,9 +74,9 @@
                 </div>
 
                 <!-- Source -->
-                <div class="panel-wrap">
-                    <span class="panel-label">Source</span>
-                    <div class="panel-outer">
+                <details class="advanced-panel workflow-panel" id="sourcePanel" open>
+                    <summary>Source</summary>
+                    <div class="advanced-panel-body workflow-panel-body">
                         <div class="row compact-choice-row">
                             <label data-tip="Process one recording, or process every supported recording inside a folder.">Input</label>
                             <div class="field-group">
@@ -97,12 +97,12 @@
                             <button id="pickOutput" class="btn" data-tip="Choose the destination folder.">Browse…</button>
                         </div>
                     </div>
-                </div>
+                </details>
 
                 <!-- Analysis -->
-                <div class="panel-wrap">
-                    <span class="panel-label">Analysis</span>
-                    <div class="panel-outer">
+                <details class="advanced-panel workflow-panel" id="analysisPanel" open>
+                    <summary>Analysis</summary>
+                    <div class="advanced-panel-body workflow-panel-body">
                         <div class="row" id="segmentationPolicyRow">
                             <label data-tip="Complete Segments is recommended: internal fades stay inside the larger piece. Every Separator creates a new clip at each strong separator-like event.">Split Behavior</label>
                             <select id="segmentationPolicy">
@@ -126,14 +126,13 @@
                             </select>
                         </div>
 
-                        <div class="product-note">Automatic analysis — no threshold tuning required.</div>
                     </div>
-                </div>
+                </details>
 
                 <!-- Output -->
-                <div class="panel-wrap">
-                    <span class="panel-label">Output</span>
-                    <div class="panel-outer">
+                <details class="advanced-panel workflow-panel" id="outputPanel" open>
+                    <summary>Output</summary>
+                    <div class="advanced-panel-body workflow-panel-body">
                         <div class="row">
                             <label data-tip="Separate Clips exports the complete structural timeline as individual files. Chapters preserves the recording and adds navigation markers.">Result</label>
                             <select id="outputMode">
@@ -150,9 +149,8 @@
                                 <option value="custom">Custom  (Advanced)</option>
                             </select>
                         </div>
-                        <div class="product-note" id="outputProfileNote">Fast default. Preserves the source video stream whenever possible.</div>
                     </div>
-                </div>
+                </details>
 
                 <!-- Advanced / Compatibility -->
                 <details class="advanced-panel" id="advancedPanel">
@@ -168,7 +166,6 @@
                                     <option value="legacy">Legacy Compatibility</option>
                                 </select>
                             </div>
-                            <div class="engine-note" id="engineNote">Adaptive is the normal AdSlicer analysis path. Legacy exists only as a compatibility fallback.</div>
                         </div>
 
                         <div class="advanced-section" id="batchOptions" style="display:none;">
@@ -274,43 +271,48 @@
                     </div>
                 </details>
 
-                <!-- Processing -->
-                <div class="processing-label">Processing</div>
-
-                <!-- Job Progress -->
-                <div class="progress-panel" id="progressPanel" aria-live="polite">
-                    <div class="progress-titlebar">
-                        <span id="progressStage">READY</span>
-                        <span id="progressPercent">—</span>
-                    </div>
-                    <div class="progress-track" id="progressTrack" role="progressbar" aria-label="Job progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="progress-detail" id="progressDetail">Choose a recording and press Analyze &amp; Export.</div>
-                    <div class="progress-live" id="progressLive">
-                        <span class="work-pips" aria-hidden="true"><i></i><i></i><i></i></span>
-                        <span id="progressLiveText">WAITING</span>
-                        <span id="progressLastUpdate"></span>
-                    </div>
-                    <div class="progress-estimate" id="progressEstimate">Select a recording to calculate an initial time estimate.</div>
-                    <div class="progress-batch" id="progressBatch" style="display:none;"></div>
-                    <div class="progress-metrics">
-                        <div><span class="metric-label">ELAPSED</span><span id="progressElapsed">00:00:00</span></div>
-                        <div><span class="metric-label">ETA</span><span id="progressEta">—</span></div>
-                        <div><span class="metric-label">RATE</span><span id="progressRate">—</span></div>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="transport-panel">
-                    <div class="transport-row">
-                        <div class="transport-buttons">
-                            <button id="startBtn" class="btn primary" data-tip="Analyze the selected recording and export the result using the current settings.">▶  Analyze &amp; Export</button>
-                            <button id="stopBtn" class="btn danger" data-tip="Cancel the running job. Output folder may contain partial files.">■  Stop</button>
+                <!-- Processing / transport -->
+                <div class="processing-shell">
+                    <!-- Current job state -->
+                    <div class="progress-panel" id="progressPanel" aria-live="polite">
+                        <div class="progress-titlebar">
+                            <div class="progress-stage-group">
+                                <div id="statusLed" class="status-led idle" aria-hidden="true"></div>
+                                <span id="progressStage">READY</span>
+                            </div>
+                            <div class="progress-title-right">
+                                <div class="progress-live" id="progressLive" aria-hidden="true">
+                                    <span class="work-pips"><i></i><i></i><i></i></span>
+                                    <span id="progressLiveText" class="visually-hidden">WAITING</span>
+                                    <span id="progressLastUpdate" class="visually-hidden"></span>
+                                </div>
+                                <span id="progressPercent"></span>
+                            </div>
                         </div>
-                        <div class="status-indicator">
-                            <div id="statusLed" class="status-led idle"></div>
-                            <span id="status">Idle</span>
+                        <div class="progress-detail" id="progressDetail"></div>
+                        <div class="progress-batch" id="progressBatch" style="display:none;"></div>
+                    </div>
+
+                    <!-- Unified transport: controls + live progress + timing -->
+                    <div class="transport-panel">
+                        <div class="transport-row">
+                            <div class="transport-buttons">
+                                <button id="startBtn" class="btn primary" data-tip="Analyze the selected recording and export the result using the current settings.">▶  Analyze &amp; Export</button>
+                                <button id="stopBtn" class="btn danger" data-tip="Cancel the running job. Output folder may contain partial files.">■  Stop</button>
+                            </div>
+
+                            <div class="transport-progress-module">
+                                <div class="progress-track" id="progressTrack" role="progressbar" aria-label="Job progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <div class="progress-metrics">
+                                    <div><span class="metric-label">ELAPSED</span><span id="progressElapsed">00:00:00</span></div>
+                                    <div><span class="metric-label" id="progressEtaLabel">EST. ETA</span><span id="progressEta">—</span></div>
+                                    <div><span class="metric-label">RATE</span><span id="progressRate">—</span></div>
+                                </div>
+                            </div>
+
+                            <span id="status" class="visually-hidden" aria-live="polite">Idle</span>
                         </div>
                     </div>
                 </div>
