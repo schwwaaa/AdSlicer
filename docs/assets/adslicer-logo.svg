@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">AdSlice film eye icon</title>
+  <desc id="desc">A black film frame with a yellow image field and a centered black and white eye.</desc>
+  <rect x="112" y="60" width="800" height="904" rx="18" fill="#050505"/>
+  <rect x="176" y="216" width="672" height="592" fill="#F9C900"/>
+  <g fill="#F9C900">
+    <rect x="176" y="104" width="72" height="72"/><rect x="296" y="104" width="72" height="72"/>
+    <rect x="416" y="104" width="72" height="72"/><rect x="536" y="104" width="72" height="72"/>
+    <rect x="656" y="104" width="72" height="72"/><rect x="776" y="104" width="72" height="72"/>
+    <rect x="176" y="848" width="72" height="72"/><rect x="296" y="848" width="72" height="72"/>
+    <rect x="416" y="848" width="72" height="72"/><rect x="536" y="848" width="72" height="72"/>
+    <rect x="656" y="848" width="72" height="72"/><rect x="776" y="848" width="72" height="72"/>
+  </g>
+  <path d="M224 512C307 397 409 344 512 344s205 53 288 168c-83 115-185 168-288 168S307 627 224 512Z" fill="#050505"/>
+  <path d="M286 512c65-75 141-112 226-112s161 37 226 112c-65 75-141 112-226 112s-161-37-226-112Z" fill="#FFFFFF"/>
+  <circle cx="512" cy="512" r="112" fill="#050505"/>
+  <circle cx="512" cy="512" r="42" fill="#FFFFFF"/>
+</svg>
